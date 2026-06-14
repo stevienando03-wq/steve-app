@@ -104,12 +104,14 @@ body{padding-bottom:78px;max-width:520px;margin:0 auto;min-height:100vh}
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
 <div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
 <div class="tab" id="t-obj"><div class="wrap" id="obj"></div></div>
+<div class="tab" id="t-style"><div class="wrap" id="style"></div></div>
 
 <div class="nav">
   <button class="act" data-tab="jour"><span class="ic">📌</span>Aujourd'hui</button>
   <button data-tab="semaine"><span class="ic">🗓️</span>Semaine</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
+  <button data-tab="style"><span class="ic">👔</span>Style</button>
   <button data-tab="obj"><span class="ic">🎯</span>Cap</button>
 </div>
 
@@ -134,14 +136,14 @@ const DAYS=[
    dej:"Bowl batch : 150 g poulet + 100 g riz + légumes (gamelle)",
    diner:"MARDI SOIR : pas chez toi → pas de dîner à prévoir",
    courses:"",etude:"EDC2 : budget de trésorerie",copine:"",
-   tenue:"CODIR : chino marine ou beige + chemise oxford (blanc/bleu clair) rentrée + ceinture cuir + sneakers blanches propres ou derbies. Rasage net, parfum sur peau propre."},
+   tenue:"CODIR : pantalon Scherrer noir + chemise bleu ciel rentrée + blazer noir + ceinture cuir + sneakers blanches IMPEC (souliers cuir = achat n°1). Barbe nette, Azzaro."},
  {d:"2026-06-17",lab:"Mer 17 juin",type:"off",seance:"REPOS — marche 20-30 min",
    pdj:"4 œufs brouillés + 2 pain (+ skyr)",
    dej:"DÉJ AVEC LES COLLÈGUES (dehors) — pas de gamelle. ~10-15 € / TR",
    diner:"Pâtes bœuf : 100 g pâtes + 125 g bœuf 5% + légumes + concentré tomate + piment",
    courses:"RÉAPPRO ÉCO (~10 €) : œufs x12, lait 2L, pain, bananes + GINGEMBRE + PATATE DOUCE (oubliés du 14)",
    etude:"Mémoire : INTRO + problématique",copine:"Attention semaine",
-   tenue:"CODIR : jean brut foncé droit + chemise unie (ou polo qualité) + surchemise/veste légère + sneakers blanches propres. Tenue soignée, c'est ton 2e jour de comité."},
+   tenue:"CODIR j2 : chino écru + polo BOSS navy rentré + ceinture cuir + sneakers blanches IMPEC. (Le navy casse l'écru.) Barbe nette, twists frais."},
  {d:"2026-06-18",lab:"Jeu 18 juin",type:"on",num:5,seance:"Séance 5 · LEGS presse/hack (pas avant-pied)",
    pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
    diner:"Poisson blanc : 150 g colin + 200 g patate douce (four 25 min) + épices + citron",
@@ -424,13 +426,44 @@ function renderObj(){
   document.getElementById("reset").addEventListener("click",()=>{if(confirm("Effacer tout ton suivi (coches, eau, dépenses) ?")){localStorage.removeItem(LS);S={track:{},shop:{},spend:{}};renderAll();}});
 }
 
-function renderAll(){renderJour();renderSemaine();renderBouffe();renderEuro();renderObj();}
+const OUTFITS=[
+ {t:"👔 CODIR — Mardi 16",x:"Pantalon Scherrer noir + chemise bleu ciel RENTRÉE + blazer noir + ceinture cuir + sneakers blanches IMPEC. Barbe nette, Azzaro."},
+ {t:"👔 CODIR — Mercredi 17",x:"Chino écru + polo BOSS navy RENTRÉ + ceinture cuir + sneakers blanches IMPEC. (Le navy casse l'écru → pas d'effet pyjama.)"},
+ {t:"Smart casual 1",x:"Chino écru + polo BOSS navy rentré + ceinture + sneakers blanches."},
+ {t:"Smart casual 2",x:"Pantalon noir à carreaux fins + chemise blanche waffle rentrée + sneakers."},
+ {t:"Smart casual 3",x:"Chino écru + chemise lin vert sauge ouverte (manches retroussées) + t-shirt blanc dessous + sneakers."},
+ {t:"Été",x:"Jean bleu clair + t-shirt rose pâle SEUL + sneakers."},
+ {t:"Streetwear 1",x:"Joggers gris + t-shirt Carhartt noir + hoodie gris clair + sneakers."},
+ {t:"Streetwear 2",x:"Jean + sweat Nike noir + sneakers + casquette sobre."},
+ {t:"Workwear",x:"Jean + sweat olive/kaki + t-shirt Carhartt noir dessous + sneakers."},
+];
+function renderStyle(){
+  const c=document.getElementById("style");
+  let h=`<div class="card sec-today"><h2>Routine matin (ordre exact)</h2>
+    <div class="meal"><span class="k">Visage</span><span class="v">1. Nettoyant CeraVe → 2. Hydratant CeraVe → 3. SPF50 (⚠️ à acheter, La Roche-Posay ~17 €)</span></div>
+    <div class="meal"><span class="k">Cheveux</span><span class="v">Vaporise eau → Cantu Leave-in → scelle Crazy Locks → sponge brush en cercles → edges Red One + brosse à dents</span></div>
+    <div class="meal"><span class="k">Barbe</span><span class="v">Ton point fort : pleine et NETTE. Peigne, définis les contours, 1 goutte d'huile si ça tire.</span></div>
+    <div class="meal"><span class="k">Parfum</span><span class="v">Azzaro : 2 spritz (1 en espace fermé), col + poignet, jamais frotter.</span></div></div>`;
+  h+=`<div class="card"><h2>Routine soir</h2><div class="note">Visage : nettoyant CeraVe → hydratant CeraVe. Cheveux : bonnet/taie satin (à acheter ~10-20 €). Karité sur zones sèches si besoin.</div></div>`;
+  h+=`<div class="card"><h2>Tenues — d'après ta vraie garde-robe</h2>`;
+  OUTFITS.forEach(o=>{h+=`<div class="meal"><span class="k" style="width:auto;min-width:110px">${o.t}</span><span class="v" style="width:100%;display:block;margin-top:2px">${o.x}</span></div>`;});
+  h+=`</div>`;
+  h+=`<div class="card sec-off" style="border-left:4px solid var(--rouge)"><h2>Règles à respecter</h2>
+    <div class="note">• Jamais total écru/écru ni total vert → toujours une couleur qui casse.<br>• Polo rentré · chemise lin dehors (manches retroussées).<br>• Sneakers blanches OK Astridsen, PAS en CODIR formel.<br>• Ta garde-robe est grande : le vrai sujet = organisation + lessive.</div></div>`;
+  h+=`<div class="card"><h2>À acheter / à faire</h2>
+    <div class="row"><div class="lab"><b>Souliers cuir ville</b> (44) — pour le CODIR</div><span class="px">Vinted 25-40 €</span></div>
+    <div class="row"><div class="lab"><b>SPF50</b> visage</div><span class="px">~17 €</span></div>
+    <div class="row"><div class="lab"><b>Bonnet/taie satin</b> (twists)</div><span class="px">~10-20 €</span></div>
+    <div class="row"><div class="lab"><b>Retour Primark</b> : short XXL → reprends en M/L</div><span class="px">sous 28 j + ticket</span></div></div>`;
+  c.innerHTML=h;
+}
+function renderAll(){renderJour();renderSemaine();renderBouffe();renderEuro();renderObj();renderStyle();}
 // nav
 document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("act"));
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("act"));
   b.classList.add("act");document.getElementById("t-"+b.dataset.tab).classList.add("act");
-  const R={jour:renderJour,semaine:renderSemaine,bouffe:renderBouffe,euro:renderEuro,obj:renderObj};
+  const R={jour:renderJour,semaine:renderSemaine,bouffe:renderBouffe,euro:renderEuro,obj:renderObj,style:renderStyle};
   if(R[b.dataset.tab])R[b.dataset.tab]();
   window.scrollTo(0,0);
 }));
