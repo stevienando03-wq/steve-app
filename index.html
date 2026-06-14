@@ -383,10 +383,12 @@ function renderJour(){
     if(dej.indexOf('COLLÈGUES')>=0){msg="Demain midi : repas avec les collègues 🍽️";sub="Pas de gamelle à préparer.";}
     else if(dej.toLowerCase().indexOf('batch')>=0){msg="🥡 Prépare ta gamelle ce soir";sub="150 g poulet (du batch) + 100 g riz + légumes dans une boîte. Sors-la du frigo demain matin.";}
     else {msg="🥡 Demain midi";sub=dej||"—";}
-    h+=`<div class="card sec-on"><h2>Gamelle de demain <span class="tag">${tmr.lab}</span></h2>
-      <div class="row"><div class="lab"><b>${msg}</b><br>${sub}</div></div>`;
+    h+=`<div class="card sec-on"><h2>Préparer ce soir pour demain <span class="tag">${tmr.lab}</span></h2>
+      <div class="row"><div class="lab">🥡 <b>${msg}</b><br>${sub}</div></div>
+      <div class="row"><div class="lab">👔 Tenue : ${outfitFor(tmr)}</div></div>`;
+    if(tmr.type==='on'||tmr.type==='done') h+=`<div class="row"><div class="lab">🎒 Prépare ton sac de salle (séance demain matin)</div></div>`;
     if((day.courses||"").indexOf('RÉAPPRO')>=0||(day.dej||"").indexOf('BATCH')>=0)
-      h+=`<div class="note" style="margin-top:6px">🍳 Ce soir aussi : (re)lance ton batch poulet+riz pour les 3 prochains jours.</div>`;
+      h+=`<div class="note" style="margin-top:6px">🍳 Ce soir aussi : (re)lance ton batch poulet+riz pour 3 jours.</div>`;
     h+=`</div>`;
   })();
   // repas
@@ -693,8 +695,17 @@ function renderApprendre(){
     <input type="text" data-add="read" placeholder="Ajouter un livre / article…" style="width:100%;margin-top:8px;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit"></div>`;
   h+=`<div class="card"><h2>🎯 À apprendre <span class="tag">${S.skills.filter(x=>x.done).length}/${S.skills.length}</span></h2>${S.skills.length?listHTML(S.skills,'skills'):'<div class="note">Rien encore.</div>'}
     <input type="text" data-add="skills" placeholder="Ex : Excel avancé, anglais, cuisine, montage…" style="width:100%;margin-top:8px;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit"></div>`;
-  h+=`<div class="card"><h2>Le réflexe</h2><div class="note">Lecture 20 min/jour (tracker dans « Aujourd'hui »). Pioche selon tes axes : finance/compta (ton M2), cuisine, style, gestion du temps, communication. Remplis avec ce qui t'attire vraiment — je ne mets pas de titres au hasard.</div></div>`;
+  const SUGG_READ=["Atomic Habits (J. Clear) — bâtir des habitudes","La psychologie de l'argent (M. Housel)","Deep Work (C. Newport) — concentration","Comment se faire des amis (D. Carnegie) — confiance","Les mots sont des fenêtres (CNV, Rosenberg) — couple","Père riche père pauvre (Kiyosaki) — argent"];
+  const SUGG_SKILL=["Excel avancé (TCD, RECHERCHEV, Power Query)","Anglais — 15 min/jour","Cuisine — 5 techniques de base","Prise de parole / gérer les appels","Time-blocking / anti-procrastination","Bases nutrition prise de masse"];
+  h+=`<div class="card"><h2>💡 Suggestions <span class="tag">touche = ajouter</span></h2>
+    <div class="note" style="margin-bottom:8px">Choisies pour ton profil (RAF + M2 Finance + dev perso). Touche une pastille pour l'ajouter à tes listes.</div>
+    <div class="pills" style="flex-wrap:wrap;gap:6px">`;
+  SUGG_READ.forEach(t=>h+=`<span class="pill" data-sugg="read::${t}">📖 ${t.split(' (')[0]}</span>`);
+  SUGG_SKILL.forEach(t=>h+=`<span class="pill" data-sugg="skills::${t}">🎯 ${t.split(' (')[0]}</span>`);
+  h+=`</div></div>`;
+  h+=`<div class="card"><h2>Le réflexe</h2><div class="note">Lecture 20 min/jour (tracker dans « Aujourd'hui »). Commence petit : 10 pages ou 1 chapitre par soir.</div></div>`;
   c.innerHTML=h;
+  c.querySelectorAll('[data-sugg]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.sugg.split('::'),k=p[0],txt=p[1];if(!S[k].some(x=>x.text===txt)){S[k].push({id:String(Date.now()),text:txt,done:false});save();renderApprendre();}}));
   c.querySelectorAll('[data-add]').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&inp.value.trim()){const k=inp.dataset.add;S[k].push({id:String(Date.now()),text:inp.value.trim(),done:false});save();renderApprendre();}}));
   c.querySelectorAll('[data-tg]').forEach(el=>el.addEventListener('click',e=>{if(e.target.dataset.del!==undefined)return;const p=el.dataset.tg.split(':'),k=p[0],id=p[1];const it=S[k].find(x=>x.id===id);if(it){it.done=!it.done;save();renderApprendre();}}));
   c.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const p=b.dataset.del.split(':'),k=p[0],id=p[1];S[k]=S[k].filter(x=>x.id!==id);save();renderApprendre();}));
