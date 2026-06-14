@@ -594,6 +594,10 @@ function renderEuro(){
 function renderObj(){
   const c=document.getElementById("obj");c.innerHTML="";
   let h=`<div class="hint">Tu en as marre de tout revoir sur ton tél : voici l'essentiel, toujours à portée. Pour la version complète (programme salle, fiches EDC, idées copine), reste dans le classeur Excel — cette appli est ton tableau de bord rapide.</div>`;
+  h+=`<div class="card"><h2>📅 Calendrier & rappels</h2>
+    <div class="note">Mets tes séances, étude, tenues et rappels dans ton agenda (avec alarmes).</div>
+    <a href="steve.ics" download="steve.ics" style="display:block;text-align:center;margin-top:10px;background:#14213D;color:#fff;text-decoration:none;padding:12px 16px;border-radius:10px;font-weight:700;font-size:14px">📥 Ajouter à mon calendrier</a>
+    <div class="note" style="margin-top:10px">📱 Sur le tél : ça télécharge le fichier → ouvre-le → « Ouvrir avec Google Agenda ».<br>🔄 Pour qu'il se mette à jour tout seul (sur ordi) : <span id="copyCal" style="color:var(--or);text-decoration:underline;cursor:pointer">copier le lien d'abonnement</span>, puis calendar.google.com → Autres agendas → À partir de l'URL.</div></div>`;
   h+=`<div class="card"><h2>Cap 6 mois — confiant, sportif, bien dans ma peau</h2>`;
   OBJ.forEach(([a,d,t])=>{h+=`<div class="miniobj"><b>${a}</b><span class="c">${d} → ${t}</span></div>`;});
   h+=`</div>`;
@@ -616,6 +620,8 @@ function renderObj(){
   c.innerHTML=h;
   document.getElementById("reset").addEventListener("click",()=>{if(confirm("Effacer tout ton suivi (coches, eau, poids, dépenses) ?")){localStorage.removeItem(LS);S={track:{},shop:{},spend:{},fin:{},weights:[]};renderAll();}});
   document.getElementById("backup").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(S)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ma-version-sauvegarde.json";a.click();});
+  const cc=document.getElementById("copyCal");
+  if(cc)cc.addEventListener("click",()=>{const u="https://stevienando03-wq.github.io/steve-app/steve.ics";if(navigator.clipboard){navigator.clipboard.writeText(u).then(()=>{cc.textContent="lien copié ✓";}).catch(()=>{cc.textContent=u;});}else{cc.textContent=u;}});
   const rf=document.getElementById("restoreFile");
   document.getElementById("restoreBtn").addEventListener("click",()=>rf.click());
   rf.addEventListener("change",()=>{const f=rf.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);S=Object.assign({track:{},shop:{},spend:{},fin:{},weights:[]},o);save();renderAll();alert("Données restaurées.");}catch(e){alert("Fichier invalide.");}};r.readAsText(f);});
