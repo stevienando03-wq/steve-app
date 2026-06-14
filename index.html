@@ -94,6 +94,35 @@ body{padding-bottom:78px;max-width:520px;margin:0 auto;min-height:100vh}
 .hint{background:#FCF8EC;border:1px dashed var(--or);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--anthr);line-height:1.5;margin-bottom:12px}
 .miniobj{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F0ECE2;font-size:13px}
 .miniobj:last-child{border:0}.miniobj b{color:var(--bleu)}.miniobj .c{color:var(--anthr);text-align:right;max-width:55%}
+.headbtns{position:absolute;top:14px;right:14px;display:flex;gap:8px}
+.headbtns button{background:rgba(255,255,255,.14);border:0;color:#fff;width:34px;height:34px;border-radius:9px;font-size:15px;cursor:pointer}
+.alert{border-left:4px solid var(--rouge);background:#FCF3F2}
+.pomo{position:fixed;inset:0;background:rgba(10,15,25,.86);display:none;align-items:center;justify-content:center;z-index:50}
+.pomo.open{display:flex}
+.pomo .box2{background:#fff;border-radius:18px;padding:24px;width:84%;max-width:300px;text-align:center}
+.pomo .ph{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--or);font-weight:700}
+.pomo .time{font-size:56px;font-weight:800;color:var(--bleu);margin:6px 0;font-variant-numeric:tabular-nums}
+.pomo .ctrls{display:flex;gap:10px;justify-content:center;margin-top:14px}
+.pomo .ctrls button{flex:1;padding:11px;border-radius:10px;border:1px solid var(--ligne);background:var(--creme);color:var(--bleu);font-weight:700;cursor:pointer}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.pgrid .ph{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--off)}
+.pgrid .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.pgrid .ph .del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);color:#fff;border:0;border-radius:6px;font-size:12px;width:22px;height:22px;cursor:pointer}
+.pgrid .ph .cap{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:2px 4px;text-align:center}
+.hbars{display:flex;gap:4px;align-items:flex-end;height:46px;margin-top:8px}
+.hbars .hb{flex:1;background:var(--or);border-radius:3px 3px 0 0;min-height:3px}
+body.dark{--creme:#161b24;--bleu:#E8EBF1;--anthr:#AEB6C4;--ligne:#2c3543;--on:#22304a;--off:#2a2722}
+body.dark .card,body.dark .daycard,body.dark .acc,body.dark .pill,body.dark .step button,
+body.dark .nav,body.dark input,body.dark textarea,body.dark .pomo .box2,body.dark .pomo .ctrls button{background:#1f2733;color:var(--bleu)}
+body.dark .card{border-color:#2c3543}
+body.dark .hint{background:#2a2410}
+body.dark .sec-today,body.dark .alert{background:#23262f}
+body.dark .head{background:#0e1729}
+body.dark .kpi .box{background:#2a3346}body.dark .kpi .box.alt{background:#3a4456}
+body.dark .nav button{color:#7e879a}body.dark .nav button.act{color:var(--bleu)}
+body.dark .bar{background:#2c3543}
+body.dark .pill.g.act{background:#1e3a26;color:#9fdcae}body.dark .pill.r.act{background:#3a1f24;color:#e8a8b0}
+body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#2a2722;color:var(--anthr)}
 </style>
 </head>
 <body>
@@ -101,6 +130,22 @@ body{padding-bottom:78px;max-width:520px;margin:0 auto;min-height:100vh}
   <h1>Meilleure version de moi-même</h1>
   <div class="mots">Confiant · Sportif · Bien dans ma peau</div>
   <div class="date" id="hdate"></div>
+  <div class="headbtns">
+    <button id="pomoBtn" title="Pomodoro">⏱</button>
+    <button id="darkBtn" title="Mode sombre">🌙</button>
+  </div>
+</div>
+<div class="pomo" id="pomo">
+  <div class="box2">
+    <div class="ph" id="pomoPhase">Travail</div>
+    <div class="time" id="pomoTime">25:00</div>
+    <div class="note" id="pomoCount">0 pomodoro fait(s)</div>
+    <div class="ctrls">
+      <button id="pomoStart">Démarrer</button>
+      <button id="pomoReset">Reset</button>
+    </div>
+    <div class="ctrls"><button id="pomoClose" style="flex:1">Fermer</button></div>
+  </div>
 </div>
 
 <div class="tab act" id="t-jour"><div class="wrap" id="jour"></div></div>
@@ -248,7 +293,7 @@ const OBJ=[
 /* ---------------- ÉTAT (sauvé sur le tél) ---------------- */
 const LS="steve_v1";
 let S=JSON.parse(localStorage.getItem(LS)||"{}");
-S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{}; S.fin=S.fin||{}; S.weights=S.weights||[];
+S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{}; S.fin=S.fin||{}; S.weights=S.weights||[]; S.photos=S.photos||[];
 function save(){localStorage.setItem(LS,JSON.stringify(S));}
 function dayState(d){return S.track[d]||(S.track[d]={seance:false,eau:0,energ:null,jeux:null,scroll:null,prieres:0});}
 function todayISO(){const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");}
@@ -356,7 +401,7 @@ function renderJour(){
       <div class="note" style="margin-top:6px">🔥 Série sans énergisante : <b>${streak} j</b>. Coche tes habitudes ci-dessous, le score monte.</div></div>`;
   })();
   // tracking
-  h+=`<div class="card"><h2>Mon suivi du jour</h2>
+  h+=`<div class="card"><h2>Mon suivi du jour <span class="pill g" data-act="allok" style="float:right;font-size:11px;padding:4px 10px">✓ Tout bon</span></h2>
     <div class="row"><div class="lab">Séance faite</div><div class="pills"><span class="pill g ${st.seance?'act':''}" data-act="seance">${st.seance?'✓ Fait':'À faire'}</span></div></div>
     <div class="row"><div class="lab">Énergisante</div><div class="pills">
       <span class="pill g ${st.energ==='N'?'act':''}" data-act="energ" data-v="N">Aucune ✓</span>
@@ -372,6 +417,7 @@ function renderJour(){
     <div class="bar" style="margin:-2px 0 8px"><i style="width:${st.eau/8*100}%"></i></div>
     <div class="row"><div class="lab">Prières</div>
       <div class="step"><button data-act="prieres" data-v="-1">−</button><span class="val">${st.prieres}/5</span><button data-act="prieres" data-v="1">+</button></div></div>
+    <div class="row"><div class="lab">Humeur / énergie</div><div class="pills">${[1,2,3,4,5].map(n=>`<span class="pill ${st.humeur==n?'g act':''}" data-act="humeur" data-v="${n}">${n}</span>`).join('')}</div></div>
     <div style="padding-top:8px"><div class="lab" style="margin-bottom:4px">📝 Note du jour</div>
       <textarea data-note placeholder="Rechute ? victoire ? une ligne sur ta journée…" style="width:100%;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit;color:var(--bleu);min-height:46px">${st.note||''}</textarea></div>
   </div>`;
@@ -383,6 +429,7 @@ function renderJour(){
     if(a==="seance") s.seance=!s.seance;
     else if(a==="eau") s.eau=Math.max(0,Math.min(8,s.eau+(+v)));
     else if(a==="prieres") s.prieres=Math.max(0,Math.min(5,s.prieres+(+v)));
+    else if(a==="allok"){ if(day.type==='on'||day.type==='done')s.seance=true; s.energ='N'; s.jeux='O'; s.scroll='O'; s.eau=8; }
     else s[a]= s[a]===v? null : v;
     save();renderJour();
   }));
@@ -421,6 +468,10 @@ function renderSemaine(){
   } else { h+=`<div class="note">Pas encore de pesée. Pèse-toi 1×/sem, même jour, à jeun.</div>`; }
   h+=`<div class="spend" style="margin-top:8px"><span class="c">Ajouter une pesée (kg)</span><input type="number" inputmode="decimal" data-weight placeholder="ex 65.5"></div>
     <div class="note">Lean bulk = +0,5-0,7 kg/mois. Trop vite → baisse le gainer ; stagnation 2 sem → +1 portion glucides.</div></div>`;
+  // humeur de la semaine
+  h+=`<div class="card"><h2>Humeur / énergie</h2><div class="hbars">`;
+  DAYS.slice(-10).forEach(d=>{const s=S.track[d.d];const v=s&&s.humeur?+s.humeur:0;h+=`<div class="hb" style="height:${v?v/5*100:4}%;opacity:${v?1:.25}"></div>`;});
+  h+=`</div><div class="note" style="margin-top:6px">Note ton humeur dans « Aujourd'hui » (1-5). Repère les creux pour ajuster.</div></div>`;
   // jours
   h+=`<div class="card"><h2>Les jours</h2>`;
   const ti=todayISO();
@@ -523,6 +574,12 @@ function renderObj(){
   h+=`<div class="card"><h2>Cap 6 mois — confiant, sportif, bien dans ma peau</h2>`;
   OBJ.forEach(([a,d,t])=>{h+=`<div class="miniobj"><b>${a}</b><span class="c">${d} → ${t}</span></div>`;});
   h+=`</div>`;
+  (function(){const now=new Date();let a=new Date(now.getFullYear(),11,15);if(a<now)a=new Date(now.getFullYear()+1,11,15);
+   const dl=Math.ceil((a-now)/86400000);
+   h+=`<div class="card"><h2>🎂 Anniversaire copine <span class="tag">15 déc</span></h2>
+     <div class="kpi"><div class="box"><div class="n">${dl}</div><div class="t">jours restants</div></div></div>
+     <div class="note" style="margin-top:8px">Dès septembre : note ses envies + 1 idée cadeau + 1 sortie/voyage. Oct-nov : réserve tôt. 15/12 : exécution, zéro impro.</div></div>`;
+  })();
   h+=`<div class="card sec-today"><h2>Le rappel qui compte</h2><div class="note">
    Aucun fichier ne fait les séances à ta place. Le contrat du jour est minuscule : 1 séance (jours ON) + cocher 4 cases ce soir. Études : 0 fait depuis le début → le bloc 19h30-21h ne se saute plus. Exams : semaine du 20 juillet.</div></div>`;
   h+=`<div class="card"><h2>Mes données <span class="tag">sur ce tél</span></h2>
@@ -570,7 +627,16 @@ function renderStyle(){
     <div class="row"><div class="lab"><b>SPF50</b> visage</div><span class="px">~17 €</span></div>
     <div class="row"><div class="lab"><b>Bonnet/taie satin</b> (twists)</div><span class="px">~10-20 €</span></div>
     <div class="row"><div class="lab"><b>Retour Primark</b> : short XXL → reprends en M/L</div><span class="px">sous 28 j + ticket</span></div></div>`;
+  h+=`<div class="card"><h2>Ma penderie en photos <span class="tag">${S.photos.length}</span></h2>
+    <div class="note">Photographie tes pièces ou tes tenues montées : tu les as sous la main partout, même en magasin.</div>
+    <input type="file" accept="image/*" capture="environment" data-photo style="margin-top:8px;font-size:12px;color:var(--anthr)">
+    <div class="pgrid">`;
+  S.photos.forEach(p=>{h+=`<div class="ph"><img src="${p.data}"><button class="del" data-delphoto="${p.id}">✕</button></div>`;});
+  h+=`</div></div>`;
   c.innerHTML=h;
+  const pi=c.querySelector('[data-photo]');
+  if(pi)pi.addEventListener('change',function(){if(pi.files&&pi.files[0])addPhoto(pi.files[0]);});
+  c.querySelectorAll('[data-delphoto]').forEach(function(b){b.addEventListener('click',function(){S.photos=S.photos.filter(function(p){return p.id!==b.dataset.delphoto;});save();renderStyle();});});
 }
 function renderAll(){renderJour();renderSemaine();renderBouffe();renderEuro();renderObj();renderStyle();}
 // nav
@@ -585,6 +651,34 @@ document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",(
 // date header
 (function(){const j=["dim","lun","mar","mer","jeu","ven","sam"];const m=["jan","fév","mar","avr","mai","juin","juil","aoû","sep","oct","nov","déc"];
   const t=new Date();document.getElementById("hdate").textContent=j[t.getDay()]+". "+t.getDate()+" "+m[t.getMonth()]+" "+t.getFullYear();})();
+// mode sombre
+function applyDark(){document.body.classList.toggle('dark',!!S.dark);document.getElementById('darkBtn').textContent=S.dark?'☀️':'🌙';}
+document.getElementById('darkBtn').addEventListener('click',function(){S.dark=!S.dark;save();applyDark();});
+applyDark();
+// pomodoro 25/5
+(function(){
+ let secs=25*60,phase='Travail',running=false,timer=null,count=0;
+ const ov=document.getElementById('pomo'),tEl=document.getElementById('pomoTime'),phEl=document.getElementById('pomoPhase'),cEl=document.getElementById('pomoCount'),stB=document.getElementById('pomoStart');
+ function fmt(){const m=Math.floor(secs/60),s=secs%60;tEl.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;phEl.textContent=phase;cEl.textContent=count+' pomodoro fait(s)';}
+ function tick(){secs--;if(secs<0){if(phase==='Travail'){count++;phase='Pause';secs=5*60;}else{phase='Travail';secs=25*60;}}fmt();}
+ stB.addEventListener('click',function(){running=!running;stB.textContent=running?'Pause':'Reprendre';if(running){timer=setInterval(tick,1000);}else{clearInterval(timer);}});
+ document.getElementById('pomoReset').addEventListener('click',function(){clearInterval(timer);running=false;stB.textContent='Démarrer';phase='Travail';secs=25*60;fmt();});
+ document.getElementById('pomoBtn').addEventListener('click',function(){ov.classList.add('open');fmt();});
+ document.getElementById('pomoClose').addEventListener('click',function(){ov.classList.remove('open');});
+ fmt();
+})();
+// photos garde-robe
+function addPhoto(file){
+ const r=new FileReader();
+ r.onload=function(){const img=new Image();img.onload=function(){
+   const max=600;let w=img.width,h=img.height;
+   if(w>h&&w>max){h=h*max/w;w=max;}else if(h>=w&&h>max){w=w*max/h;h=max;}
+   const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
+   try{S.photos.push({id:String(Date.now()),data:cv.toDataURL('image/jpeg',0.6)});save();renderStyle();}
+   catch(e){alert('Mémoire pleine — supprime quelques photos.');}
+ };img.src=r.result;};
+ r.readAsDataURL(file);
+}
 renderAll();
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
 </script>
