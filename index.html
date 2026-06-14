@@ -349,7 +349,7 @@ function dayReminders(day){
   if(day.type==='on'||day.type==='done')R.push(["07h30","🏋️ Salle — sac prêt la veille"]);
   else R.push(["aprèm","🚶 Marche 20-30 min (récup)"]);
   R.push(["matin","👔 Tenue : "+outfitFor(day)]);
-  R.push(["journée","💧 Eau 2,5 L (2 bouteilles)"]);
+  R.push(["lever·midi·aprèm·soir","💧 Eau : 1 verre à chaque ancre (cible 2,5 L)"]);
   if(day.etude)R.push([isTue?"en journée":"19h30","📚 "+day.etude+(isTue?" — pas chez toi ce soir":"")]);
   if(day.copine)R.push(["—","❤️ "+day.copine]);
   if(jn==='Ven')R.push(["18h30","🤙 Appel hebdo (famille/admin)"]);
@@ -393,6 +393,14 @@ function renderJour(){
   if(day.pdj||day.dej||day.diner){
     h+=`<div class="card"><h2>Repas du jour</h2>${meal('Petit-déj',day.pdj)}${meal('Déjeuner',day.dej)}${meal('Dîner',day.diner)}
     <div class="note" style="margin-top:8px">Détail des recettes → onglet Bouffe.</div></div>`;
+  }
+  // bloc étude + pomodoro
+  if(day.etude){
+    const isTue=day.diner&&day.diner.indexOf('MARDI')===0;
+    h+=`<div class="card"><h2>📚 Bloc étude <span class="tag">${isTue?'en journée':'19h30'}</span></h2>
+      <div class="row"><div class="lab">${day.etude}${isTue?' (pas chez toi ce soir → cale-le en journée)':''}</div></div>
+      <div class="note" style="margin-top:6px">Révision active : refais un cas sur feuille, ne relis pas.</div>
+      <div class="pills" style="margin-top:8px"><span class="pill g" id="studyPomo">▶ Lancer le Pomodoro 25/5</span></div></div>`;
   }
   // score + série
   (function(){
@@ -443,6 +451,8 @@ function renderJour(){
   }));
   const ta=c.querySelector("[data-note]");
   if(ta) ta.addEventListener("change",()=>{const s=dayState(day.d); s.note=ta.value; save();});
+  const sp=c.querySelector("#studyPomo");
+  if(sp) sp.addEventListener("click",()=>document.getElementById("pomoBtn").click());
 }
 
 function renderSemaine(){
@@ -465,6 +475,11 @@ function renderSemaine(){
    <div class="lab" style="font-size:11px;margin-top:10px">Séances ${fait}/13 — minimum vital 11</div>
    <div class="bar ${fait>=11?'':(fait>=8?'warn':'over')}"><i style="width:${Math.min(100,fait/13*100)}%"></i></div>
    <div class="note" style="margin-top:9px">Tu coches dans « Aujourd'hui », ça monte ici tout seul.</div></div>`;
+  // bilan de la semaine
+  (function(){const dim=new Date().getDay()===0;
+   h+=`<div class="card ${dim?'sec-today':''}"><h2>Bilan de la semaine${dim?" — c'est dimanche !":''}</h2>
+     <div class="note">${fait} séance(s) · ${energN} jour(s) sans énergisante · ${eauOK} jour(s) à 2,5 L · ${lect} min de lecture.<br>${dim?'Lis ces chiffres, note ce qui a marché/coincé, et ajuste la semaine qui vient.':'Reviens dimanche soir pour le bilan et les ajustements.'}</div></div>`;
+  })();
   // poids
   const w=S.weights;
   h+=`<div class="card"><h2>Suivi du poids <span class="tag">lean bulk</span></h2>`;
