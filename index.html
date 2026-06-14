@@ -372,8 +372,8 @@ function dayReminders(day){
   const jn=day.lab.split(' ')[0];
   let R=[];
   const _on=(day.type==='on'||day.type==='done');
-  R.push([_on?"06h15":"07h00","⏰ Réveil + grand verre d'eau"]);
-  if(_on)R.push(["06h30","🏋️ Salle (3 min à pied) — séance ~50 min (sac prêt la veille)"]);
+  R.push([_on?"06h30":"07h15","⏰ Réveil + grand verre d'eau"]);
+  if(_on)R.push(["06h47","🏋️ Salle (3 min à pied) — séance ~50 min (sac prêt la veille)"]);
   else R.push(["aprèm","🚶 Marche 20-30 min (récup)"]);
   R.push(["matin","👔 Tenue : "+outfitFor(day)]);
   R.push(["lever·midi·aprèm·soir","💧 Eau : 1 verre à chaque ancre (cible 2,5 L)"]);
@@ -382,8 +382,8 @@ function dayReminders(day){
   if(jn==='Ven')R.push(["18h30","🤙 Appel hebdo (famille/admin)"]);
   R.push(["soir","🧹 Propreté : 10 min de rangement"]);
   R.push(["soir","📖 Lecture : 20 min"]);
-  R.push(["22h15","📵 Écrans coupés (tel hors chambre)"]);
-  R.push([_on?"22h45":"23h00","😴 Coucher — vise ~7h30 de sommeil"]);
+  R.push(["22h30","📵 Écrans coupés (tel hors chambre)"]);
+  R.push([_on?"23h00":"23h15","😴 Coucher — vise ~7h30 de sommeil"]);
   return R;
 }
 function renderJour(){
@@ -650,14 +650,14 @@ function renderObj(){
     <div class="note">Mets tes séances, étude, tenues et rappels dans ton agenda (avec alarmes).</div>
     <a href="steve.ics" download="steve.ics" style="display:block;text-align:center;margin-top:10px;background:#14213D;color:#fff;text-decoration:none;padding:12px 16px;border-radius:10px;font-weight:700;font-size:14px">📥 Ajouter à mon calendrier</a>
     <div class="note" style="margin-top:10px">📱 Sur le tél : ça télécharge le fichier → ouvre-le → « Ouvrir avec Google Agenda ».<br>🔄 Pour qu'il se mette à jour tout seul (sur ordi) : <span id="copyCal" style="color:var(--or);text-decoration:underline;cursor:pointer">copier le lien d'abonnement</span>, puis calendar.google.com → Autres agendas → À partir de l'URL.</div></div>`;
-  const RON=[["06h15","Réveil + grand verre d'eau"],["06h20","Tenue de sport (préparée la veille)"],["06h30","Salle (3 min à pied) — échauffement + séance ~50 min"],["07h20","Retour à la maison"],["07h25","Douche + soin visage (nettoyant → hydratant → SPF)"],["07h45","Petit-déj / gainer maison"],["08h05","Cheveux + barbe + habillage + parfum"],["08h30","Départ travail (~30 min — ajuste à ton trajet)"],["09h00","Arrivée bureau ✅"]];
-  const ROFF=[["07h00","Réveil + grand verre d'eau"],["07h05","Petit-déj"],["07h25","Douche + soin + habillage"],["07h50","Marche 20-30 min (récup active, optionnel)"],["08h30","Départ travail (~30 min)"],["09h00","Arrivée bureau ✅"]];
+  const RON=[["06h30","Réveil + grand verre d'eau"],["06h35","Tenue de sport (préparée la veille)"],["06h47","Salle (3 min à pied) — échauffement + séance ~50 min"],["07h40","Retour à la maison"],["07h45","Douche + soin visage (nettoyant → hydratant → SPF)"],["08h05","Petit-déj / gainer maison"],["08h25","Cheveux + barbe + habillage + parfum"],["08h45","Départ travail (~45 min)"],["09h30","Arrivée bureau ✅"]];
+  const ROFF=[["07h15","Réveil + grand verre d'eau"],["07h20","Petit-déj"],["07h40","Douche + soin + habillage"],["08h05","Marche 20-30 min (récup active, optionnel)"],["08h45","Départ travail (~45 min)"],["09h30","Arrivée bureau ✅"]];
   h+=`<div class="card sec-on"><h2>⏰ Routine — jour de SALLE</h2>${RON.map(x=>`<div class="meal"><span class="k">${x[0]}</span><span class="v">${x[1]}</span></div>`).join('')}<div class="note" style="margin-top:6px">Salle le matin = elle ne saute pas (faite avant que la journée commence). Sac + tenue préparés la veille.</div></div>`;
   h+=`<div class="card sec-off"><h2>⏰ Routine — jour OFF / repos</h2>${ROFF.map(x=>`<div class="meal"><span class="k">${x[0]}</span><span class="v">${x[1]}</span></div>`).join('')}</div>`;
   h+=`<div class="card"><h2>😴 Sommeil</h2>
-    <div class="meal"><span class="k">22h15</span><span class="v">Écrans coupés, tel en charge HORS de la chambre</span></div>
-    <div class="meal"><span class="k">22h45</span><span class="v">Coucher les jours de salle (réveil 6h15 → 7h30 de sommeil)</span></div>
-    <div class="meal"><span class="k">23h00</span><span class="v">Coucher les jours off (réveil 7h00 → 8h de sommeil)</span></div>
+    <div class="meal"><span class="k">22h30</span><span class="v">Écrans coupés, tel en charge HORS de la chambre</span></div>
+    <div class="meal"><span class="k">23h00</span><span class="v">Coucher les jours de salle (réveil 6h30 → 7h30 de sommeil)</span></div>
+    <div class="meal"><span class="k">23h15</span><span class="v">Coucher les jours off (réveil 7h15 → 8h de sommeil)</span></div>
     <div class="note" style="margin-top:6px">7h30 de sommeil = ta cible (le muscle se construit la nuit). Heure de LEVER fixe = la vraie clé. Pas de canette après 14h (la caféine reste 6-8h). Chambre fraîche et sombre.</div></div>`;
   h+=`<div class="card"><h2>Cap 6 mois — confiant, sportif, bien dans ma peau</h2>`;
   OBJ.forEach(([a,d,t])=>{h+=`<div class="miniobj"><b>${a}</b><span class="c">${d} → ${t}</span></div>`;});
