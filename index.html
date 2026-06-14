@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#14213D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Steve — Meilleure version</title>
+<style>
+:root{
+  --bleu:#14213D; --creme:#F5F1E8; --anthr:#4A5568; --or:#C8A24B;
+  --on:#E3E8F0; --off:#F2EFE7; --vert:#1E6B33; --vertbg:#DFF0D8;
+  --rouge:#9C2330; --rougebg:#F8D7DA; --ligne:#E3DFD4;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{background:var(--creme);color:var(--bleu);
+  font-family:-apple-system,'Segoe UI',Roboto,Aptos,system-ui,sans-serif;font-size:16px;-webkit-text-size-adjust:100%}
+body{padding-bottom:78px;max-width:520px;margin:0 auto;min-height:100vh}
+.head{background:var(--bleu);color:#fff;padding:18px 18px 14px;position:sticky;top:0;z-index:20}
+.head h1{font-size:18px;font-weight:700;letter-spacing:.3px}
+.head .mots{font-size:11px;color:#B9C2D6;margin-top:3px;text-transform:uppercase;letter-spacing:1px}
+.head .date{font-size:12px;color:var(--or);margin-top:6px;font-weight:600}
+.wrap{padding:14px}
+.card{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:14px;margin-bottom:12px;
+  box-shadow:0 1px 2px rgba(20,33,61,.04)}
+.card h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--anthr);margin-bottom:10px;font-weight:700}
+.card h2 .tag{float:right;font-size:11px;color:var(--or)}
+.sec-on{border-left:4px solid #8FA8C8}.sec-off{border-left:4px solid var(--or)}
+.sec-done{border-left:4px solid #5BA86B}.sec-today{border-left:4px solid var(--or);background:#FCF8EC}
+.row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F0ECE2;gap:10px}
+.row:last-child{border-bottom:0}
+.row .lab{font-size:13px;color:var(--anthr);flex:1}
+.row .lab b{color:var(--bleu)}
+.meal{font-size:13px;line-height:1.5;color:var(--bleu);padding:8px 0;border-bottom:1px solid #F0ECE2}
+.meal:last-child{border-bottom:0}
+.meal .k{display:inline-block;width:62px;font-size:11px;text-transform:uppercase;color:var(--or);font-weight:700;vertical-align:top}
+.meal .v{display:inline-block;width:calc(100% - 66px)}
+.pill{border:1px solid var(--ligne);background:#fff;border-radius:20px;padding:7px 14px;font-size:13px;font-weight:600;
+  color:var(--anthr);cursor:pointer;transition:.12s}
+.pill.g.act{background:var(--vertbg);border-color:#9BC6A4;color:var(--vert)}
+.pill.r.act{background:var(--rougebg);border-color:#E0A4AB;color:var(--rouge)}
+.pills{display:flex;gap:8px}
+.step{display:flex;align-items:center;gap:12px}
+.step button{width:34px;height:34px;border-radius:9px;border:1px solid var(--ligne);background:#fff;font-size:20px;
+  color:var(--bleu);font-weight:700;cursor:pointer;line-height:1}
+.step .val{min-width:54px;text-align:center;font-weight:700;font-size:15px}
+.bar{height:9px;background:#EEE9DD;border-radius:6px;overflow:hidden;margin-top:5px}
+.bar > i{display:block;height:100%;background:var(--or);border-radius:6px}
+.bar.over > i{background:var(--rouge)}
+.bar.warn > i{background:#D99A2B}
+.kpi{display:flex;gap:10px;flex-wrap:wrap}
+.kpi .box{flex:1;min-width:78px;background:var(--bleu);color:#fff;border-radius:12px;padding:11px 8px;text-align:center}
+.kpi .box.alt{background:var(--anthr)}
+.kpi .box .n{font-size:21px;font-weight:800;line-height:1}
+.kpi .box .t{font-size:10px;color:#C3CADB;margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+.daycard{border:1px solid var(--ligne);border-radius:12px;padding:11px;margin-bottom:9px;background:#fff}
+.daycard .top{display:flex;justify-content:space-between;align-items:center}
+.daycard .dl{font-weight:700;font-size:14px}
+.daycard .st{font-size:11px;padding:2px 9px;border-radius:10px;font-weight:700}
+.st.on{background:var(--on);color:var(--bleu)}.st.off{background:var(--off);color:var(--anthr)}
+.st.done{background:var(--vertbg);color:var(--vert)}.st.today{background:var(--or);color:#fff}
+.daycard .sub{font-size:12px;color:var(--anthr);margin-top:6px;line-height:1.45}
+.acc{border:1px solid var(--ligne);border-radius:12px;margin-bottom:9px;overflow:hidden;background:#fff}
+.acc>.h{padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.acc>.h .nm{font-weight:700;font-size:13px}
+.acc>.h .meta{font-size:11px;color:var(--or);font-weight:600}
+.acc>.b{display:none;padding:0 14px 14px;font-size:13px;line-height:1.6;color:var(--anthr);white-space:pre-line;border-top:1px solid #F0ECE2}
+.acc.open>.b{display:block}
+.chk{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13px;border-bottom:1px solid #F0ECE2;cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk .bx{width:20px;height:20px;border:2px solid var(--ligne);border-radius:6px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+.chk.on .bx{background:var(--vert);border-color:var(--vert)}
+.chk.on .nm{text-decoration:line-through;color:#A9A293}
+.chk .px{margin-left:auto;font-size:11px;color:var(--anthr)}
+.catname{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--or);font-weight:700;margin:12px 0 4px}
+.spend{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #F0ECE2}
+.spend .c{flex:1;font-size:13px}
+.spend .amt{font-size:12px;color:var(--anthr);min-width:84px;text-align:right}
+.spend input{width:66px;padding:6px;border:1px solid var(--ligne);border-radius:8px;font-size:13px;text-align:right}
+.note{font-size:12px;color:var(--anthr);line-height:1.5}
+.big{font-size:26px;font-weight:800}
+.nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#fff;border-top:1px solid var(--ligne);
+  display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;border:0;background:none;padding:9px 2px 8px;cursor:pointer;color:#A9A293;font-size:10px;font-weight:600}
+.nav button .ic{font-size:19px;display:block;margin-bottom:2px}
+.nav button.act{color:var(--bleu)}
+.nav button.act .ic{transform:translateY(-1px)}
+.tab{display:none}.tab.act{display:block}
+.hint{background:#FCF8EC;border:1px dashed var(--or);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--anthr);line-height:1.5;margin-bottom:12px}
+.miniobj{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F0ECE2;font-size:13px}
+.miniobj:last-child{border:0}.miniobj b{color:var(--bleu)}.miniobj .c{color:var(--anthr);text-align:right;max-width:55%}
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>Meilleure version de moi-même</h1>
+  <div class="mots">Confiant · Sportif · Bien dans ma peau</div>
+  <div class="date" id="hdate"></div>
+</div>
+
+<div class="tab act" id="t-jour"><div class="wrap" id="jour"></div></div>
+<div class="tab" id="t-semaine"><div class="wrap" id="semaine"></div></div>
+<div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
+<div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
+<div class="tab" id="t-obj"><div class="wrap" id="obj"></div></div>
+
+<div class="nav">
+  <button class="act" data-tab="jour"><span class="ic">📌</span>Aujourd'hui</button>
+  <button data-tab="semaine"><span class="ic">🗓️</span>Semaine</button>
+  <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
+  <button data-tab="euro"><span class="ic">💶</span>Budget</button>
+  <button data-tab="obj"><span class="ic">🎯</span>Cap</button>
+</div>
+
+<script>
+/* ---------------- DONNÉES (mises à jour par Claude) ---------------- */
+const DAYS=[
+ {d:"2026-06-12",lab:"Ven 12 juin",type:"done",num:1,seance:"Séance 1 · PUSH (fait ✓)",pdj:"",dej:"",diner:"",courses:"",etude:"EDC1 : cas rentabilité",copine:"Soir copine"},
+ {d:"2026-06-13",lab:"Sam 13 juin",type:"done",num:2,seance:"Séance 2 · PULL (fait ✓)",pdj:"",dej:"",diner:"",courses:"",etude:"EDC1 : cas VAN/TIR",copine:"Soir copine"},
+ {d:"2026-06-14",lab:"Dim 14 juin",type:"today",seance:"REPOS — marche 20-30 min",
+   pdj:"Selon stock : 4 œufs + pain, OU skyr 200 g + 60 g flocons",
+   dej:"BATCH = cuis 450 g poulet + 300 g riz cru → 3 portions (150 g poulet + 100 g riz). Mange-en 1, garde 2 en boîte.",
+   diner:"Poulet poivron (du batch) : 150 g poulet + 1 poivron + 1/2 oignon + citron + 100 g riz",
+   courses:"✓ Courses faites. Manque GINGEMBRE + PATATE DOUCE → course du 17.",
+   etude:"Démarrage : imprime le référentiel EDC, repère tes lacunes (30 min)",copine:"Message audio le matin",obj:"Courses + coiffure + ranger appart + lessive"},
+ {d:"2026-06-15",lab:"Lun 15 juin",type:"on",num:3,seance:"Séance 3 · PUSH pecs/épaules/tri",
+   pdj:"Gainer : 500 ml lait + 60 g avoine + 150 g skyr + 1 banane + 20 g PB",
+   dej:"Bowl batch : 150 g poulet + 100 g riz + légumes (gamelle)",
+   diner:"Omelette : 4 œufs + 30 g fromage + 2 pain + 1/2 oignon + épices + salade",
+   courses:"",etude:"EDC2 : TFT / plan de financement",copine:""},
+ {d:"2026-06-16",lab:"Mar 16 juin",type:"on",num:4,seance:"Séance 4 · PULL dos/biceps",
+   pdj:"Skyr 200 g + 60 g flocons + 1 banane",
+   dej:"Bowl batch : 150 g poulet + 100 g riz + légumes (gamelle)",
+   diner:"MARDI SOIR : pas chez toi → pas de dîner à prévoir",
+   courses:"",etude:"EDC2 : budget de trésorerie",copine:""},
+ {d:"2026-06-17",lab:"Mer 17 juin",type:"off",seance:"REPOS — marche 20-30 min",
+   pdj:"4 œufs brouillés + 2 pain (+ skyr)",
+   dej:"DÉJ AVEC LES COLLÈGUES (dehors) — pas de gamelle. ~10-15 € / TR",
+   diner:"Pâtes bœuf : 100 g pâtes + 125 g bœuf 5% + légumes + concentré tomate + piment",
+   courses:"RÉAPPRO ÉCO (~10 €) : œufs x12, lait 2L, pain, bananes + GINGEMBRE + PATATE DOUCE (oubliés du 14)",
+   etude:"Mémoire : INTRO + problématique",copine:"Attention semaine"},
+ {d:"2026-06-18",lab:"Jeu 18 juin",type:"on",num:5,seance:"Séance 5 · LEGS presse/hack (pas avant-pied)",
+   pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
+   diner:"Poisson blanc : 150 g colin + 200 g patate douce (four 25 min) + épices + citron",
+   courses:"",etude:"EDC2 : 1 cas complet (maths fi/TVA)",copine:""},
+ {d:"2026-06-19",lab:"Ven 19 juin",type:"on",num:6,seance:"Séance 6 · PUSH pecs/épaules/tri",
+   pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",
+   diner:"Pâtes bolo : 100 g pâtes + 125 g bœuf 5% + oignon + concentré tomate + piment",
+   courses:"",etude:"Mémoire : Partie I (lancer)",copine:"Soir copine"},
+ {d:"2026-06-20",lab:"Sam 20 juin",type:"off",seance:"REPOS — marche / mobilité",
+   pdj:"4 œufs + pain",dej:"Bowl batch",
+   diner:"Poisson blanc : 150 g colin + 200 g patate douce + épices + citron",
+   courses:"RÉAPPRO ÉCO (~8 €) : œufs x12, lait, pain, bananes",
+   etude:"Mémoire : Partie I (suite)",copine:"Sortie expo (vérifie les dates avant d'annoncer)"},
+ {d:"2026-06-21",lab:"Dim 21 juin",type:"on",num:7,seance:"Séance 7 · PULL dos/biceps",
+   pdj:"Gainer maison",dej:"Bowl batch",
+   diner:"Poulet gingembre : 150 g poulet + gingembre + ail + 100 g riz (mange TÔT, concert après)",
+   courses:"",etude:"EDC2 : maths fi (léger)",copine:"FÊTE DE LA MUSIQUE — quais St-Bernard"},
+ {d:"2026-06-22",lab:"Lun 22 juin",type:"off",seance:"REPOS — marche 20-30 min",
+   pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",
+   diner:"Sardines/maquereau : 1 boîte + 100 g riz + légumes + citron (0 cuisson)",
+   courses:"",etude:"EDC2 : TFT / plan de financement",copine:""},
+ {d:"2026-06-23",lab:"Mar 23 juin",type:"on",num:8,seance:"Séance 8 · LEGS presse/hack (pas avant-pied)",
+   pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
+   diner:"MARDI SOIR : pas chez toi → pas de dîner à prévoir",
+   courses:"RÉAPPRO (~14 €) : poulet 1kg (nouveau batch) + œufs x12, lait, pain",
+   etude:"EDC2 : budget de trésorerie",copine:""},
+ {d:"2026-06-24",lab:"Mer 24 juin",type:"on",num:9,seance:"Séance 9 · PUSH pecs/épaules/tri",
+   pdj:"Skyr + flocons + banane",
+   dej:"DÉJ AVEC LES COLLÈGUES (dehors) — pas de gamelle. ~10-15 € / TR",
+   diner:"Omelette : 4 œufs + 30 g fromage + 2 pain + épices",
+   courses:"",etude:"Mémoire : Partie I (finir)",copine:"Attention semaine"},
+ {d:"2026-06-25",lab:"Jeu 25 juin",type:"off",seance:"REPOS — marche 20-30 min",
+   pdj:"4 œufs + pain",dej:"Bowl batch (gamelle)",
+   diner:"Pâtes bœuf : 100 g pâtes + 125 g bœuf 5% + légumes + concentré + piment",
+   courses:"",etude:"EDC5 : risques Bâle/Solvency (cours)",copine:""},
+ {d:"2026-06-26",lab:"Ven 26 juin",type:"on",num:10,seance:"Séance 10 · PULL dos/biceps",
+   pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
+   diner:"Pâtes bolo : 100 g pâtes + 125 g bœuf 5% + oignon + concentré + piment",
+   courses:"RÉAPPRO ÉCO (~9 €) : œufs x12, lait, pain, bananes, 1 légume",
+   etude:"Mémoire : Partie II (lancer)",copine:"Soir copine"},
+ {d:"2026-06-27",lab:"Sam 27 juin",type:"on",num:11,seance:"Séance 11 · LEGS presse/hack (pas avant-pied)",
+   pdj:"Skyr + flocons + banane",dej:"Bowl batch",
+   diner:"Lentilles-riz : 100 g lentilles + 80 g riz + 1 œuf + cumin/paprika/piment",
+   courses:"",etude:"Mémoire : Partie II (suite)",copine:"Sortie / brunch"},
+ {d:"2026-06-28",lab:"Dim 28 juin",type:"off",seance:"REPOS — marche / mobilité",
+   pdj:"4 œufs + pain",dej:"Bowl batch",
+   diner:"Omelette : 4 œufs + 30 g fromage + 2 pain + épices",
+   courses:"",etude:"EDC5 : seuil de rentabilité",copine:"Balade canal St-Martin"},
+ {d:"2026-06-29",lab:"Lun 29 juin",type:"on",num:12,seance:"Séance 12 · PUSH pecs/épaules/tri",
+   pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
+   diner:"Poulet gingembre : 150 g poulet + gingembre + ail + 100 g riz",
+   courses:"RÉAPPRO (~12 €) : poulet 1kg, œufs x12, bananes (paie arrivée)",
+   etude:"EDC4 : consolidation risques + ESG",copine:""},
+ {d:"2026-06-30",lab:"Mar 30 juin",type:"on",num:13,seance:"Séance 13 · PULL dos/biceps",
+   pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",
+   diner:"MARDI SOIR : pas chez toi → pas de dîner à prévoir",
+   courses:"",etude:"Mémoire : Partie II (finir)",copine:""},
+];
+const RECIPES=[
+ {nm:"Gainer maison (remplace le whey)",meta:"46 g P · 765 kcal · ~1,30 €",
+  b:"500 ml lait · 60 g avoine · 150 g skyr · 1 banane · 20 g beurre de cacahuète.\n1. Tout au blender (ou shaker + banane écrasée).\n2. Mixe 30 s.\n3. Le matin et/ou dans l'heure après la séance."},
+ {nm:"Bowl poulet-riz (batch — le déj)",meta:"42 g P · 700 kcal · ~1,35 €",
+  b:"150 g poulet cuit (du batch) · 100 g riz · légumes.\n1. Jour des courses : cuis 450 g poulet + 300 g riz d'un coup.\n2. Répartis en 3 boîtes.\n3. Réchauffe + filet d'huile + épices."},
+ {nm:"Omelette épicée costaud",meta:"35 g P · 620 kcal · ~1,10 €",
+  b:"4 œufs · 2 pain · 30 g fromage · 1/2 oignon · piment · paprika.\n1. Oignon 2 min.\n2. Œufs + épices.\n3. Fromage, plie 4 min. + pain."},
+ {nm:"Lentilles-riz épicé + œuf (éco)",meta:"28 g P · 650 kcal · ~1,00 €",
+  b:"100 g lentilles (ou 1 boîte) · 80 g riz · oignon · ail · cumin · paprika · piment · 1-2 œufs.\n1. Riz + lentilles cuits.\n2. Oignon+ail+épices 3 min.\n3. Œuf(s) dessus."},
+ {nm:"Poisson blanc épicé + patate douce",meta:"35 g P · 620 kcal · ~1,30 €",
+  b:"150 g colin surgelé · 200 g patate douce · paprika+piment+ail · citron.\n1. Patate douce four 25 min 200°C.\n2. Poisson épicé, poêle 3-4 min/face, citron. + brocoli."},
+ {nm:"Pâtes bolo épicée",meta:"40 g P · 790 kcal · ~1,35 €",
+  b:"100 g pâtes · 125 g bœuf 5% · oignon · 2 c.às concentré tomate · piment · ail.\n1. Pâtes 9 min.\n2. Oignon+ail+bœuf 6 min.\n3. Concentré+piment 5 min. (Double, congèle 2.)"},
+ {nm:"Poulet poivron (yassa léger) + riz",meta:"45 g P · 740 kcal · ~1,45 €",
+  b:"150 g poulet · 1 poivron · oignon · citron · piment · ail · 100 g riz.\n1. Mariner 10 min.\n2. Saisir 6 min.\n3. Poivron+oignon 5 min, remettre poulet."},
+ {nm:"Poulet gingembre-ail + riz",meta:"45 g P · 710 kcal · ~1,40 €",
+  b:"150 g poulet · 100 g riz · gingembre · ail · oignon · paprika.\n1. Riz.\n2. Gingembre+ail+oignon 2 min.\n3. Poulet+paprika 7-8 min."},
+ {nm:"Sardines/maquereau express + riz (éco)",meta:"30 g P · 600 kcal · ~1,15 €",
+  b:"1 boîte sardines/maquereau · 100 g riz · légumes surgelés · piment · citron.\n1. Riz + légumes.\n2. Émiette la boîte dessus, citron + piment. Zéro cuisson."},
+];
+const SHOP=[
+ ["Protéines",["Œufs x30 ~5,50€","Lentilles/pois chiches ~1,50€","Poulet 1kg ~6€","Bœuf 5% 500g ~4€","Sardines/maquereau x3 ~2€","Poisson blanc colin ~4€","Skyr 1kg ~3€","Lait 2L ~2€"]],
+ ["Glucides",["Riz 1kg ~1,50€","Pâtes 1kg ~1,20€","Avoine 1kg ~1,50€","Pain complet ~1,20€","Patate douce/pdt ~2,50€","Tortillas ~1,50€"]],
+ ["Légumes/Fruits",["Légumes surgelés ~2€","Brocoli/poivrons ~3€","Oignons+ail+gingembre ~3€","Citrons x4 ~1,50€","Bananes 1kg ~1,50€","Fruits saison ~2€"]],
+ ["Épices/Extras",["Paprika/piment/curry/cumin ~3€","Concentré+bouillon ~1,50€","Huile ~5€","Beurre cacahuète ~2,50€","Eau gazeuse ~1,50€"]],
+];
+const FIN={
+ soldeBourso:742.35, soldeBling:0.62, salaireMois:1010, pointBas:183, soldeFin:284,
+ epargneDispo:364, trReçus:209,
+ now:{solde:38.30, coiffure:20, decouvert:100, joursPaie:14, trResto:0},
+ budgets:[["Courses",260],["Restaurants",80],["Sorties / loisirs",50],["Vêtements",40],
+   ["Coiffure",20],["Lavage",25],["Santé",35],["Jeux",25],["Soin / parfum",15]],
+ regime:[["Restaurants","224 €","80 €"],["Abonnements IA","112 €","25 €"],["Jeux in-app","26 €","5 €"],
+   ["Soin/parfum","42 €","15 €"],["Coiffure","45 €","25 €"],["Lavage","40 €","25 €"]],
+};
+const OBJ=[
+ ["Énergisantes","~3/jour","0 (arrêt sec)"],["Salle","irrégulier","≥11/13 ce mois"],
+ ["Poids","~65 kg","+4-6 kg propres en 6 mois"],["Cuisine","commandes","cuisiner 6j/7, ≤1 livraison/sem"],
+ ["Style","3 pièces","base P1 ~100-130€ Vinted"],["Couple","à son initiative","1 attention/sem + anniv 15/12 préparé"],
+ ["Foi","arrêtée","reprise 3→5 prières/jour"],["Études","0 fait","tout couvert avant exams (20 juil)"],
+];
+/* ---------------- ÉTAT (sauvé sur le tél) ---------------- */
+const LS="steve_v1";
+let S=JSON.parse(localStorage.getItem(LS)||"{}");
+S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{};
+function save(){localStorage.setItem(LS,JSON.stringify(S));}
+function dayState(d){return S.track[d]||(S.track[d]={seance:false,eau:0,energ:null,jeux:null,scroll:null,prieres:0});}
+function todayISO(){const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");}
+function findToday(){const i=todayISO();let d=DAYS.find(x=>x.d===i);if(d)return d;
+  // sinon: 1er jour à venir, sinon le dernier
+  let f=DAYS.find(x=>x.d>=i);return f||DAYS[DAYS.length-1];}
+
+/* ---------------- RENDU ---------------- */
+function el(h){const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstChild;}
+function meal(k,v){return v?`<div class="meal"><span class="k">${k}</span><span class="v">${v}</span></div>`:"";}
+
+function renderJour(){
+  const c=document.getElementById("jour");c.innerHTML="";
+  const day=findToday();const st=dayState(day.d);
+  const cls={done:"sec-done",today:"sec-today",on:"sec-on",off:"sec-off"}[day.type];
+  // bandeau
+  let h=`<div class="card ${cls}"><h2>${day.lab}<span class="tag">${day.type==='off'?'REPOS':day.type==='done'?'FAIT':day.num?('Séance '+day.num+'/13'):''}</span></h2>`;
+  if(day.obj) h+=`<div class="row"><div class="lab">🎯 <b>Objectif n°1</b><br>${day.obj}</div></div>`;
+  h+=`<div class="row"><div class="lab">🏋️ <b>${day.seance}</b></div></div>`;
+  if(day.etude) h+=`<div class="row"><div class="lab">📚 ${day.etude}</div></div>`;
+  if(day.copine) h+=`<div class="row"><div class="lab">❤️ ${day.copine}</div></div>`;
+  if(day.courses) h+=`<div class="row"><div class="lab">🛒 ${day.courses}</div></div>`;
+  h+=`</div>`;
+  // repas
+  if(day.pdj||day.dej||day.diner){
+    h+=`<div class="card"><h2>Repas du jour</h2>${meal('Petit-déj',day.pdj)}${meal('Déjeuner',day.dej)}${meal('Dîner',day.diner)}
+    <div class="note" style="margin-top:8px">Détail des recettes → onglet Bouffe.</div></div>`;
+  }
+  // tracking
+  h+=`<div class="card"><h2>Mon suivi du jour</h2>
+    <div class="row"><div class="lab">Séance faite</div><div class="pills"><span class="pill g ${st.seance?'act':''}" data-act="seance">${st.seance?'✓ Fait':'À faire'}</span></div></div>
+    <div class="row"><div class="lab">Énergisante</div><div class="pills">
+      <span class="pill g ${st.energ==='N'?'act':''}" data-act="energ" data-v="N">Aucune ✓</span>
+      <span class="pill r ${st.energ==='O'?'act':''}" data-act="energ" data-v="O">Bue</span></div></div>
+    <div class="row"><div class="lab">Jeux ≤ 1h</div><div class="pills">
+      <span class="pill g ${st.jeux==='O'?'act':''}" data-act="jeux" data-v="O">Tenu ✓</span>
+      <span class="pill r ${st.jeux==='N'?'act':''}" data-act="jeux" data-v="N">Dépassé</span></div></div>
+    <div class="row"><div class="lab">Scroll maîtrisé</div><div class="pills">
+      <span class="pill g ${st.scroll==='O'?'act':''}" data-act="scroll" data-v="O">Oui ✓</span>
+      <span class="pill r ${st.scroll==='N'?'act':''}" data-act="scroll" data-v="N">Subi</span></div></div>
+    <div class="row"><div class="lab">Eau (verres de 0,3 L · cible 8)</div>
+      <div class="step"><button data-act="eau" data-v="-1">−</button><span class="val">${st.eau}/8</span><button data-act="eau" data-v="1">+</button></div></div>
+    <div class="row"><div class="lab">Prières</div>
+      <div class="step"><button data-act="prieres" data-v="-1">−</button><span class="val">${st.prieres}/5</span><button data-act="prieres" data-v="1">+</button></div></div>
+  </div>`;
+  c.innerHTML=h;
+  c.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
+    const a=b.dataset.act, v=b.dataset.v, s=dayState(day.d);
+    if(a==="seance") s.seance=!s.seance;
+    else if(a==="eau") s.eau=Math.max(0,Math.min(8,s.eau+(+v)));
+    else if(a==="prieres") s.prieres=Math.max(0,Math.min(5,s.prieres+(+v)));
+    else s[a]= s[a]===v? null : v;
+    save();renderJour();
+  }));
+}
+
+function renderSemaine(){
+  const c=document.getElementById("semaine");c.innerHTML="";
+  // KPIs
+  let fait=0,energN=0,jeux=0,scroll=0,eauOK=0,prie=0,planON=0;
+  DAYS.forEach(d=>{
+    if(d.type==='done'){fait++;}
+    if(d.num&&d.type!=='done')planON++;
+    const s=S.track[d.d];
+    if(s){ if(s.seance&&d.type!=='done')fait++; if(s.energ==='N')energN++; if(s.jeux==='O')jeux++;
+      if(s.scroll==='O')scroll++; if(s.eau>=8)eauOK++; prie+=s.prieres||0; }
+  });
+  let h=`<div class="card"><h2>Tableau de bord — juin</h2><div class="kpi">
+    <div class="box"><div class="n">${fait}/13</div><div class="t">Séances</div></div>
+    <div class="box alt"><div class="n">${energN}</div><div class="t">Jours sans énerg.</div></div>
+    <div class="box alt"><div class="n">${eauOK}</div><div class="t">Jours 2,5 L</div></div>
+    <div class="box"><div class="n">${prie}</div><div class="t">Prières cumul</div></div>
+   </div><div class="note" style="margin-top:9px">Minimum vital : 11 séances /13. Tu coches dans « Aujourd'hui », ça monte ici.</div></div>`;
+  // jours
+  h+=`<div class="card"><h2>Les jours</h2>`;
+  const ti=todayISO();
+  DAYS.forEach(d=>{
+    const s=S.track[d.d]; const done=(d.type==='done')||(s&&s.seance);
+    const stxt={done:'FAIT',today:"AUJ.",on:(d.num?'Séance '+d.num:'ON'),off:'REPOS'}[d.type];
+    const sc=d.type==='today'?'today':(done&&d.num?'done':d.type);
+    h+=`<div class="daycard"><div class="top"><span class="dl">${d.lab}</span><span class="st ${sc}">${done&&d.num?'✓ '+stxt:stxt}</span></div>
+      <div class="sub">${d.seance}${d.diner&&!d.diner.startsWith('MARDI')?' · 🍽️ '+d.diner.split(':')[0]:''}</div></div>`;
+  });
+  h+=`</div>`;
+  c.innerHTML=h;
+}
+
+function renderBouffe(){
+  const c=document.getElementById("bouffe");c.innerHTML="";
+  let h=`<div class="card"><h2>Recettes <span class="tag">quantités + coût</span></h2><div class="note" style="margin-bottom:8px">~2700-2800 kcal/j · ~125 g protéines · sans whey · ~45-50 €/sem.</div>`;
+  RECIPES.forEach((r,i)=>{h+=`<div class="acc" data-acc><div class="h"><span class="nm">${r.nm}</span><span class="meta">${r.meta}</span></div><div class="b">${r.b}</div></div>`;});
+  h+=`</div>`;
+  // liste de courses
+  h+=`<div class="card"><h2>Liste de courses <span class="tag">~50 €/sem</span></h2>`;
+  SHOP.forEach((cat,ci)=>{
+    h+=`<div class="catname">${cat[0]}</div>`;
+    cat[1].forEach((it,ii)=>{const id="s"+ci+"_"+ii;const on=S.shop[id]?'on':'';
+      h+=`<div class="chk ${on}" data-shop="${id}"><span class="bx">${S.shop[id]?'✓':''}</span><span class="nm">${it}</span></div>`;});
+  });
+  h+=`<div class="note" style="margin-top:10px">Paie en tickets resto en priorité. Cases sauvegardées sur ton tél.</div></div>`;
+  c.innerHTML=h;
+  c.querySelectorAll("[data-acc]").forEach(a=>a.querySelector(".h").addEventListener("click",()=>a.classList.toggle("open")));
+  c.querySelectorAll("[data-shop]").forEach(x=>x.addEventListener("click",()=>{const id=x.dataset.shop;S.shop[id]=!S.shop[id];save();renderBouffe();}));
+}
+
+function renderEuro(){
+  const c=document.getElementById("euro");c.innerHTML="";
+  const totSpent=FIN.budgets.reduce((a,b)=>a+(S.spend[b[0]]||0),0);
+  const totBud=FIN.budgets.reduce((a,b)=>a+b[1],0);
+  const n=FIN.now, dispo=(n.solde-n.coiffure), marge=dispo+n.decouvert, parJour=marge/n.joursPaie;
+  let h=`<div class="card sec-off" style="border-left:4px solid var(--rouge);background:#FCF3F2">
+    <h2 style="color:var(--rouge)">⚠️ Cash jusqu'à la paie (~${n.joursPaie} j)</h2>
+    <div class="kpi">
+      <div class="box" style="background:var(--rouge)"><div class="n">${dispo.toFixed(2)} €</div><div class="t">Reste après coiffure</div></div>
+      <div class="box alt"><div class="n">${marge.toFixed(0)} €</div><div class="t">Avec découvert (${n.decouvert})</div></div>
+      <div class="box alt"><div class="n">${parJour.toFixed(2)} €</div><div class="t">Par jour max</div></div>
+    </div>
+    <div class="note" style="margin-top:9px">
+      Solde ${n.solde.toFixed(2)} € − coiffure ${n.coiffure} € = <b>${dispo.toFixed(2)} €</b>. Plus de tickets resto → la bouffe passe sur la CB.<br>
+      <b>On NE coupe PAS la bouffe.</b> Réduire les calories te coûterait tes gains — c'est pas le levier. Manger ÉCO ≠ manger MOINS : œufs, lait, avoine, lentilles, riz, pâtes, beurre de cacahuète = plein de calories + protéines pour des centimes. Tu gardes ton surplus et ta prise de masse.<br>
+      <b>Ce qu'on coupe à la place (2 sem.) :</b> 0 resto, 0 livraison, 0 jeux, 0 Vinted.<br>
+      Ta bouffe coûte ~6-7 €/j → tu rentres déjà sous les ${parJour.toFixed(0)} €/j. Un découvert qui sert à MANGER pour ta masse = un bon découvert (~0,65 € d'agios sur 15 j), tu le rembourses à la paie.<br>
+      <b>Coiffure :</b> à 20 € c'est un tiers de ton cash. La décaler de 2 semaines libère ta marge — mais c'est ton appel.
+    </div></div>`;
+  h+=`<div class="card"><h2>Réappros jusqu'à la paie <span class="tag">socle déjà payé</span></h2>
+    <div class="row"><div class="lab">Mer 17/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes + gingembre/patate douce</div><b>~10 €</b></div>
+    <div class="row"><div class="lab">Sam 20/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes</div><b>~8 €</b></div>
+    <div class="row"><div class="lab">Mar 23/06</div><div class="lab" style="flex:2">poulet 1kg (batch) + œufs, lait, pain</div><b>~14 €</b></div>
+    <div class="row"><div class="lab">Ven 26/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes, 1 légume</div><b>~9 €</b></div>
+    <div class="note" style="margin-top:8px"><b>Total ~41 €</b> de frais sur 2 semaines (le gros est déjà acheté). Tes 18 € + un petit coup de découvert remboursé à la paie. On NE coupe pas les calories : on étire le poulet (lunchs) et on tient les protéines avec œufs + lentilles + skyr.</div></div>`;
+  h+=`<div class="card"><h2>Trésorerie du mois</h2><div class="kpi">
+    <div class="box"><div class="n">${FIN.pointBas} €</div><div class="t">Point bas</div></div>
+    <div class="box alt"><div class="n">${FIN.soldeFin} €</div><div class="t">Solde fin</div></div>
+    <div class="box"><div class="n">${FIN.epargneDispo} €</div><div class="t">Épargne possible/mois</div></div>
+   </div><div class="note" style="margin-top:9px">Tu tiens jusqu'au salaire (point bas &gt; 0). Le 28 : loyer payé + épargne virée AVANT de dépenser.</div></div>`;
+  // budgets variables
+  h+=`<div class="card"><h2>Mes dépenses du mois <span class="tag">${totSpent.toFixed(0)} / ${totBud} €</span></h2>`;
+  FIN.budgets.forEach(([cat,bud])=>{
+    const sp=S.spend[cat]||0; const pct=Math.min(100,bud?sp/bud*100:0);
+    const cls=sp>bud?'over':(pct>=80?'warn':'');
+    h+=`<div class="spend"><span class="c">${cat}</span><span class="amt">${sp.toFixed(0)} / ${bud} €</span>
+      <input type="number" inputmode="decimal" placeholder="+€" data-cat="${cat}"></div>
+      <div class="bar ${cls}"><i style="width:${pct}%"></i></div>`;
+  });
+  h+=`<div class="note" style="margin-top:10px">Tape un montant + Entrée pour l'ajouter à un poste. Barre rouge = budget dépassé.</div></div>`;
+  // régime
+  h+=`<div class="card"><h2>Régime budgétaire <span class="tag">réel → cible</span></h2>`;
+  FIN.regime.forEach(([p,r,t])=>{h+=`<div class="miniobj"><b>${p}</b><span class="c">${r} → ${t}</span></div>`;});
+  h+=`<div class="note" style="margin-top:8px">Si tu tiens ces cibles : ~364 €/mois débloqués (LEP + PEA), sans toucher santé/loyer.</div></div>`;
+  c.innerHTML=h;
+  c.querySelectorAll("[data-cat]").forEach(inp=>{
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")addSpend(inp);});
+    inp.addEventListener("blur",()=>{if(inp.value)addSpend(inp);});
+  });
+  function addSpend(inp){const v=parseFloat(inp.value.replace(",","."));if(!isNaN(v)){const c=inp.dataset.cat;S.spend[c]=(S.spend[c]||0)+v;save();renderEuro();}}
+}
+
+function renderObj(){
+  const c=document.getElementById("obj");c.innerHTML="";
+  let h=`<div class="hint">Tu en as marre de tout revoir sur ton tél : voici l'essentiel, toujours à portée. Pour la version complète (programme salle, fiches EDC, idées copine), reste dans le classeur Excel — cette appli est ton tableau de bord rapide.</div>`;
+  h+=`<div class="card"><h2>Cap 6 mois — confiant, sportif, bien dans ma peau</h2>`;
+  OBJ.forEach(([a,d,t])=>{h+=`<div class="miniobj"><b>${a}</b><span class="c">${d} → ${t}</span></div>`;});
+  h+=`</div>`;
+  h+=`<div class="card sec-today"><h2>Le rappel qui compte</h2><div class="note">
+   Aucun fichier ne fait les séances à ta place. Le contrat du jour est minuscule : 1 séance (jours ON) + cocher 4 cases ce soir. Études : 0 fait depuis le début → le bloc 19h30-21h ne se saute plus. Exams : semaine du 20 juillet.</div></div>`;
+  h+=`<div class="card"><h2>Reset / données</h2><div class="note">Tes coches sont stockées sur CE téléphone. <span style="color:var(--rouge);text-decoration:underline" id="reset">Tout réinitialiser</span></div></div>`;
+  c.innerHTML=h;
+  document.getElementById("reset").addEventListener("click",()=>{if(confirm("Effacer tout ton suivi (coches, eau, dépenses) ?")){localStorage.removeItem(LS);S={track:{},shop:{},spend:{}};renderAll();}});
+}
+
+function renderAll(){renderJour();renderSemaine();renderBouffe();renderEuro();renderObj();}
+// nav
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("act"));
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("act"));
+  b.classList.add("act");document.getElementById("t-"+b.dataset.tab).classList.add("act");
+  const R={jour:renderJour,semaine:renderSemaine,bouffe:renderBouffe,euro:renderEuro,obj:renderObj};
+  if(R[b.dataset.tab])R[b.dataset.tab]();
+  window.scrollTo(0,0);
+}));
+// date header
+(function(){const j=["dim","lun","mar","mer","jeu","ven","sam"];const m=["jan","fév","mar","avr","mai","juin","juil","aoû","sep","oct","nov","déc"];
+  const t=new Date();document.getElementById("hdate").textContent=j[t.getDay()]+". "+t.getDate()+" "+m[t.getMonth()]+" "+t.getFullYear();})();
+renderAll();
+</script>
+</body>
+</html>
