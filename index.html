@@ -256,6 +256,52 @@ function findToday(){const i=todayISO();let d=DAYS.find(x=>x.d===i);if(d)return 
 function el(h){const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstChild;}
 function meal(k,v){return v?`<div class="meal"><span class="k">${k}</span><span class="v">${v}</span></div>`:"";}
 
+const OUTFIT={
+ "2026-06-14":"Détente : joggers gris + t-shirt + hoodie gris clair",
+ "2026-06-15":"Chino écru + polo BOSS navy rentré + ceinture + sneakers blanches",
+ "2026-06-18":"Pantalon noir carreaux fins + chemise blanche waffle rentrée + sneakers",
+ "2026-06-19":"Chino écru + chemise lin sauge ouverte + t-shirt blanc dessous + sneakers",
+ "2026-06-20":"Jean bleu clair + t-shirt rose pâle seul + sneakers",
+ "2026-06-21":"Jean + sweat Nike noir + sneakers + casquette (concert)",
+ "2026-06-22":"Pantalon BOSS navy + polo navy à pois rentré + sneakers",
+ "2026-06-23":"Chino écru + chemise bleu/blanc rayée rentrée + sneakers",
+ "2026-06-24":"Pantalon habillé clair + chemise bleu ciel rentrée + blazer noir si frais",
+ "2026-06-25":"Jean bleu clair + t-shirt Carhartt noir + hoodie gris clair",
+ "2026-06-26":"Chino écru + polo BOSS navy rentré + sneakers",
+ "2026-06-27":"Short Adidas vert + t-shirt waffle écru + sneakers",
+ "2026-06-28":"Joggers gris + sweat olive/kaki + t-shirt",
+ "2026-06-29":"Pantalon Scherrer noir + chemise blanche waffle rentrée + sneakers",
+ "2026-06-30":"Chino écru + chemise lin sauge ouverte + t-shirt blanc + sneakers",
+};
+const TIPS=[
+ "Sac de salle préparé la veille, devant la porte. La friction, pas la motivation.",
+ "Eau gazeuse au frigo = ton anti-canette. Le geste compte autant que la caféine.",
+ "Avant de commander : mange d'abord l'omelette (10 min). Tu ne commanderas pas.",
+ "Tel en niveaux de gris : les réseaux perdent la moitié de leur pouvoir.",
+ "Révision active : refais le cas sur feuille, ne relis pas le corrigé.",
+ "Règle des 5 min à la salle : le droit d'arrêter après 5 min. Personne ne repart.",
+ "Une attention copine ≠ un cadeau : message audio, plat apporté, sortie annoncée.",
+ "Tel en charge HORS de la chambre. Ce qui te lève, c'est le réveil, pas le feed.",
+ "Batch le jour des courses : 450 g poulet + 300 g riz = 3 déj prêts.",
+ "Lit fait le matin = première victoire de la journée, donne le ton.",
+ "Souliers cuir = ton achat n°1 dès la paie (les sneakers blanches ne passent pas en CODIR).",
+ "Bonnet satin la nuit : tes twists tiennent 2× plus longtemps.",
+];
+function outfitFor(day){return day.tenue||OUTFIT[day.d]||"tenue libre (voir onglet Style)";}
+function dayReminders(day){
+  const isTue=day.diner&&day.diner.indexOf('MARDI')===0;
+  const jn=day.lab.split(' ')[0];
+  let R=[];
+  if(day.type==='on'||day.type==='done')R.push(["07h30","🏋️ Salle — sac prêt la veille"]);
+  else R.push(["aprèm","🚶 Marche 20-30 min (récup)"]);
+  R.push(["matin","👔 Tenue : "+outfitFor(day)]);
+  R.push(["journée","💧 Eau 2,5 L (2 bouteilles)"]);
+  if(day.etude)R.push([isTue?"en journée":"19h30","📚 "+day.etude+(isTue?" — pas chez toi ce soir":"")]);
+  if(day.copine)R.push(["—","❤️ "+day.copine]);
+  if(jn==='Ven')R.push(["18h30","🤙 Appel hebdo (famille/admin)"]);
+  R.push(["soir","🕌 Prières + propreté 10 min"]);
+  return R;
+}
 function renderJour(){
   const c=document.getElementById("jour");c.innerHTML="";
   const day=findToday();const st=dayState(day.d);
@@ -264,16 +310,47 @@ function renderJour(){
   let h=`<div class="card ${cls}"><h2>${day.lab}<span class="tag">${day.type==='off'?'REPOS':day.type==='done'?'FAIT':day.num?('Séance '+day.num+'/13'):''}</span></h2>`;
   if(day.obj) h+=`<div class="row"><div class="lab">🎯 <b>Objectif n°1</b><br>${day.obj}</div></div>`;
   h+=`<div class="row"><div class="lab">🏋️ <b>${day.seance}</b></div></div>`;
-  if(day.tenue) h+=`<div class="row"><div class="lab">👔 <b>Tenue</b> — ${day.tenue}</div></div>`;
+  h+=`<div class="row"><div class="lab">👔 <b>Tenue</b> — ${outfitFor(day)}</div></div>`;
   if(day.etude) h+=`<div class="row"><div class="lab">📚 ${day.etude}</div></div>`;
   if(day.copine) h+=`<div class="row"><div class="lab">❤️ ${day.copine}</div></div>`;
   if(day.courses) h+=`<div class="row"><div class="lab">🛒 ${day.courses}</div></div>`;
   h+=`</div>`;
+  // rappels du jour
+  h+=`<div class="card"><h2>Rappels du jour</h2>`;
+  dayReminders(day).forEach(([t,x])=>{h+=`<div class="row"><div class="lab">${x}</div><span class="px">${t}</span></div>`;});
+  h+=`<div class="note" style="margin-top:8px">Les vraies alarmes arrivent via ton Google Agenda (calendrier abonné). Ici = la vue d'ensemble.</div></div>`;
+  // gamelle de demain (tupperware pour le taf)
+  (function(){
+    const i=DAYS.indexOf(day), tmr=(i>=0&&i+1<DAYS.length)?DAYS[i+1]:null;
+    if(!tmr)return;
+    let msg,sub;
+    const dej=(tmr.dej||"");
+    if(dej.indexOf('COLLÈGUES')>=0){msg="Demain midi : repas avec les collègues 🍽️";sub="Pas de gamelle à préparer.";}
+    else if(dej.toLowerCase().indexOf('batch')>=0){msg="🥡 Prépare ta gamelle ce soir";sub="150 g poulet (du batch) + 100 g riz + légumes dans une boîte. Sors-la du frigo demain matin.";}
+    else {msg="🥡 Demain midi";sub=dej||"—";}
+    h+=`<div class="card sec-on"><h2>Gamelle de demain <span class="tag">${tmr.lab}</span></h2>
+      <div class="row"><div class="lab"><b>${msg}</b><br>${sub}</div></div>`;
+    if((day.courses||"").indexOf('RÉAPPRO')>=0||(day.dej||"").indexOf('BATCH')>=0)
+      h+=`<div class="note" style="margin-top:6px">🍳 Ce soir aussi : (re)lance ton batch poulet+riz pour les 3 prochains jours.</div>`;
+    h+=`</div>`;
+  })();
   // repas
   if(day.pdj||day.dej||day.diner){
     h+=`<div class="card"><h2>Repas du jour</h2>${meal('Petit-déj',day.pdj)}${meal('Déjeuner',day.dej)}${meal('Dîner',day.diner)}
     <div class="note" style="margin-top:8px">Détail des recettes → onglet Bouffe.</div></div>`;
   }
+  // score + série
+  (function(){
+    let done=0,tot=0;
+    if(day.type==='on'){tot++; if(st.seance)done++;}
+    tot+=5; if(st.energ==='N')done++; if(st.jeux==='O')done++; if(st.scroll==='O')done++; if(st.eau>=8)done++; if(st.prieres>=3)done++;
+    // série sans énergisante (en remontant jusqu'à aujourd'hui)
+    let streak=0; const idx=DAYS.indexOf(day);
+    for(let k=idx;k>=0;k--){const s=S.track[DAYS[k].d]; if(DAYS[k].type==='done'){continue;} if(s&&s.energ==='N')streak++; else if(s&&s.energ==='O')break; else if(k<idx)break;}
+    h+=`<div class="card"><h2>Score du jour <span class="tag">${done}/${tot}</span></h2>
+      <div class="bar"><i style="width:${tot?done/tot*100:0}%"></i></div>
+      <div class="note" style="margin-top:6px">🔥 Série sans énergisante : <b>${streak} j</b>. Coche tes habitudes ci-dessous, le score monte.</div></div>`;
+  })();
   // tracking
   h+=`<div class="card"><h2>Mon suivi du jour</h2>
     <div class="row"><div class="lab">Séance faite</div><div class="pills"><span class="pill g ${st.seance?'act':''}" data-act="seance">${st.seance?'✓ Fait':'À faire'}</span></div></div>
@@ -286,11 +363,14 @@ function renderJour(){
     <div class="row"><div class="lab">Scroll maîtrisé</div><div class="pills">
       <span class="pill g ${st.scroll==='O'?'act':''}" data-act="scroll" data-v="O">Oui ✓</span>
       <span class="pill r ${st.scroll==='N'?'act':''}" data-act="scroll" data-v="N">Subi</span></div></div>
-    <div class="row"><div class="lab">Eau (verres de 0,3 L · cible 8)</div>
+    <div class="row"><div class="lab">Eau (verres 0,3 L · cible 8 = 2,5 L)</div>
       <div class="step"><button data-act="eau" data-v="-1">−</button><span class="val">${st.eau}/8</span><button data-act="eau" data-v="1">+</button></div></div>
+    <div class="bar" style="margin:-2px 0 8px"><i style="width:${st.eau/8*100}%"></i></div>
     <div class="row"><div class="lab">Prières</div>
       <div class="step"><button data-act="prieres" data-v="-1">−</button><span class="val">${st.prieres}/5</span><button data-act="prieres" data-v="1">+</button></div></div>
   </div>`;
+  // astuce
+  h+=`<div class="card"><h2>Astuce du jour</h2><div class="note">💡 ${TIPS[(new Date().getDate())%TIPS.length]}</div></div>`;
   c.innerHTML=h;
   c.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
     const a=b.dataset.act, v=b.dataset.v, s=dayState(day.d);
@@ -327,7 +407,7 @@ function renderSemaine(){
     const stxt={done:'FAIT',today:"AUJ.",on:(d.num?'Séance '+d.num:'ON'),off:'REPOS'}[d.type];
     const sc=d.type==='today'?'today':(done&&d.num?'done':d.type);
     h+=`<div class="daycard"><div class="top"><span class="dl">${d.lab}</span><span class="st ${sc}">${done&&d.num?'✓ '+stxt:stxt}</span></div>
-      <div class="sub">${d.seance}${d.diner&&!d.diner.startsWith('MARDI')?' · 🍽️ '+d.diner.split(':')[0]:''}</div></div>`;
+      <div class="sub">${d.seance}${d.diner&&!d.diner.startsWith('MARDI')?' · 🍽️ '+d.diner.split(':')[0]:''}<br>👔 ${outfitFor(d)}</div></div>`;
   });
   h+=`</div>`;
   c.innerHTML=h;
