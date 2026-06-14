@@ -133,13 +133,15 @@ const DAYS=[
    pdj:"Skyr 200 g + 60 g flocons + 1 banane",
    dej:"Bowl batch : 150 g poulet + 100 g riz + légumes (gamelle)",
    diner:"MARDI SOIR : pas chez toi → pas de dîner à prévoir",
-   courses:"",etude:"EDC2 : budget de trésorerie",copine:""},
+   courses:"",etude:"EDC2 : budget de trésorerie",copine:"",
+   tenue:"CODIR : chino marine ou beige + chemise oxford (blanc/bleu clair) rentrée + ceinture cuir + sneakers blanches propres ou derbies. Rasage net, parfum sur peau propre."},
  {d:"2026-06-17",lab:"Mer 17 juin",type:"off",seance:"REPOS — marche 20-30 min",
    pdj:"4 œufs brouillés + 2 pain (+ skyr)",
    dej:"DÉJ AVEC LES COLLÈGUES (dehors) — pas de gamelle. ~10-15 € / TR",
    diner:"Pâtes bœuf : 100 g pâtes + 125 g bœuf 5% + légumes + concentré tomate + piment",
    courses:"RÉAPPRO ÉCO (~10 €) : œufs x12, lait 2L, pain, bananes + GINGEMBRE + PATATE DOUCE (oubliés du 14)",
-   etude:"Mémoire : INTRO + problématique",copine:"Attention semaine"},
+   etude:"Mémoire : INTRO + problématique",copine:"Attention semaine",
+   tenue:"CODIR : jean brut foncé droit + chemise unie (ou polo qualité) + surchemise/veste légère + sneakers blanches propres. Tenue soignée, c'est ton 2e jour de comité."},
  {d:"2026-06-18",lab:"Jeu 18 juin",type:"on",num:5,seance:"Séance 5 · LEGS presse/hack (pas avant-pied)",
    pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
    diner:"Poisson blanc : 150 g colin + 200 g patate douce (four 25 min) + épices + citron",
@@ -224,14 +226,12 @@ const SHOP=[
  ["Légumes/Fruits",["Légumes surgelés ~2€","Brocoli/poivrons ~3€","Oignons+ail+gingembre ~3€","Citrons x4 ~1,50€","Bananes 1kg ~1,50€","Fruits saison ~2€"]],
  ["Épices/Extras",["Paprika/piment/curry/cumin ~3€","Concentré+bouillon ~1,50€","Huile ~5€","Beurre cacahuète ~2,50€","Eau gazeuse ~1,50€"]],
 ];
+/* Aucune donnée financière perso ici (code public). Tes chiffres = saisis sur ton tél (localStorage). */
 const FIN={
- soldeBourso:742.35, soldeBling:0.62, salaireMois:1010, pointBas:183, soldeFin:284,
- epargneDispo:364, trReçus:209,
- now:{solde:38.30, coiffure:20, decouvert:100, joursPaie:14, trResto:0},
  budgets:[["Courses",260],["Restaurants",80],["Sorties / loisirs",50],["Vêtements",40],
    ["Coiffure",20],["Lavage",25],["Santé",35],["Jeux",25],["Soin / parfum",15]],
- regime:[["Restaurants","224 €","80 €"],["Abonnements IA","112 €","25 €"],["Jeux in-app","26 €","5 €"],
-   ["Soin/parfum","42 €","15 €"],["Coiffure","45 €","25 €"],["Lavage","40 €","25 €"]],
+ leviers:[["Resto","cuisiner > commander"],["Abos IA","garder l'essentiel"],["Jeux in-app","couper"],
+   ["Lavage","grouper les machines"],["Vinted","plutôt que neuf"]],
 };
 const OBJ=[
  ["Énergisantes","~3/jour","0 (arrêt sec)"],["Salle","irrégulier","≥11/13 ce mois"],
@@ -242,7 +242,7 @@ const OBJ=[
 /* ---------------- ÉTAT (sauvé sur le tél) ---------------- */
 const LS="steve_v1";
 let S=JSON.parse(localStorage.getItem(LS)||"{}");
-S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{};
+S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{}; S.fin=S.fin||{};
 function save(){localStorage.setItem(LS,JSON.stringify(S));}
 function dayState(d){return S.track[d]||(S.track[d]={seance:false,eau:0,energ:null,jeux:null,scroll:null,prieres:0});}
 function todayISO(){const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");}
@@ -262,6 +262,7 @@ function renderJour(){
   let h=`<div class="card ${cls}"><h2>${day.lab}<span class="tag">${day.type==='off'?'REPOS':day.type==='done'?'FAIT':day.num?('Séance '+day.num+'/13'):''}</span></h2>`;
   if(day.obj) h+=`<div class="row"><div class="lab">🎯 <b>Objectif n°1</b><br>${day.obj}</div></div>`;
   h+=`<div class="row"><div class="lab">🏋️ <b>${day.seance}</b></div></div>`;
+  if(day.tenue) h+=`<div class="row"><div class="lab">👔 <b>Tenue</b> — ${day.tenue}</div></div>`;
   if(day.etude) h+=`<div class="row"><div class="lab">📚 ${day.etude}</div></div>`;
   if(day.copine) h+=`<div class="row"><div class="lab">❤️ ${day.copine}</div></div>`;
   if(day.courses) h+=`<div class="row"><div class="lab">🛒 ${day.courses}</div></div>`;
@@ -350,35 +351,42 @@ function renderBouffe(){
 
 function renderEuro(){
   const c=document.getElementById("euro");c.innerHTML="";
+  const f=S.fin;
   const totSpent=FIN.budgets.reduce((a,b)=>a+(S.spend[b[0]]||0),0);
   const totBud=FIN.budgets.reduce((a,b)=>a+b[1],0);
-  const n=FIN.now, dispo=(n.solde-n.coiffure), marge=dispo+n.decouvert, parJour=marge/n.joursPaie;
-  let h=`<div class="card sec-off" style="border-left:4px solid var(--rouge);background:#FCF3F2">
-    <h2 style="color:var(--rouge)">⚠️ Cash jusqu'à la paie (~${n.joursPaie} j)</h2>
-    <div class="kpi">
-      <div class="box" style="background:var(--rouge)"><div class="n">${dispo.toFixed(2)} €</div><div class="t">Reste après coiffure</div></div>
-      <div class="box alt"><div class="n">${marge.toFixed(0)} €</div><div class="t">Avec découvert (${n.decouvert})</div></div>
-      <div class="box alt"><div class="n">${parJour.toFixed(2)} €</div><div class="t">Par jour max</div></div>
-    </div>
-    <div class="note" style="margin-top:9px">
-      Solde ${n.solde.toFixed(2)} € − coiffure ${n.coiffure} € = <b>${dispo.toFixed(2)} €</b>. Plus de tickets resto → la bouffe passe sur la CB.<br>
-      <b>On NE coupe PAS la bouffe.</b> Réduire les calories te coûterait tes gains — c'est pas le levier. Manger ÉCO ≠ manger MOINS : œufs, lait, avoine, lentilles, riz, pâtes, beurre de cacahuète = plein de calories + protéines pour des centimes. Tu gardes ton surplus et ta prise de masse.<br>
-      <b>Ce qu'on coupe à la place (2 sem.) :</b> 0 resto, 0 livraison, 0 jeux, 0 Vinted.<br>
-      Ta bouffe coûte ~6-7 €/j → tu rentres déjà sous les ${parJour.toFixed(0)} €/j. Un découvert qui sert à MANGER pour ta masse = un bon découvert (~0,65 € d'agios sur 15 j), tu le rembourses à la paie.<br>
-      <b>Coiffure :</b> à 20 € c'est un tiers de ton cash. La décaler de 2 semaines libère ta marge — mais c'est ton appel.
-    </div></div>`;
+  // 1. Réglages privés (saisie locale)
+  let h=`<div class="card"><h2>Mes chiffres <span class="tag">privés · ce tél seulement</span></h2>
+    <div class="spend"><span class="c">Solde dispo (€)</span><input type="number" inputmode="decimal" data-fin="solde" value="${f.solde??''}"></div>
+    <div class="spend"><span class="c">Coiffure prévue (€)</span><input type="number" inputmode="decimal" data-fin="coiffure" value="${f.coiffure??''}"></div>
+    <div class="spend"><span class="c">Découvert autorisé (€)</span><input type="number" inputmode="decimal" data-fin="decouvert" value="${f.decouvert??100}"></div>
+    <div class="spend"><span class="c">Jours avant la paie</span><input type="number" inputmode="numeric" data-fin="joursPaie" value="${f.joursPaie??''}"></div>
+    <div class="note" style="margin-top:8px">Ces chiffres restent sur ton téléphone — ils ne partent jamais en ligne.</div></div>`;
+  // 2. Carte cash calculée (si solde rempli)
+  if(f.solde!=null && f.solde!==''){
+    const dispo=(+f.solde)-(+f.coiffure||0), dec=(f.decouvert==null||f.decouvert==='')?100:(+f.decouvert||0), marge=dispo+dec, jp=(+f.joursPaie||14), parJour=marge/jp;
+    h+=`<div class="card sec-off" style="border-left:4px solid var(--rouge);background:#FCF3F2">
+      <h2 style="color:var(--rouge)">⚠️ Cash jusqu'à la paie (~${jp} j)</h2>
+      <div class="kpi">
+        <div class="box" style="background:var(--rouge)"><div class="n">${dispo.toFixed(0)} €</div><div class="t">Reste après coiffure</div></div>
+        <div class="box alt"><div class="n">${marge.toFixed(0)} €</div><div class="t">Avec découvert</div></div>
+        <div class="box alt"><div class="n">${parJour.toFixed(1)} €</div><div class="t">Par jour max</div></div>
+      </div>
+      <div class="note" style="margin-top:9px">
+        <b>On NE coupe PAS la bouffe</b> — couper les calories couperait tes gains. Manger ÉCO ≠ manger MOINS : œufs, lait, avoine, lentilles, riz, pâtes, PB = plein de calories + protéines pour des centimes. Surplus et prise de masse intacts.<br>
+        <b>Ce qu'on coupe :</b> 0 resto, 0 livraison, 0 jeux, 0 Vinted. Ta bouffe ~6-7 €/j → tu rentres sous les ${parJour.toFixed(0)} €/j.<br>
+        Un découvert qui sert à MANGER pour ta masse = bon découvert (~0,65 € d'agios/15 j), remboursé à la paie.
+      </div></div>`;
+  } else {
+    h+=`<div class="hint">Entre ton solde ci-dessus → je calcule ta marge jusqu'à la paie et ton budget/jour.</div>`;
+  }
+  // 3. Réappros (générique, pas de données perso)
   h+=`<div class="card"><h2>Réappros jusqu'à la paie <span class="tag">socle déjà payé</span></h2>
     <div class="row"><div class="lab">Mer 17/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes + gingembre/patate douce</div><b>~10 €</b></div>
     <div class="row"><div class="lab">Sam 20/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes</div><b>~8 €</b></div>
     <div class="row"><div class="lab">Mar 23/06</div><div class="lab" style="flex:2">poulet 1kg (batch) + œufs, lait, pain</div><b>~14 €</b></div>
     <div class="row"><div class="lab">Ven 26/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes, 1 légume</div><b>~9 €</b></div>
-    <div class="note" style="margin-top:8px"><b>Total ~41 €</b> de frais sur 2 semaines (le gros est déjà acheté). Tes 18 € + un petit coup de découvert remboursé à la paie. On NE coupe pas les calories : on étire le poulet (lunchs) et on tient les protéines avec œufs + lentilles + skyr.</div></div>`;
-  h+=`<div class="card"><h2>Trésorerie du mois</h2><div class="kpi">
-    <div class="box"><div class="n">${FIN.pointBas} €</div><div class="t">Point bas</div></div>
-    <div class="box alt"><div class="n">${FIN.soldeFin} €</div><div class="t">Solde fin</div></div>
-    <div class="box"><div class="n">${FIN.epargneDispo} €</div><div class="t">Épargne possible/mois</div></div>
-   </div><div class="note" style="margin-top:9px">Tu tiens jusqu'au salaire (point bas &gt; 0). Le 28 : loyer payé + épargne virée AVANT de dépenser.</div></div>`;
-  // budgets variables
+    <div class="note" style="margin-top:8px"><b>~41 €</b> de frais sur 2 semaines (le gros est déjà acheté). On étire le poulet (lunchs), protéines tenues avec œufs + lentilles + skyr.</div></div>`;
+  // 4. Suivi dépenses (cibles génériques)
   h+=`<div class="card"><h2>Mes dépenses du mois <span class="tag">${totSpent.toFixed(0)} / ${totBud} €</span></h2>`;
   FIN.budgets.forEach(([cat,bud])=>{
     const sp=S.spend[cat]||0; const pct=Math.min(100,bud?sp/bud*100:0);
@@ -387,15 +395,18 @@ function renderEuro(){
       <input type="number" inputmode="decimal" placeholder="+€" data-cat="${cat}"></div>
       <div class="bar ${cls}"><i style="width:${pct}%"></i></div>`;
   });
-  h+=`<div class="note" style="margin-top:10px">Tape un montant + Entrée pour l'ajouter à un poste. Barre rouge = budget dépassé.</div></div>`;
-  // régime
-  h+=`<div class="card"><h2>Régime budgétaire <span class="tag">réel → cible</span></h2>`;
-  FIN.regime.forEach(([p,r,t])=>{h+=`<div class="miniobj"><b>${p}</b><span class="c">${r} → ${t}</span></div>`;});
-  h+=`<div class="note" style="margin-top:8px">Si tu tiens ces cibles : ~364 €/mois débloqués (LEP + PEA), sans toucher santé/loyer.</div></div>`;
+  h+=`<div class="note" style="margin-top:10px">Tape un montant + Entrée pour l'ajouter. Barre rouge = budget dépassé.</div></div>`;
+  // 5. Leviers d'éco (générique)
+  h+=`<div class="card"><h2>Leviers d'économie</h2>`;
+  FIN.leviers.forEach(([p,t])=>{h+=`<div class="miniobj"><b>${p}</b><span class="c">${t}</span></div>`;});
+  h+=`<div class="note" style="margin-top:8px">Le détail chiffré de ton budget reste dans ton Excel (privé). Ici = le rappel des bons réflexes.</div></div>`;
   c.innerHTML=h;
   c.querySelectorAll("[data-cat]").forEach(inp=>{
     inp.addEventListener("keydown",e=>{if(e.key==="Enter")addSpend(inp);});
     inp.addEventListener("blur",()=>{if(inp.value)addSpend(inp);});
+  });
+  c.querySelectorAll("[data-fin]").forEach(inp=>{
+    inp.addEventListener("change",()=>{const k=inp.dataset.fin;S.fin[k]=inp.value===''?'':parseFloat(inp.value.replace(",","."));save();renderEuro();});
   });
   function addSpend(inp){const v=parseFloat(inp.value.replace(",","."));if(!isNaN(v)){const c=inp.dataset.cat;S.spend[c]=(S.spend[c]||0)+v;save();renderEuro();}}
 }
