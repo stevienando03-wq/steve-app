@@ -85,8 +85,9 @@ body{padding-bottom:78px;max-width:520px;margin:0 auto;min-height:100vh}
 .note{font-size:12px;color:var(--anthr);line-height:1.5}
 .big{font-size:26px;font-weight:800}
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#fff;border-top:1px solid var(--ligne);
-  display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
-.nav button{flex:1;border:0;background:none;padding:9px 2px 8px;cursor:pointer;color:#A9A293;font-size:10px;font-weight:600}
+  display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex:1 0 auto;min-width:60px;border:0;background:none;padding:9px 2px 8px;cursor:pointer;color:#A9A293;font-size:10px;font-weight:600}
 .nav button .ic{font-size:19px;display:block;margin-bottom:2px}
 .nav button.act{color:var(--bleu)}
 .nav button.act .ic{transform:translateY(-1px)}
@@ -154,13 +155,17 @@ body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#
 <div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
 <div class="tab" id="t-obj"><div class="wrap" id="obj"></div></div>
 <div class="tab" id="t-style"><div class="wrap" id="style"></div></div>
+<div class="tab" id="t-sport"><div class="wrap" id="sport"></div></div>
+<div class="tab" id="t-apprendre"><div class="wrap" id="apprendre"></div></div>
 
 <div class="nav">
   <button class="act" data-tab="jour"><span class="ic">📌</span>Aujourd'hui</button>
   <button data-tab="semaine"><span class="ic">🗓️</span>Semaine</button>
+  <button data-tab="sport"><span class="ic">💪</span>Sport</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="style"><span class="ic">👔</span>Style</button>
+  <button data-tab="apprendre"><span class="ic">📖</span>Apprendre</button>
   <button data-tab="obj"><span class="ic">🎯</span>Cap</button>
 </div>
 
@@ -288,12 +293,12 @@ const OBJ=[
  ["Énergisantes","~3/jour","0 (arrêt sec)"],["Salle","irrégulier","≥11/13 ce mois"],
  ["Poids","~65 kg","+4-6 kg propres en 6 mois"],["Cuisine","commandes","cuisiner 6j/7, ≤1 livraison/sem"],
  ["Style","3 pièces","base P1 ~100-130€ Vinted"],["Couple","à son initiative","1 attention/sem + anniv 15/12 préparé"],
- ["Foi","arrêtée","reprise 3→5 prières/jour"],["Études","0 fait","tout couvert avant exams (20 juil)"],
+ ["Lecture / apprendre","irrégulier","20 min/jour + livres & compétences"],["Études","0 fait","tout couvert avant exams (20 juil)"],
 ];
 /* ---------------- ÉTAT (sauvé sur le tél) ---------------- */
 const LS="steve_v1";
 let S=JSON.parse(localStorage.getItem(LS)||"{}");
-S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{}; S.fin=S.fin||{}; S.weights=S.weights||[]; S.photos=S.photos||[];
+S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{}; S.fin=S.fin||{}; S.weights=S.weights||[]; S.photos=S.photos||[]; S.read=S.read||[]; S.skills=S.skills||[];
 function save(){localStorage.setItem(LS,JSON.stringify(S));}
 function dayState(d){return S.track[d]||(S.track[d]={seance:false,eau:0,energ:null,jeux:null,scroll:null,prieres:0});}
 function todayISO(){const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");}
@@ -348,7 +353,8 @@ function dayReminders(day){
   if(day.etude)R.push([isTue?"en journée":"19h30","📚 "+day.etude+(isTue?" — pas chez toi ce soir":"")]);
   if(day.copine)R.push(["—","❤️ "+day.copine]);
   if(jn==='Ven')R.push(["18h30","🤙 Appel hebdo (famille/admin)"]);
-  R.push(["soir","🕌 Prières + propreté 10 min"]);
+  R.push(["soir","🧹 Propreté : 10 min de rangement"]);
+  R.push(["soir","📖 Lecture : 20 min"]);
   return R;
 }
 function renderJour(){
@@ -392,7 +398,7 @@ function renderJour(){
   (function(){
     let done=0,tot=0;
     if(day.type==='on'){tot++; if(st.seance)done++;}
-    tot+=5; if(st.energ==='N')done++; if(st.jeux==='O')done++; if(st.scroll==='O')done++; if(st.eau>=8)done++; if(st.prieres>=3)done++;
+    tot+=5; if(st.energ==='N')done++; if(st.jeux==='O')done++; if(st.scroll==='O')done++; if(st.eau>=8)done++; if((st.lecture||0)>=20)done++;
     // série sans énergisante (en remontant jusqu'à aujourd'hui)
     let streak=0; const idx=DAYS.indexOf(day);
     for(let k=idx;k>=0;k--){const s=S.track[DAYS[k].d]; if(DAYS[k].type==='done'){continue;} if(s&&s.energ==='N')streak++; else if(s&&s.energ==='O')break; else if(k<idx)break;}
@@ -415,8 +421,10 @@ function renderJour(){
     <div class="row"><div class="lab">Eau (verres 0,3 L · cible 8 = 2,5 L)</div>
       <div class="step"><button data-act="eau" data-v="-1">−</button><span class="val">${st.eau}/8</span><button data-act="eau" data-v="1">+</button></div></div>
     <div class="bar" style="margin:-2px 0 8px"><i style="width:${st.eau/8*100}%"></i></div>
-    <div class="row"><div class="lab">Prières</div>
-      <div class="step"><button data-act="prieres" data-v="-1">−</button><span class="val">${st.prieres}/5</span><button data-act="prieres" data-v="1">+</button></div></div>
+    <div class="row"><div class="lab">Propreté (10 min rangement)</div><div class="pills">
+      <span class="pill g ${st.proprete==='O'?'act':''}" data-act="proprete" data-v="O">Fait ✓</span></div></div>
+    <div class="row"><div class="lab">Lecture (min)</div>
+      <div class="step"><button data-act="lecture" data-v="-10">−</button><span class="val">${st.lecture||0}</span><button data-act="lecture" data-v="10">+</button></div></div>
     <div class="row"><div class="lab">Humeur / énergie</div><div class="pills">${[1,2,3,4,5].map(n=>`<span class="pill ${st.humeur==n?'g act':''}" data-act="humeur" data-v="${n}">${n}</span>`).join('')}</div></div>
     <div style="padding-top:8px"><div class="lab" style="margin-bottom:4px">📝 Note du jour</div>
       <textarea data-note placeholder="Rechute ? victoire ? une ligne sur ta journée…" style="width:100%;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit;color:var(--bleu);min-height:46px">${st.note||''}</textarea></div>
@@ -428,8 +436,8 @@ function renderJour(){
     const a=b.dataset.act, v=b.dataset.v, s=dayState(day.d);
     if(a==="seance") s.seance=!s.seance;
     else if(a==="eau") s.eau=Math.max(0,Math.min(8,s.eau+(+v)));
-    else if(a==="prieres") s.prieres=Math.max(0,Math.min(5,s.prieres+(+v)));
-    else if(a==="allok"){ if(day.type==='on'||day.type==='done')s.seance=true; s.energ='N'; s.jeux='O'; s.scroll='O'; s.eau=8; }
+    else if(a==="lecture") s.lecture=Math.max(0,Math.min(180,(s.lecture||0)+(+v)));
+    else if(a==="allok"){ if(day.type==='on'||day.type==='done')s.seance=true; s.energ='N'; s.jeux='O'; s.scroll='O'; s.eau=8; s.proprete='O'; }
     else s[a]= s[a]===v? null : v;
     save();renderJour();
   }));
@@ -440,19 +448,19 @@ function renderJour(){
 function renderSemaine(){
   const c=document.getElementById("semaine");c.innerHTML="";
   // KPIs
-  let fait=0,energN=0,jeux=0,scroll=0,eauOK=0,prie=0,planON=0;
+  let fait=0,energN=0,jeux=0,scroll=0,eauOK=0,lect=0,planON=0;
   DAYS.forEach(d=>{
     if(d.type==='done'){fait++;}
     if(d.num&&d.type!=='done')planON++;
     const s=S.track[d.d];
     if(s){ if(s.seance&&d.type!=='done')fait++; if(s.energ==='N')energN++; if(s.jeux==='O')jeux++;
-      if(s.scroll==='O')scroll++; if(s.eau>=8)eauOK++; prie+=s.prieres||0; }
+      if(s.scroll==='O')scroll++; if(s.eau>=8)eauOK++; lect+=s.lecture||0; }
   });
   let h=`<div class="card"><h2>Tableau de bord — juin</h2><div class="kpi">
     <div class="box"><div class="n">${fait}/13</div><div class="t">Séances</div></div>
     <div class="box alt"><div class="n">${energN}</div><div class="t">Jours sans énerg.</div></div>
     <div class="box alt"><div class="n">${eauOK}</div><div class="t">Jours 2,5 L</div></div>
-    <div class="box"><div class="n">${prie}</div><div class="t">Prières cumul</div></div>
+    <div class="box"><div class="n">${lect}</div><div class="t">Lecture (min)</div></div>
    </div>
    <div class="lab" style="font-size:11px;margin-top:10px">Séances ${fait}/13 — minimum vital 11</div>
    <div class="bar ${fait>=11?'':(fait>=8?'warn':'over')}"><i style="width:${Math.min(100,fait/13*100)}%"></i></div>
@@ -638,13 +646,45 @@ function renderStyle(){
   if(pi)pi.addEventListener('change',function(){if(pi.files&&pi.files[0])addPhoto(pi.files[0]);});
   c.querySelectorAll('[data-delphoto]').forEach(function(b){b.addEventListener('click',function(){S.photos=S.photos.filter(function(p){return p.id!==b.dataset.delphoto;});save();renderStyle();});});
 }
-function renderAll(){renderJour();renderSemaine();renderBouffe();renderEuro();renderObj();renderStyle();}
+const PROG=[
+ {t:"Échauffement (8-10 min)",x:"5 min cardio doux (vélo/rameur) + mobilité épaules/hanches + 1-2 séries légères sur le 1er exo. Jamais à froid."},
+ {t:"PUSH — pecs / épaules / triceps",x:"Développé couché haltères — 4×8-10\nDéveloppé militaire assis — 3×8-10\nÉcarté poulie/pec-deck — 3×12-15\nÉlévations latérales — 4×12-15\nExtensions triceps poulie — 3×12-15\nOiseau (rear delt) — 3×15-20"},
+ {t:"PULL — dos / biceps",x:"Tirage vertical (lat pulldown) — 4×8-10\nRowing assis machine — 4×10-12\nTirage horizontal poulie — 3×10-12\nFace pull — 3×15-20\nCurl haltères — 3×10-12\nCurl marteau — 3×12-15"},
+ {t:"LEGS — sans charge avant-pied",x:"Presse à cuisses — 4×10-12\nHack squat — 3×10-12\nLeg curl ASSIS — 3×12-15\nLeg extension — 3×12-15\nHip thrust / pont — 3×12-15\nMollets ASSIS (pas debout) — 3×15-20"},
+ {t:"Progression (la clé)",x:"Double progression : monte les reps jusqu'au haut de la fourchette, puis +1-2 kg et repars en bas. +1 rep ou +1-2 kg/semaine. Garde 1-2 reps en réserve. Deload toutes les 6-8 sem si stagnation."},
+ {t:"Cardio & pied",x:"Cardio SANS impact (vélo, rameur, marche inclinée) 2-3×/sem. JAMAIS course/saut tant que la gêne avant-pied est là. Mobilité cheville 2 min/jour."},
+ {t:"Récup",x:"Repos 60-90s en isolation, 2-3 min sur presse/hack. 2 ON / 1 OFF, jamais 2 OFF d'affilée. Sommeil 7-8h. Gainer maison dans l'heure après la séance."},
+];
+function renderSport(){
+  const c=document.getElementById("sport");
+  let h=`<div class="card sec-on"><h2>Mon sport <span class="tag">prise de masse</span></h2>
+    <div class="note">Rythme : 2 ON / 1 OFF, jamais 2 OFF d'affilée. Objectif juin : ≥ 11/13 séances. Gêne avant-pied → LEGS sans charge sur les orteils. Touche un titre pour voir le détail.</div></div>`;
+  PROG.forEach(p=>{h+=`<div class="acc" data-acc><div class="h"><span class="nm">${p.t}</span><span class="meta">›</span></div><div class="b">${p.x}</div></div>`;});
+  h+=`<div class="card"><h2>Suivi des charges & poids</h2><div class="note">Note tes charges semaine/semaine dans l'Excel (onglet 📓 Journal) ou en « note du jour ». Ton poids se suit dans l'onglet Semaine. Progresse : +1 rep ou +1-2 kg/sem.</div></div>`;
+  c.innerHTML=h;
+  c.querySelectorAll("[data-acc]").forEach(a=>a.querySelector(".h").addEventListener("click",()=>a.classList.toggle("open")));
+}
+function listHTML(arr,key){let h='';arr.forEach(it=>{h+=`<div class="chk ${it.done?'on':''}" data-tg="${key}:${it.id}"><span class="bx">${it.done?'✓':''}</span><span class="nm">${it.text}</span><button class="del" style="margin-left:auto;background:none;border:0;color:var(--anthr);cursor:pointer;font-size:14px" data-del="${key}:${it.id}">✕</button></div>`;});return h;}
+function renderApprendre(){
+  const c=document.getElementById("apprendre");
+  let h=`<div class="hint">Tes lectures et ce que tu veux apprendre. Tape dans le champ + Entrée pour ajouter, touche une ligne pour la cocher. Tout reste sur ton tél.</div>`;
+  h+=`<div class="card"><h2>📖 À lire <span class="tag">${S.read.filter(x=>x.done).length}/${S.read.length}</span></h2>${S.read.length?listHTML(S.read,'read'):'<div class="note">Rien encore.</div>'}
+    <input type="text" data-add="read" placeholder="Ajouter un livre / article…" style="width:100%;margin-top:8px;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit"></div>`;
+  h+=`<div class="card"><h2>🎯 À apprendre <span class="tag">${S.skills.filter(x=>x.done).length}/${S.skills.length}</span></h2>${S.skills.length?listHTML(S.skills,'skills'):'<div class="note">Rien encore.</div>'}
+    <input type="text" data-add="skills" placeholder="Ex : Excel avancé, anglais, cuisine, montage…" style="width:100%;margin-top:8px;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit"></div>`;
+  h+=`<div class="card"><h2>Le réflexe</h2><div class="note">Lecture 20 min/jour (tracker dans « Aujourd'hui »). Pioche selon tes axes : finance/compta (ton M2), cuisine, style, gestion du temps, communication. Remplis avec ce qui t'attire vraiment — je ne mets pas de titres au hasard.</div></div>`;
+  c.innerHTML=h;
+  c.querySelectorAll('[data-add]').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&inp.value.trim()){const k=inp.dataset.add;S[k].push({id:String(Date.now()),text:inp.value.trim(),done:false});save();renderApprendre();}}));
+  c.querySelectorAll('[data-tg]').forEach(el=>el.addEventListener('click',e=>{if(e.target.dataset.del!==undefined)return;const p=el.dataset.tg.split(':'),k=p[0],id=p[1];const it=S[k].find(x=>x.id===id);if(it){it.done=!it.done;save();renderApprendre();}}));
+  c.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const p=b.dataset.del.split(':'),k=p[0],id=p[1];S[k]=S[k].filter(x=>x.id!==id);save();renderApprendre();}));
+}
+function renderAll(){renderJour();renderSemaine();renderSport();renderBouffe();renderEuro();renderStyle();renderApprendre();renderObj();}
 // nav
 document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("act"));
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("act"));
   b.classList.add("act");document.getElementById("t-"+b.dataset.tab).classList.add("act");
-  const R={jour:renderJour,semaine:renderSemaine,bouffe:renderBouffe,euro:renderEuro,obj:renderObj,style:renderStyle};
+  const R={jour:renderJour,semaine:renderSemaine,sport:renderSport,bouffe:renderBouffe,euro:renderEuro,style:renderStyle,apprendre:renderApprendre,obj:renderObj};
   if(R[b.dataset.tab])R[b.dataset.tab]();
   window.scrollTo(0,0);
 }));
