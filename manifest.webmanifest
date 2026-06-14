@@ -1,0 +1,14 @@
+{
+  "name": "Meilleure version de moi-même",
+  "short_name": "Ma version",
+  "description": "Planning, sport, bouffe, budget, style — mon tableau de bord perso.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F1E8",
+  "theme_color": "#14213D",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
