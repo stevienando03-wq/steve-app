@@ -153,6 +153,7 @@ body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#
 <div class="tab act" id="t-jour"><div class="wrap" id="jour"></div></div>
 <div class="tab" id="t-semaine"><div class="wrap" id="semaine"></div></div>
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
+<div class="tab" id="t-courses"><div class="wrap" id="courses"></div></div>
 <div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
 <div class="tab" id="t-obj"><div class="wrap" id="obj"></div></div>
 <div class="tab" id="t-style"><div class="wrap" id="style"></div></div>
@@ -164,6 +165,7 @@ body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#
   <button data-tab="semaine"><span class="ic">🗓️</span>Semaine</button>
   <button data-tab="sport"><span class="ic">💪</span>Sport</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
+  <button data-tab="courses"><span class="ic">🛒</span>Courses</button>
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="style"><span class="ic">👔</span>Style</button>
   <button data-tab="apprendre"><span class="ic">📖</span>Apprendre</button>
@@ -173,115 +175,46 @@ body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#
 <script>
 /* ---------------- DONNÉES (mises à jour par Claude) ---------------- */
 const DAYS=[
- {d:"2026-06-12",lab:"Ven 12 juin",type:"done",num:1,seance:"Séance 1 · PUSH (fait ✓)",pdj:"",dej:"",diner:"",courses:"",etude:"EDC1 : cas rentabilité",copine:"Soir copine"},
- {d:"2026-06-13",lab:"Sam 13 juin",type:"done",num:2,seance:"Séance 2 · PULL (fait ✓)",pdj:"",dej:"",diner:"",courses:"",etude:"EDC1 : cas VAN/TIR",copine:"Soir copine"},
- {d:"2026-06-14",lab:"Dim 14 juin",type:"today",seance:"REPOS — marche 20-30 min",
-   pdj:"Selon stock : 4 œufs + pain, OU skyr 200 g + 60 g flocons",
-   dej:"BATCH = cuis 450 g poulet + 300 g riz cru → 3 portions (150 g poulet + 100 g riz). Mange-en 1, garde 2 en boîte.",
-   diner:"Poulet poivron (du batch) : 150 g poulet + 1 poivron + 1/2 oignon + citron + 100 g riz",
-   courses:"✓ Courses faites. Manque GINGEMBRE + PATATE DOUCE → course du 17.",
-   etude:"Démarrage : imprime le référentiel EDC, repère tes lacunes (30 min)",copine:"Message audio le matin",obj:"Courses + coiffure + ranger appart + lessive"},
- {d:"2026-06-15",lab:"Lun 15 juin",type:"off",seance:"REPOS (séance manquée — on repart)",
-   pdj:"Gainer : 500 ml lait + 60 g avoine + 150 g skyr + 1 banane + 20 g PB",
-   dej:"Bowl batch : 150 g poulet + 100 g riz + légumes (gamelle)",
-   diner:"Omelette : 4 œufs + 30 g fromage + 2 pain + 1/2 oignon + épices + salade",
-   courses:"",etude:"EDC2 : TFT / plan de financement",copine:""},
- {d:"2026-06-16",lab:"Mar 16 juin",type:"off",seance:"REPOS (séance manquée — on repart)",
-   pdj:"Skyr 200 g + 60 g flocons + 1 banane",
-   dej:"Bowl batch : 150 g poulet + 100 g riz + légumes (gamelle)",
-   diner:"MARDI SOIR : pas chez toi → pas de dîner à prévoir",
-   courses:"",etude:"EDC2 : budget de trésorerie",copine:"",
-   tenue:"CODIR : pantalon Scherrer noir + chemise bleu ciel rentrée + blazer noir + ceinture cuir + bottes noires ou chaussures marron (mieux que les sneakers en formel). Barbe nette, Azzaro."},
- {d:"2026-06-17",lab:"Mer 17 juin",type:"off",seance:"REPOS — ON REPART : ce soir dîner PROPRE (sur le stock) + sac prêt pour PULL demain",
-   pdj:"4 œufs brouillés + 2 pain (+ skyr)",
-   dej:"DÉJ AVEC LES COLLÈGUES (dehors) — pas de gamelle. ~10-15 € / TR",
-   diner:"Pâtes bœuf : 100 g pâtes + 125 g bœuf 5% + légumes + concentré tomate + piment (sur ton stock)",
-   courses:"Stock quasi intact (peu touché) — juste du frais si besoin (lait, pain, bananes)",
-   etude:"Reprise : EDC1 — 1 cas rentabilité (ROE/levier), fiche formules prête",copine:"Attention semaine",
-   tenue:"CODIR j2 : chino écru + polo BOSS navy rentré + ceinture cuir + bottes noires / chaussures marron. (Le navy casse l'écru.) Barbe nette, twists frais."},
- {d:"2026-06-18",lab:"Jeu 18 juin",type:"on",num:3,seance:"Séance 3 · PULL dos/biceps",
-   pdj:"Gainer maison ou œufs",dej:"Pas de batch prêt → déj rapide (wrap/TR). Tu CUISINES LE BATCH ce soir.",
-   diner:"CUIS LE BATCH ce soir : 450 g poulet + 300 g riz (= 3 j) + 1 portion. Dîner sur ton stock (poisson blanc / pâtes bœuf).",
-   courses:"Stock intact — rien à acheter",etude:"DÉMARRAGE révisions (0 fait) : EDC1 — 1 cas rentabilité (ROE/levier) avec ta fiche formules. 45 min, c'est tout.",copine:""},
- {d:"2026-06-19",lab:"Ven 19 juin",type:"on",num:4,seance:"Séance 4 · LEGS presse/hack (pas avant-pied)",
-   pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",
-   diner:"Pâtes bolo : 100 g pâtes + 125 g bœuf 5% + oignon + concentré tomate + piment",
-   courses:"",etude:"Mémoire : Partie I (lancer)",copine:"Soir copine"},
- {d:"2026-06-20",lab:"Sam 20 juin",type:"off",seance:"REPOS (VivaTech cet aprèm) — reprise salle PULL DEMAIN",
-   pdj:"4 œufs + pain (ou gainer)",dej:"Cuis le BATCH aujourd'hui : 450 g poulet + 300 g riz = 3 portions (mange-en 1)",
-   diner:"Pâtes bolo : 100 g pâtes + 125 g BŒUF HACHÉ (cuisine-le CE SOIR avant qu'il tourne) + oignon + concentré tomate + piment",
-   courses:"Rien à acheter — stock OK",
-   etude:"Léger : 30 min EDC1 (fiche formules) en rentrant, si tu as l'énergie",copine:"🎟️ VivaTech (Porte de Versailles) cet après-midi"},
- {d:"2026-06-21",lab:"Dim 21 juin",type:"on",num:3,seance:"Séance 3 · PULL dos/biceps (REPRISE)",
-   pdj:"Gainer maison",dej:"Bowl batch",
-   diner:"Poulet gingembre : 150 g poulet + gingembre + ail + 100 g riz (mange TÔT, concert après)",
-   courses:"",etude:"EDC2 : maths fi (léger)",copine:"FÊTE DE LA MUSIQUE — quais St-Bernard"},
- {d:"2026-06-22",lab:"Lun 22 juin",type:"off",seance:"REPOS — marche 20-30 min",
-   pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",
-   diner:"Sardines/maquereau : 1 boîte + 100 g riz + légumes + citron (0 cuisson)",
-   courses:"",etude:"EDC2 : TFT / plan de financement",copine:""},
- {d:"2026-06-23",lab:"Mar 23 juin",type:"on",num:6,seance:"Séance 6 · PULL dos/biceps",
-   pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
-   diner:"MARDI SOIR : pas chez toi → pas de dîner à prévoir",
-   courses:"RÉAPPRO (~14 €) : poulet 1kg (nouveau batch) + œufs x12, lait, pain",
-   etude:"EDC2 : budget de trésorerie",copine:""},
- {d:"2026-06-24",lab:"Mer 24 juin",type:"on",num:7,seance:"Séance 7 · LEGS presse/hack (pas avant-pied)",
-   pdj:"Skyr + flocons + banane",
-   dej:"DÉJ AVEC LES COLLÈGUES (dehors) — pas de gamelle. ~10-15 € / TR",
-   diner:"Omelette : 4 œufs + 30 g fromage + 2 pain + épices",
-   courses:"",etude:"Mémoire : Partie I (finir)",copine:"Attention semaine"},
- {d:"2026-06-25",lab:"Jeu 25 juin",type:"off",seance:"REPOS — marche 20-30 min",
-   pdj:"4 œufs + pain",dej:"Bowl batch (gamelle)",
-   diner:"Pâtes bœuf : 100 g pâtes + 125 g bœuf 5% + légumes + concentré + piment",
-   courses:"",etude:"EDC5 : risques Bâle/Solvency (cours)",copine:""},
- {d:"2026-06-26",lab:"Ven 26 juin",type:"on",num:8,seance:"Séance 8 · PUSH pecs/épaules/tri",
-   pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
-   diner:"Pâtes bolo : 100 g pâtes + 125 g bœuf 5% + oignon + concentré + piment",
-   courses:"RÉAPPRO ÉCO (~9 €) : œufs x12, lait, pain, bananes, 1 légume",
-   etude:"Mémoire : Partie II (lancer)",copine:"Soir copine"},
- {d:"2026-06-27",lab:"Sam 27 juin",type:"on",num:9,seance:"Séance 9 · PULL dos/biceps",
-   pdj:"Skyr + flocons + banane",dej:"Bowl batch",
-   diner:"Lentilles-riz : 100 g lentilles + 80 g riz + 1 œuf + cumin/paprika/piment",
-   courses:"",etude:"Mémoire : Partie II (suite)",copine:"Sortie / brunch"},
- {d:"2026-06-28",lab:"Dim 28 juin",type:"off",seance:"REPOS — marche / mobilité",
-   pdj:"4 œufs + pain",dej:"Bowl batch",
-   diner:"Omelette : 4 œufs + 30 g fromage + 2 pain + épices",
-   courses:"",etude:"EDC5 : seuil de rentabilité",copine:"Balade canal St-Martin"},
- {d:"2026-06-29",lab:"Lun 29 juin",type:"on",num:10,seance:"Séance 10 · LEGS presse/hack (pas avant-pied)",
-   pdj:"Gainer maison",dej:"Bowl batch (gamelle)",
-   diner:"Poulet gingembre : 150 g poulet + gingembre + ail + 100 g riz",
-   courses:"RÉAPPRO (~12 €) : poulet 1kg, œufs x12, bananes (paie arrivée)",
-   etude:"EDC4 : consolidation risques + ESG",copine:""},
- {d:"2026-06-30",lab:"Mar 30 juin",type:"on",num:11,seance:"Séance 11 · PUSH pecs/épaules/tri",
-   pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",
-   diner:"MARDI SOIR : pas chez toi → pas de dîner à prévoir",
-   courses:"",etude:"Mémoire : Partie II (finir)",copine:""},
- {d:"2026-07-01",lab:"Mer 1 juil",type:"on",num:14,seance:"Séance 14 · PUSH",pdj:"Gainer maison",dej:"DÉJ COLLÈGUES (dehors)",diner:"Repas prise de masse épicé (Recettes)",courses:"RÉAPPRO frais (~10 €)",etude:"EDC3 + EDC4 : portefeuille, reporting, conso, ESG",copine:""},
- {d:"2026-07-02",lab:"Jeu 2 juil",type:"off",seance:"REPOS — marche",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Mémoire : Partie III",copine:""},
- {d:"2026-07-03",lab:"Ven 3 juil",type:"on",num:15,seance:"Séance 15 · PULL",pdj:"Gainer maison",dej:"Bowl batch (gamelle)",diner:"Repas prise de masse (Recettes)",courses:"",etude:"EDC5 : révision (Bâle, seuil, couverture)",copine:"Soir copine"},
- {d:"2026-07-04",lab:"Sam 4 juil",type:"on",num:16,seance:"Séance 16 · LEGS (pas avant-pied)",pdj:"Skyr + flocons",dej:"Bowl batch",diner:"Repas prise de masse (Recettes)",courses:"Courses socle",etude:"Mémoire : relecture I-II",copine:""},
- {d:"2026-07-05",lab:"Dim 5 juil",type:"off",seance:"REPOS — marche",pdj:"Gainer maison",dej:"Bowl batch",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Mémoire : finir Partie III",copine:"Sortie / balade"},
- {d:"2026-07-06",lab:"Lun 6 juil",type:"on",num:17,seance:"Séance 17 · PUSH",pdj:"Gainer maison",dej:"Bowl batch (gamelle)",diner:"Repas prise de masse (Recettes)",courses:"",etude:"EDC6 + EDC7 : management (rédactionnel, rapide)",copine:""},
- {d:"2026-07-07",lab:"Mar 7 juil",type:"off",seance:"REPOS — marche",pdj:"Skyr + flocons",dej:"Bowl batch (gamelle)",diner:"MARDI SOIR : pas chez toi → pas de dîner",courses:"",etude:"Cas blanc EDC1 (chrono, sur feuille)",copine:""},
- {d:"2026-07-08",lab:"Mer 8 juil",type:"on",num:18,seance:"Séance 18 · PULL",pdj:"Gainer maison",dej:"DÉJ COLLÈGUES (dehors)",diner:"Repas prise de masse (Recettes)",courses:"RÉAPPRO frais",etude:"Cas blanc EDC2 (chrono)",copine:""},
- {d:"2026-07-09",lab:"Jeu 9 juil",type:"off",seance:"REPOS — marche",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Cas blanc EDC5 (chrono)",copine:""},
- {d:"2026-07-10",lab:"Ven 10 juil",type:"on",num:19,seance:"Séance 19 · LEGS (pas avant-pied)",pdj:"Gainer maison",dej:"Bowl batch (gamelle)",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Fiches synthèse de TOUS les EDC",copine:"Soir copine"},
- {d:"2026-07-11",lab:"Sam 11 juil",type:"off",seance:"REPOS — mobilité",pdj:"Skyr + flocons",dej:"Bowl batch",diner:"Repas prise de masse (Recettes)",courses:"Courses socle",etude:"Mémoire : finalisation + mise en forme",copine:""},
- {d:"2026-07-12",lab:"Dim 12 juil",type:"off",seance:"REPOS — marche",pdj:"Gainer maison",dej:"Bowl batch",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Mémoire : RENDU / impression",copine:""},
- {d:"2026-07-13",lab:"Lun 13 juil",type:"on",num:20,seance:"Séance 20 · PUSH (léger)",pdj:"Gainer maison",dej:"Bowl batch (gamelle)",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Révision générale : 1 cas par EDC élevé (1,2,5)",copine:""},
- {d:"2026-07-14",lab:"Mar 14 juil",type:"off",seance:"REPOS (férié)",pdj:"Skyr + flocons",dej:"Libre",diner:"MARDI SOIR : pas chez toi → pas de dîner",courses:"",etude:"Relecture fiches + points faibles",copine:""},
- {d:"2026-07-15",lab:"Mer 15 juil",type:"off",seance:"REPOS — marche",pdj:"Œufs + pain",dej:"Bowl batch",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Derniers cas EDC1/2/5",copine:""},
- {d:"2026-07-16",lab:"Jeu 16 juil",type:"on",num:21,seance:"Séance 21 · PULL (léger)",pdj:"Gainer maison",dej:"Bowl batch (gamelle)",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Fiches + révision ciblée",copine:""},
- {d:"2026-07-17",lab:"Ven 17 juil",type:"off",seance:"REPOS — marche",pdj:"Skyr + flocons",dej:"Bowl batch (gamelle)",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Relecture légère (pas de surchauffe)",copine:"Soir copine"},
- {d:"2026-07-18",lab:"Sam 18 juil",type:"off",seance:"REPOS",pdj:"Gainer maison",dej:"Bowl batch",diner:"Repas prise de masse (Recettes)",courses:"",etude:"Repos actif — relis tes fiches 30 min max",copine:""},
- {d:"2026-07-19",lab:"Dim 19 juil",type:"off",seance:"REPOS — dors tôt",pdj:"Œufs + pain",dej:"Bowl batch",diner:"Repas léger + dodo tôt (exams demain)",courses:"",etude:"Veille d'exams : zéro révision lourde, repos",copine:""},
- {d:"2026-07-20",lab:"Lun 20 juil",type:"exam",seance:"🎓 JOUR D'EXAMS — donne tout",pdj:"Petit-déj solide (œufs + avoine)",dej:"Selon planning des épreuves",diner:"Tu l'as mérité",courses:"",etude:"ÉPREUVES EDC — tu es prêt",copine:""},
+ {d:"2026-08-06",lab:"Jeu 6 août",type:"off",seance:"Retour de voyage — repos, déballage, lessive",pdj:"Libre",dej:"Libre (route du retour)",diner:"Simple sur le stock : omelette ou sardines-riz",courses:"Repère ce qui manque → GROS PLEIN samedi (liste : onglet 🛒 Courses)",etude:"Rien ce soir — installe-toi. Demain : Basic Fit, séance 1.",copine:"Vous rentrez du Sud ensemble — atterrissage en douceur",obj:"Valise défaite + lessive lancée + sac de salle PRÊT pour demain"},
+ {d:"2026-08-07",lab:"Ven 7 août",type:"on",num:1,seance:"Séance 1 · PUSH — REPRISE À 0 (charges −30/40 %, garde 2 reps en réserve)",pdj:"Œufs + pain (la whey arrive demain avec le gros plein)",dej:"Vite fait : sardines-riz préparé la veille, ou déj dehors (TR)",diner:"Poulet gingembre-ail + riz (si stock), sinon lentilles-riz épicé",courses:"Appoint si besoin : œufs, lait, pain (~5 €)",etude:"Mémoire : liste 6-8 contacts d'entretien + envoie les sollicitations ce soir",copine:"Soir copine",obj:"Séance 1 faite = la reprise est lancée. Peu importe les charges."},
+ {d:"2026-08-08",lab:"Sam 8 août",type:"on",num:2,seance:"Séance 2 · PULL (léger — reprise)",pdj:"Skyr + flocons + banane",dej:"BATCH : cuis 450 g poulet + 300 g riz → 3 boîtes (mange-en 1)",diner:"Pâtes bolo épicée (double la sauce → congèle 2)",courses:"🛒 GROS PLEIN DU MOIS (~55-60 €, TR d'abord) : socle + WHEY 1 kg — liste : onglet Courses",etude:"Mémoire : relis ton guide d'entretien + propose des créneaux",copine:""},
+ {d:"2026-08-09",lab:"Dim 9 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Gainer + whey",dej:"Bowl batch",diner:"Chili con carne express (double → congèle 2)",courses:"",etude:"Mémoire : grille d'analyse du ch.5 prête (thèmes + verbatims à repérer)",copine:"Sortie / balade"},
+ {d:"2026-08-10",lab:"Lun 10 août",type:"on",num:3,seance:"Séance 3 · LEGS (léger, pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poisson blanc épicé + patate douce",courses:"",etude:"Mémoire : relance les contacts muets + cale les RDV de la semaine",copine:""},
+ {d:"2026-08-11",lab:"Mar 11 août",type:"on",num:4,seance:"Séance 4 · PUSH (encore −20 %)",pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",diner:"Poulet poivron (yassa léger) + riz",courses:"",etude:"Entretien n°1 si calé — sinon 2 lectures + fiches (biblio normée)",copine:""},
+ {d:"2026-08-12",lab:"Mer 12 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Riz sauté œufs-légumes (anti-gaspi)",courses:"RÉAPPRO frais (~15 €, TR) : poulet 1 kg (batch demain), œufs x12, lait, bananes",etude:"Retranscris l'entretien fait — à chaud, 1 h max",copine:""},
+ {d:"2026-08-13",lab:"Jeu 13 août",type:"on",num:5,seance:"Séance 5 · PULL",pdj:"Gainer + whey",dej:"Bowl batch (gamelle) — cuis le nouveau BATCH ce soir",diner:"Curry de poulet coco + riz (+ BATCH en parallèle)",courses:"",etude:"Entretien n°2 + notes à chaud",copine:""},
+ {d:"2026-08-14",lab:"Ven 14 août",type:"on",num:6,seance:"Séance 6 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Chili (du congélo) — zéro cuisine",courses:"",etude:"Rien de lourd — pose tout, c'est le week-end du 15",copine:"Soir copine"},
+ {d:"2026-08-15",lab:"Sam 15 août",type:"off",seance:"REPOS (férié) — profite",pdj:"Skyr + flocons + banane",dej:"Libre — profite",diner:"Libre",courses:"",etude:"Repos total.",copine:"Férié ensemble ❤️"},
+ {d:"2026-08-16",lab:"Dim 16 août",type:"on",num:7,seance:"Séance 7 · PUSH",pdj:"Gainer + whey",dej:"BATCH : 450 g poulet + 300 g riz → 3 boîtes",diner:"Omelette épicée costaud",courses:"",etude:"Mémoire : retranscriptions à jour + relance les entretiens restants",copine:""},
+ {d:"2026-08-17",lab:"Lun 17 août",type:"on",num:8,seance:"Séance 8 · PULL",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poulet gingembre-ail + riz",courses:"",etude:"Entretien n°3 + notes à chaud",copine:""},
+ {d:"2026-08-18",lab:"Mar 18 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Sardines/maquereau express + riz",courses:"",etude:"Entretien n°4 + notes à chaud",copine:""},
+ {d:"2026-08-19",lab:"Mer 19 août",type:"on",num:9,seance:"Séance 9 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Wraps poulet express",courses:"RÉAPPRO frais (~15 €, TR) : poulet 1 kg, œufs x12, lait, légumes surgelés",etude:"Ch.5 : commence la rédaction (résultats des entretiens 1-4)",copine:""},
+ {d:"2026-08-20",lab:"Jeu 20 août",type:"on",num:10,seance:"Séance 10 · PUSH",pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle) — BATCH ce soir",diner:"Curry coco (reste) ou lentilles-riz épicé",courses:"",etude:"Entretien n°5 + notes à chaud",copine:""},
+ {d:"2026-08-21",lab:"Ven 21 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Chili (congélo)",courses:"",etude:"Ch.5 : suite rédaction (30-45 min, pas plus)",copine:"Soir copine"},
+ {d:"2026-08-22",lab:"Sam 22 août",type:"on",num:11,seance:"Séance 11 · PULL",pdj:"Gainer + whey",dej:"BATCH → 3 boîtes",diner:"Poisson blanc épicé + patate douce",courses:"Socle léger (~10-12 €, TR) : riz/pâtes si entamés, bananes, légumes",etude:"Entretien n°6 — objectif : tous les entretiens FAITS cette semaine",copine:""},
+ {d:"2026-08-23",lab:"Dim 23 août",type:"on",num:12,seance:"Séance 12 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch",diner:"Riz sauté œufs-légumes",courses:"",etude:"Ch.5 : analyse croisée (points communs / divergences entre répondants)",copine:"Sortie / brunch"},
+ {d:"2026-08-24",lab:"Lun 24 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",diner:"Omelette épicée costaud",courses:"",etude:"Ch.6 : discussion — confronte les résultats à tes hypothèses",copine:""},
+ {d:"2026-08-25",lab:"Mar 25 août",type:"on",num:13,seance:"Séance 13 · PUSH",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Pâtes bolo (congélo)",courses:"",etude:"Ch.6 : préconisations concrètes (dont le cas Astridsen)",copine:""},
+ {d:"2026-08-26",lab:"Mer 26 août",type:"on",num:14,seance:"Séance 14 · PULL",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poulet poivron (yassa léger) + riz",courses:"RÉAPPRO frais (~15 €, TR) : poulet, œufs x12, lait, bananes",etude:"Conclusion + intro relue (les deux doivent se répondre)",copine:""},
+ {d:"2026-08-27",lab:"Jeu 27 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Sardines/maquereau express + riz",courses:"",etude:"Biblio aux normes (NOM Prénom, année) + annexes (guide + retranscriptions)",copine:""},
+ {d:"2026-08-28",lab:"Ven 28 août",type:"on",num:15,seance:"Séance 15 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle) — BATCH ce soir",diner:"Curry de poulet coco + riz",courses:"",etude:"Relecture complète 1/2 : le FOND (fil rouge, transitions, hypothèses)",copine:"Soir copine"},
+ {d:"2026-08-29",lab:"Sam 29 août",type:"on",num:16,seance:"Séance 16 · PUSH",pdj:"Gainer + whey",dej:"BATCH → 3 boîtes",diner:"Chili (congélo)",courses:"Socle léger (~12 €, TR)",etude:"Relecture 2/2 : la FORME (TNR 12, interligne 1,5, marges, pagination, sommaire)",copine:""},
+ {d:"2026-08-30",lab:"Dim 30 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Skyr + flocons + banane",dej:"Bowl batch",diner:"Libre — tu l'as mérité",courses:"",etude:"Corrections finales + génère le PDF définitif",copine:"Sortie / balade",obj:"PDF final du mémoire PRÊT ce soir"},
+ {d:"2026-08-31",lab:"Lun 31 août",type:"on",num:17,seance:"Séance 17 · PULL",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poulet gingembre-ail + riz",courses:"",etude:"🚨 DÉPÔT sur ESG Learn AUJOURD'HUI — n'attends pas la deadline de demain",copine:"",obj:"Mémoire DÉPOSÉ ce soir = zéro stress demain"},
+ {d:"2026-09-01",lab:"Mar 1 sept",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Riz sauté œufs-légumes",courses:"",etude:"Deadline officielle 23h59 — vérifie l'accusé de dépôt ESG Learn",copine:"",obj:"Dépôt confirmé (accusé reçu)"},
+ {d:"2026-09-02",lab:"Mer 2 sept",type:"on",num:18,seance:"Séance 18 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poisson blanc épicé + patate douce",courses:"",etude:"Soutenance (14-18/09) : plan du PPT — 20 min de présentation",copine:""},
+ {d:"2026-09-03",lab:"Jeu 3 sept",type:"on",num:19,seance:"Séance 19 · PUSH",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Pâtes bolo épicée (double → congèle)",courses:"",etude:"Soutenance : slides — première passe",copine:""},
+ {d:"2026-09-04",lab:"Ven 4 sept",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",diner:"Omelette épicée costaud",courses:"",etude:"Soutenance : slides finis + notes orales",copine:"Soir copine"},
+ {d:"2026-09-05",lab:"Sam 5 sept",type:"on",num:20,seance:"Séance 20 · PULL",pdj:"Gainer + whey",dej:"BATCH → 3 boîtes",diner:"Curry de poulet coco + riz",courses:"Frais (~15 €, TR)",etude:"Répétition à voix haute ×1, chrono 20 min",copine:""},
+ {d:"2026-09-06",lab:"Dim 6 sept",type:"on",num:21,seance:"Séance 21 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch",diner:"Libre",courses:"",etude:"Repos ou répétition légère — tu es prêt",copine:"Sortie"},
 ];
 const SEANCE_TOTAL=DAYS.filter(d=>d.num).length;
 const SEANCE_MIN=Math.ceil(SEANCE_TOTAL*0.85);
 const RECIPES=[
- {nm:"Gainer maison (remplace le whey)",meta:"46 g P · 765 kcal · ~1,30 €",
-  b:"500 ml lait · 60 g avoine · 150 g skyr · 1 banane · 20 g beurre de cacahuète.\n1. Tout au blender (ou shaker + banane écrasée).\n2. Mixe 30 s.\n3. Le matin et/ou dans l'heure après la séance."},
+ {nm:"Shake whey express (post-séance)",meta:"27 g P · 320 kcal · ~0,90 €",
+  b:"30 g whey (1 dose) · 400 ml lait (ou eau).\n1. Shaker, 30 secondes.\n2. Dans les 2 h après la séance — ou au pdj des jours pressés."},
+ {nm:"Gainer maison + whey (pdj des jours ON)",meta:"50 g P · 800 kcal · ~1,60 €",
+  b:"400 ml lait · 60 g avoine · 30 g whey · 1 banane · 15 g beurre de cacahuète.\n1. Tout au blender (ou shaker + banane écrasée), 30 s.\n2. Le matin des jours de salle. (Plus de whey ? Remplace par 150 g de skyr.)"},
  {nm:"Bowl poulet-riz (batch — le déj)",meta:"42 g P · 700 kcal · ~1,35 €",
   b:"150 g poulet cuit (du batch) · 100 g riz · légumes.\n1. Jour des courses : cuis 450 g poulet + 300 g riz d'un coup.\n2. Répartis en 3 boîtes.\n3. Réchauffe + filet d'huile + épices."},
  {nm:"Omelette épicée costaud",meta:"35 g P · 620 kcal · ~1,10 €",
@@ -298,25 +231,41 @@ const RECIPES=[
   b:"150 g poulet · 100 g riz · gingembre · ail · oignon · paprika.\n1. Riz.\n2. Gingembre+ail+oignon 2 min.\n3. Poulet+paprika 7-8 min."},
  {nm:"Sardines/maquereau express + riz (éco)",meta:"30 g P · 600 kcal · ~1,15 €",
   b:"1 boîte sardines/maquereau · 100 g riz · légumes surgelés · piment · citron.\n1. Riz + légumes.\n2. Émiette la boîte dessus, citron + piment. Zéro cuisson."},
+ {nm:"🆕 Chili con carne express (double → congèle)",meta:"38 g P · 720 kcal · ~1,40 €",
+  b:"125 g bœuf 5% · 1 boîte haricots rouges · 1/2 boîte tomates concassées · oignon · ail · cumin+paprika+piment · 80 g riz.\n1. Oignon+ail+bœuf 6 min.\n2. Tomates+haricots+épices 10 min à feu doux.\n3. Sur riz. Fais ×2, congèle 2 portions = tes soirs de flemme."},
+ {nm:"🆕 Curry de poulet coco + riz",meta:"44 g P · 750 kcal · ~1,70 €",
+  b:"150 g poulet · 100 ml lait de coco · oignon · ail · curry + gingembre · 100 g riz.\n1. Oignon+ail 2 min.\n2. Poulet+curry 6 min.\n3. Lait de coco 5 min à feu doux. Change complètement du yassa."},
+ {nm:"🆕 Riz sauté œufs-légumes (anti-gaspi)",meta:"26 g P · 640 kcal · ~1,00 €",
+  b:"Reste de riz · 3 œufs · légumes surgelés · sauce soja · ail.\n1. Légumes à la poêle 4 min.\n2. Riz + soja 3 min à feu vif.\n3. Œufs battus, remue 2 min. Le riz de la veille est PARFAIT pour ça."},
+ {nm:"🆕 Wraps poulet express",meta:"40 g P · 680 kcal · ~1,50 €",
+  b:"2 tortillas · 150 g poulet (du batch) · crudités · sauce = skyr + citron + ail.\n1. Réchauffe le poulet.\n2. Tartine la sauce, garnis, roule.\n3. Quasi zéro vaisselle."},
 ];
-const SHOP=[
- ["Protéines",["Œufs x30 ~5,50€","Lentilles/pois chiches ~1,50€","Poulet 1kg ~6€","Bœuf 5% 500g ~4€","Sardines/maquereau x3 ~2€","Poisson blanc colin ~4€","Skyr 1kg ~3€","Lait 2L ~2€"]],
- ["Glucides",["Riz 1kg ~1,50€","Pâtes 1kg ~1,20€","Avoine 1kg ~1,50€","Pain complet ~1,20€","Patate douce/pdt ~2,50€","Tortillas ~1,50€"]],
- ["Légumes/Fruits",["Légumes surgelés ~2€","Brocoli/poivrons ~3€","Oignons+ail+gingembre ~3€","Citrons x4 ~1,50€","Bananes 1kg ~1,50€","Fruits saison ~2€"]],
- ["Épices/Extras",["Paprika/piment/curry/cumin ~3€","Concentré+bouillon ~1,50€","Huile ~5€","Beurre cacahuète ~2,50€","Eau gazeuse ~1,50€"]],
+const GROS_PLEIN=[
+ "💪 WHEY 1 kg nature/choco ~17-25 € (Lidl la moins chère, sinon Action/Decathlon)",
+ "Avoine 2×1 kg ~3 €","Riz 2 kg ~3 €","Pâtes 2×1 kg ~2,40 €",
+ "Lentilles + pois chiches ~3 €","Haricots rouges ×2 ~1,60 €","Tomates concassées ×2 ~1,40 €",
+ "Sardines/maquereau ×4 ~4 €","Beurre de cacahuète ~2,50 €","Huile ~5 €",
+ "Concentré de tomate + bouillon ~1,50 €","Lait de coco ~1,20 €","Tortillas ×8 ~1,50 €",
+ "Épices manquantes (cumin/curry/paprika/piment) ~3 €","Lait UHT 6×1 L ~6 €",
 ];
-/* Aucune donnée financière perso ici (code public). Tes chiffres = saisis sur ton tél (localStorage). */
+const FRAIS_SEM=[
+ "Poulet 1 kg (le batch) ~6 €","Œufs ×30 ~5,50 €","Bœuf 5 % 500 g ~4 €",
+ "Skyr 1 kg ~3 €","Lait 2 L ~2 € (si le pack de 6 est fini)","Pain complet ~1,20 €",
+ "Bananes 1 kg ~1,50 €","Légumes surgelés ~2 €","Poisson blanc surgelé ~4 € (1 sem sur 2)",
+ "Patates douces ~2,50 € (1 sem sur 2)",
+];
+/* Enveloppes d'août (recalées 06/08 à la demande de Steve). Les 150 € de TR = enveloppe courses à part. */
 const FIN={
- budgets:[["Courses",260],["Restaurants",80],["Sorties / loisirs",50],["Vêtements",40],
-   ["Coiffure",20],["Lavage",25],["Santé",35],["Jeux",25],["Soin / parfum",15]],
- leviers:[["Resto","cuisiner > commander"],["Abos IA","garder l'essentiel"],["Jeux in-app","couper"],
-   ["Lavage","grouper les machines"],["Vinted","plutôt que neuf"]],
+ budgets:[["Courses (cash, en + des TR)",40],["Whey (1× le mois)",25],["Sorties / loisirs",60],
+   ["Coiffure",25],["Lavage",20],["Santé / soin",20],["Imprévus",30]],
+ leviers:[["Courses","TR d'abord, cash ensuite"],["Resto","cuisiner > commander"],["Abos IA","garder l'essentiel"],
+   ["Jeux in-app","couper"],["Lavage","grouper les machines"],["Vinted","plutôt que neuf"]],
 };
 const OBJ=[
- ["Énergisantes","~3/jour","0 (arrêt sec)"],["Salle","irrégulier","≥11/13 ce mois"],
- ["Poids","~65 kg","+4-6 kg propres en 6 mois"],["Cuisine","commandes","cuisiner 6j/7, ≤1 livraison/sem"],
- ["Style","3 pièces","base P1 ~100-130€ Vinted"],["Couple","à son initiative","1 attention/sem + anniv 15/12 préparé"],
- ["Lecture / apprendre","irrégulier","20 min/jour + livres & compétences"],["Études","0 fait","tout couvert avant exams (20 juil)"],
+ ["Énergisantes","~3/jour en juin","0 — la série continue"],["Salle","arrêt depuis mi-juillet","Basic Fit dès le 7/08 : repartir à 0 → ≥ 14 séances en août"],
+ ["Poids","~65 kg","+4-6 kg propres en 6 mois"],["Cuisine","batch rodé","batch + 1 plat nouveau/sem, ≤ 1 livraison/sem"],
+ ["Mémoire","entretiens à mener","déposé le 31/08 (deadline 01/09 23h59)"],["Couple","voyage dans le Sud fait ✈️","1 attention/sem + anniv 15/12 préparé"],
+ ["Style","base OK","souliers cuir + SPF50 dès la paie"],["Lecture / apprendre","irrégulier","20 min/jour"],
 ];
 /* ---------------- ÉTAT (sauvé sur le tél) ---------------- */
 const LS="steve_v1";
@@ -374,7 +323,7 @@ function dayReminders(day){
   let R=[];
   const _on=(day.type==='on'||day.type==='done');
   R.push([_on?"06h30":"07h15","⏰ Réveil + grand verre d'eau"]);
-  if(_on)R.push(["06h47","🏋️ Salle (3 min à pied) — séance ~50 min (sac prêt la veille)"]);
+  if(_on)R.push(["06h45","🏋️ Basic Fit — séance ~50 min (sac prêt la veille)"]);
   else R.push(["aprèm","🚶 Marche 20-30 min (récup)"]);
   R.push(["matin","👔 Tenue : "+outfitFor(day)]);
   R.push(["lever·midi·aprèm·soir","💧 Eau : 1 verre à chaque ancre (cible 2,5 L)"]);
@@ -498,7 +447,7 @@ function renderSemaine(){
     if(s){ if(s.seance&&d.type!=='done')fait++; if(s.energ==='N')energN++; if(s.jeux==='O')jeux++;
       if(s.scroll==='O')scroll++; if(s.eau>=8)eauOK++; lect+=s.lecture||0; }
   });
-  let h=`<div class="card"><h2>Tableau de bord — juin</h2><div class="kpi">
+  let h=`<div class="card"><h2>Tableau de bord — reprise <span class="tag">6 août → 6 sept</span></h2><div class="kpi">
     <div class="box"><div class="n">${fait}/${SEANCE_TOTAL}</div><div class="t">Séances</div></div>
     <div class="box alt"><div class="n">${energN}</div><div class="t">Jours sans énerg.</div></div>
     <div class="box alt"><div class="n">${eauOK}</div><div class="t">Jours 2,5 L</div></div>
@@ -562,25 +511,50 @@ function renderSemaine(){
 function renderBouffe(){
   const c=document.getElementById("bouffe");c.innerHTML="";
   const i0=DAYS.findIndex(d=>d.d===todayISO());const wk=DAYS.slice(i0<0?0:i0,(i0<0?0:i0)+7);
-  const KW=['poulet','bœuf','œufs','riz','pâtes','lentilles','poisson','sardines','skyr','lait','pain','banane','patate douce','légumes','poivron','oignon','tomate','avoine','beurre de cacahuète'];
+  const KW=['poulet','bœuf','œufs','riz','pâtes','lentilles','poisson','sardines','skyr','lait','pain','banane','patate douce','légumes','poivron','oignon','tomate','avoine','beurre de cacahuète','whey','haricots','lait de coco','tortillas','curry','wrap'];
   const need=KW.filter(k=>wk.some(d=>((d.dej||'')+(d.diner||'')+(d.pdj||'')).toLowerCase().includes(k)));
-  let h=`<div class="card"><h2>🛒 Courses de la semaine <span class="tag">auto</span></h2><div class="note">D'après tes repas des 7 prochains jours :</div><div class="pills" style="flex-wrap:wrap;gap:6px;margin-top:8px">${need.map(k=>'<span class="pill">'+k+'</span>').join('')}</div><div class="note" style="margin-top:8px">Prix & quantités détaillés : onglet Courses Lidl (Excel).</div></div>`;
-  h+=`<div class="card"><h2>Recettes <span class="tag">quantités + coût</span></h2><div class="note" style="margin-bottom:8px">~2700-2800 kcal/j · ~125 g protéines · sans whey · ~45-50 €/sem.</div>`;
+  let h=`<div class="card"><h2>🛒 Courses de la semaine <span class="tag">auto</span></h2><div class="note">D'après tes repas des 7 prochains jours :</div><div class="pills" style="flex-wrap:wrap;gap:6px;margin-top:8px">${need.map(k=>'<span class="pill">'+k+'</span>').join('')}</div><div class="note" style="margin-top:8px">Listes complètes (gros plein, frais, whey) : onglet 🛒 Courses.</div></div>`;
+  h+=`<div class="card"><h2>Recettes <span class="tag">quantités + coût</span></h2><div class="note" style="margin-bottom:8px">~2800-3000 kcal/j · ~140-150 g protéines · WHEY INCLUSE (tu t'y mets) · ~45-50 €/sem + whey ~25 €/mois.</div>`;
   RECIPES.forEach((r,i)=>{h+=`<div class="acc" data-acc><div class="h"><span class="nm">${r.nm}</span><span class="meta">${r.meta}</span></div><div class="b">${r.b}</div></div>`;});
   h+=`</div>`;
-  // liste de courses
-  h+=`<div class="card"><h2>Liste de courses <span class="tag">~50 €/sem</span></h2>`;
-  SHOP.forEach((cat,ci)=>{
-    h+=`<div class="catname">${cat[0]}</div>`;
-    cat[1].forEach((it,ii)=>{const id="s"+ci+"_"+ii;const on=S.shop[id]?'on':'';
-      h+=`<div class="chk ${on}" data-shop="${id}"><span class="bx">${S.shop[id]?'✓':''}</span><span class="nm">${it}</span></div>`;});
-  });
-  h+=`<div class="note" style="margin-top:10px">Paie en tickets resto en priorité. Cases sauvegardées sur ton tél.</div></div>`;
+  // les listes de courses vivent dans l'onglet 🛒 Courses
+  h+=`<div class="card"><h2>🛒 Les listes de courses</h2><div class="note">Gros plein du mois, frais de la semaine, guide whey et rotation des plats : tout est dans l'onglet <b>Courses</b> (à côté).</div></div>`;
   c.innerHTML=h;
   c.querySelectorAll("[data-acc]").forEach(a=>a.querySelector(".h").addEventListener("click",()=>a.classList.toggle("open")));
   c.querySelectorAll("[data-shop]").forEach(x=>x.addEventListener("click",()=>{const id=x.dataset.shop;S.shop[id]=!S.shop[id];save();renderBouffe();}));
 }
 
+function renderCourses(){
+  const c=document.getElementById("courses");
+  let h=`<div class="hint">Ta section courses : quoi acheter pour la masse, quoi cuisiner, comment payer. Règle du mois : <b>les courses passent en TICKETS RESTO d'abord</b> (150 € ≈ ta bouffe du mois) — le cash sert au reste.</div>`;
+  h+=`<div class="card sec-today"><h2>💶 Le budget bouffe d'août</h2>
+    <div class="kpi"><div class="box"><div class="n">150 €</div><div class="t">Tickets resto</div></div>
+    <div class="box alt"><div class="n">~40 €</div><div class="t">Cash d'appoint</div></div>
+    <div class="box alt"><div class="n">~25 €</div><div class="t">Whey (1×)</div></div></div>
+    <div class="note" style="margin-top:8px">Gros plein ~55-60 € au départ, puis ~15 €/sem de frais. Plafond TR : 25 €/jour → si le plein dépasse, passe en caisse sur 2 jours ou complète en cash.</div></div>`;
+  h+=`<div class="card sec-on"><h2>🧾 Le gros plein du mois <span class="tag">1× — sam 8 août</span></h2>
+    <div class="note" style="margin-bottom:6px">Le socle sec qui tient tout le mois (~55-60 €). Coche en magasin :</div>`;
+  GROS_PLEIN.forEach((it,i)=>{const id="gp"+i;const on=S.shop[id]?'on':'';h+=`<div class="chk ${on}" data-shop="${id}"><span class="bx">${S.shop[id]?'✓':''}</span><span class="nm">${it}</span></div>`;});
+  h+=`<div class="note" style="margin-top:8px">Tout existe en marque distributeur — c'est le même riz, moitié prix.</div></div>`;
+  h+=`<div class="card"><h2>🥶 Le frais de la semaine <span class="tag">~15-18 €</span></h2>
+    <div class="note" style="margin-bottom:6px">À reprendre quand c'est fini (mercredi ou samedi) — pas tout à chaque fois :</div>`;
+  FRAIS_SEM.forEach((it,i)=>{const id="fr"+i;const on=S.shop[id]?'on':'';h+=`<div class="chk ${on}" data-shop="${id}"><span class="bx">${S.shop[id]?'✓':''}</span><span class="nm">${it}</span></div>`;});
+  h+=`<div class="note" style="margin-top:8px">Re-tape une ligne pour la décocher — la liste se réutilise chaque semaine.</div></div>`;
+  h+=`<div class="card sec-on"><h2>💪 La whey — tu t'y mets</h2>
+    <div class="meal"><span class="k">Laquelle</span><span class="v">Whey CONCENTRÉE classique, nature ou chocolat, 1 kg. Pas besoin d'isolate ni de marque chère.</span></div>
+    <div class="meal"><span class="k">Où</span><span class="v">Lidl (~13-17 €/kg, la moins chère), Action, Decathlon (~20 €). En ligne seulement si vraie promo.</span></div>
+    <div class="meal"><span class="k">Quand</span><span class="v">30 g (1 dose) dans les 2 h après la séance les jours ON + 30 g dans le gainer du matin. 1 kg ≈ 33 doses ≈ ton mois.</span></div>
+    <div class="meal"><span class="k">Le rôle</span><span class="v">Elle COMPLÈTE tes repas (elle t'amène à ~140-150 g de protéines/j pour ~65-70 kg), elle ne remplace JAMAIS un repas.</span></div></div>`;
+  h+=`<div class="card"><h2>🍳 Quoi cuisiner — la rotation anti-lassitude</h2>
+    <div class="meal"><span class="k">Midi</span><span class="v">Toujours pareil, zéro réflexion : bowl batch (poulet + riz + légumes). Un batch de 3 boîtes tous les 3 jours.</span></div>
+    <div class="meal"><span class="k">Soir</span><span class="v">Rotation sur ~10 plats (recettes : onglet Bouffe). Base : bolo, yassa, gingembre-ail, omelette, poisson-patate douce, sardines express, lentilles-riz.</span></div>
+    <div class="meal"><span class="k">Varier</span><span class="v">Chaque semaine 1 « plat nouveau » : chili con carne, curry coco, riz sauté, wraps poulet. Ils sont déjà placés dans ton planning.</span></div>
+    <div class="meal"><span class="k">Flemme</span><span class="v">Double les sauces (bolo, chili) → 2 portions au congélo = tes soirs de flemme, prêt en 12 min AVANT d'ouvrir Uber Eats.</span></div></div>`;
+  h+=`<div class="card"><h2>🧠 Réflexes en magasin</h2>
+    <div class="note">• TR d'abord, cash ensuite.<br>• Marque distributeur par défaut.<br>• Surgelés = zéro gâchis (légumes, poisson).<br>• Protéines les moins chères : œufs, lentilles, sardines — la whey vient en renfort.<br>• Jamais les courses le ventre vide.<br>• Un seul « plaisir » par plein — et c'est très bien comme ça.</div></div>`;
+  c.innerHTML=h;
+  c.querySelectorAll("[data-shop]").forEach(x=>x.addEventListener("click",()=>{const id=x.dataset.shop;S.shop[id]=!S.shop[id];save();renderCourses();}));
+}
 function renderEuro(){
   const c=document.getElementById("euro");c.innerHTML="";
   const f=S.fin;
@@ -593,6 +567,15 @@ function renderEuro(){
     <div class="spend"><span class="c">Découvert autorisé (€)</span><input type="number" inputmode="decimal" data-fin="decouvert" value="${f.decouvert??100}"></div>
     <div class="spend"><span class="c">Jours avant la paie</span><input type="number" inputmode="numeric" data-fin="joursPaie" value="${f.joursPaie??''}"></div>
     <div class="note" style="margin-top:8px">Ces chiffres restent sur ton téléphone — ils ne partent jamais en ligne.</div></div>`;
+  // 1bis. Budget d'août (chiffres donnés par Steve le 06/08)
+  h+=`<div class="card sec-today"><h2>💶 Budget août <span class="tag">au 06/08</span></h2>
+    <div class="kpi">
+      <div class="box"><div class="n">292 €</div><div class="t">Sur le compte</div></div>
+      <div class="box alt"><div class="n">150 €</div><div class="t">Tickets resto</div></div>
+      <div class="box alt"><div class="n">+10 €</div><div class="t">Rembt à venir</div></div>
+    </div>
+    <div class="note" style="margin-top:9px"><b>~452 € pour finir le mois.</b> La règle : les courses passent en <b>TR d'abord</b> (150 € ≈ ta bouffe du mois) → le cash (~302 €) couvre le reste : whey ~25 € (1 fois), coiffure, lavage, sorties. Ça laisse ~<b>10-11 €/jour</b> de cash — large si zéro livraison.</div>
+    <div class="note" style="margin-top:6px">Enveloppes détaillées ↓ « Mes dépenses du mois ». Listes de courses → onglet 🛒 Courses.</div></div>`;
   // 2. Carte cash calculée (si solde rempli)
   if(f.solde!=null && f.solde!==''){
     const dispo=(+f.solde)-(+f.coiffure||0), dec=(f.decouvert==null||f.decouvert==='')?100:(+f.decouvert||0), marge=dispo+dec, jp=(+f.joursPaie||14), parJour=marge/jp;
@@ -612,13 +595,15 @@ function renderEuro(){
   } else {
     h+=`<div class="hint">Entre ton solde ci-dessus → je calcule ta marge jusqu'à la paie et ton budget/jour.</div>`;
   }
-  // 3. Réappros (générique, pas de données perso)
-  h+=`<div class="card"><h2>Réappros jusqu'à la paie <span class="tag">socle déjà payé</span></h2>
-    <div class="row"><div class="lab">Mer 17/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes + gingembre/patate douce</div><b>~10 €</b></div>
-    <div class="row"><div class="lab">Sam 20/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes</div><b>~8 €</b></div>
-    <div class="row"><div class="lab">Mar 23/06</div><div class="lab" style="flex:2">poulet 1kg (batch) + œufs, lait, pain</div><b>~14 €</b></div>
-    <div class="row"><div class="lab">Ven 26/06</div><div class="lab" style="flex:2">œufs, lait, pain, bananes, 1 légume</div><b>~9 €</b></div>
-    <div class="note" style="margin-top:8px"><b>~41 €</b> de frais sur 2 semaines (le gros est déjà acheté). On étire le poulet (lunchs), protéines tenues avec œufs + lentilles + skyr.</div></div>`;
+  // 3. Réappros d'août (payés en TR)
+  h+=`<div class="card"><h2>Réappros d'août <span class="tag">en TR</span></h2>
+    <div class="row"><div class="lab">Sam 08/08</div><div class="lab" style="flex:2">🛒 GROS PLEIN (socle du mois + whey 1 kg)</div><b>~55-60 €</b></div>
+    <div class="row"><div class="lab">Mer 12/08</div><div class="lab" style="flex:2">poulet 1 kg (batch), œufs x12, lait, bananes</div><b>~15 €</b></div>
+    <div class="row"><div class="lab">Mer 19/08</div><div class="lab" style="flex:2">poulet, œufs x12, lait, légumes surgelés</div><b>~15 €</b></div>
+    <div class="row"><div class="lab">Sam 22/08</div><div class="lab" style="flex:2">socle léger : riz/pâtes si finis, bananes</div><b>~10-12 €</b></div>
+    <div class="row"><div class="lab">Mer 26/08</div><div class="lab" style="flex:2">poulet, œufs x12, lait, bananes</div><b>~15 €</b></div>
+    <div class="row"><div class="lab">Sam 29/08</div><div class="lab" style="flex:2">socle léger</div><b>~12 €</b></div>
+    <div class="note" style="margin-top:8px"><b>~125-135 €</b> au total → ça tient dans tes <b>150 € de TR</b>. La whey (~25 €) part du cash si le magasin ne la prend pas en TR.</div></div>`;
   // 4. Suivi dépenses (cibles génériques)
   h+=`<div class="card"><h2>Mes dépenses du mois <span class="tag">${totSpent.toFixed(0)} / ${totBud} €</span></h2>`;
   FIN.budgets.forEach(([cat,bud])=>{
@@ -651,7 +636,7 @@ function renderObj(){
     <div class="note">Mets tes séances, étude, tenues et rappels dans ton agenda (avec alarmes).</div>
     <a href="steve.ics" download="steve.ics" style="display:block;text-align:center;margin-top:10px;background:#14213D;color:#fff;text-decoration:none;padding:12px 16px;border-radius:10px;font-weight:700;font-size:14px">📥 Ajouter à mon calendrier</a>
     <div class="note" style="margin-top:10px">📱 Sur le tél : ça télécharge le fichier → ouvre-le → « Ouvrir avec Google Agenda ».<br>🔄 Pour qu'il se mette à jour tout seul (sur ordi) : <span id="copyCal" style="color:var(--or);text-decoration:underline;cursor:pointer">copier le lien d'abonnement</span>, puis calendar.google.com → Autres agendas → À partir de l'URL.</div></div>`;
-  const RON=[["06h30","Réveil + grand verre d'eau"],["06h35","Tenue de sport (préparée la veille)"],["06h47","Salle (3 min à pied) — échauffement + séance ~50 min"],["07h40","Retour à la maison"],["07h45","Douche + soin visage (nettoyant → hydratant → SPF)"],["08h05","Petit-déj / gainer maison"],["08h25","Cheveux + barbe + habillage + parfum"],["08h45","Départ travail (~45 min)"],["09h30","Arrivée bureau ✅"]];
+  const RON=[["06h30","Réveil + grand verre d'eau"],["06h35","Tenue de sport (préparée la veille)"],["06h45","Basic Fit — échauffement + séance ~50 min"],["07h40","Retour à la maison"],["07h45","Douche + soin visage (nettoyant → hydratant → SPF)"],["08h05","Petit-déj : gainer + whey"],["08h25","Cheveux + barbe + habillage + parfum"],["08h45","Départ travail (~45 min)"],["09h30","Arrivée bureau ✅"]];
   const ROFF=[["07h15","Réveil + grand verre d'eau"],["07h20","Petit-déj"],["07h40","Douche + soin + habillage"],["08h05","Marche 20-30 min (récup active, optionnel)"],["08h45","Départ travail (~45 min)"],["09h30","Arrivée bureau ✅"]];
   h+=`<div class="card sec-on"><h2>⏰ Routine — jour de SALLE</h2>${RON.map(x=>`<div class="meal"><span class="k">${x[0]}</span><span class="v">${x[1]}</span></div>`).join('')}<div class="note" style="margin-top:6px">Salle le matin = elle ne saute pas (faite avant que la journée commence). Sac + tenue préparés la veille.</div></div>`;
   h+=`<div class="card sec-off"><h2>⏰ Routine — jour OFF / repos</h2>${ROFF.map(x=>`<div class="meal"><span class="k">${x[0]}</span><span class="v">${x[1]}</span></div>`).join('')}</div>`;
@@ -670,7 +655,7 @@ function renderObj(){
      <div class="note" style="margin-top:8px">Dès septembre : note ses envies + 1 idée cadeau + 1 sortie/voyage. Oct-nov : réserve tôt. 15/12 : exécution, zéro impro.</div></div>`;
   })();
   h+=`<div class="card sec-today"><h2>Le rappel qui compte</h2><div class="note">
-   Aucun fichier ne fait les séances à ta place. Le contrat du jour est minuscule : 1 séance (jours ON) + cocher 4 cases ce soir. Études : 0 fait depuis le début → le bloc 19h30-21h ne se saute plus. Exams : semaine du 20 juillet.</div></div>`;
+   Reprise = régularité avant intensité : la séance du matin ne se négocie pas, sac prêt la veille. Mémoire : les ENTRETIENS RÉELS d'abord, la rédaction suit — dépôt le 31/08 (deadline 01/09 23h59). Budget serré : TR pour les courses, cash pour le reste, zéro livraison.</div></div>`;
   (function(){const notes=DAYS.filter(d=>S.track[d.d]&&S.track[d.d].note&&S.track[d.d].note.trim());
    h+=`<div class="card"><h2>📓 Mon journal <span class="tag">${notes.length}</span></h2>`;
    if(notes.length){notes.slice(-12).reverse().forEach(d=>{h+=`<div class="meal"><span class="k" style="width:auto;min-width:78px">${d.lab.split(' ').slice(0,2).join(' ')}</span><span class="v" style="display:block">${S.track[d.d].note}</span></div>`;});}
@@ -748,8 +733,10 @@ const PROG=[
 ];
 function renderSport(){
   const c=document.getElementById("sport");
-  let h=`<div class="card sec-on"><h2>Mon sport <span class="tag">prise de masse</span></h2>
-    <div class="note">Rythme : 2 ON / 1 OFF, jamais 2 OFF d'affilée. Objectif juin : ≥ 11/13 séances. Gêne avant-pied → LEGS sans charge sur les orteils. Touche un titre pour voir le détail.</div></div>`;
+  let h=`<div class="card sec-on"><h2>Basic Fit — reprise à 0 <span class="tag">séance 1 : ven 7 août</span></h2>
+    <div class="note">Compteur remis à <b>ZÉRO</b> — aucune séance d'avant ne compte, et c'est très bien comme ça. Rythme : 2 ON / 1 OFF, jamais 2 OFF d'affilée. Objectif : <b>≥ 14 séances en août</b> (le plan va jusqu'au 6 sept = 21 séances). Gêne avant-pied → LEGS toujours sans charge sur les orteils. Touche un titre pour le détail.</div></div>`;
+  h+=`<div class="card sec-today"><h2>⚠️ Les règles de la reprise</h2>
+    <div class="note">• Semaines 1-2 : <b>charges −30 à −40 %</b> vs juin, garde 2 reps en réserve — les courbatures arriveront bien assez vite.<br>• Semaine 3 : remonte progressivement, puis double progression normale.<br>• Règle des 5 min : le droit d'arrêter après 5 min — personne ne repart jamais.<br>• Basic Fit : entrée par QR code dans leur app, évite 18h-20h si tu peux.<br>• Shake whey dans les 2 h après chaque séance.</div></div>`;
   PROG.forEach(p=>{h+=`<div class="acc" data-acc><div class="h"><span class="nm">${p.t}</span><span class="meta">›</span></div><div class="b">${p.x}</div></div>`;});
   h+=`<div class="card"><h2>⏱️ Minuteur de repos</h2>
     <div style="font-size:40px;text-align:center;font-weight:800;color:var(--bleu)" id="restTime">${restS>0?restS+'s':'—'}</div>
@@ -783,13 +770,13 @@ function renderApprendre(){
   c.querySelectorAll('[data-tg]').forEach(el=>el.addEventListener('click',e=>{if(e.target.dataset.del!==undefined)return;const p=el.dataset.tg.split(':'),k=p[0],id=p[1];const it=S[k].find(x=>x.id===id);if(it){it.done=!it.done;save();renderApprendre();}}));
   c.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const p=b.dataset.del.split(':'),k=p[0],id=p[1];S[k]=S[k].filter(x=>x.id!==id);save();renderApprendre();}));
 }
-function renderAll(){renderJour();renderSemaine();renderSport();renderBouffe();renderEuro();renderStyle();renderApprendre();renderObj();}
+function renderAll(){renderJour();renderSemaine();renderSport();renderBouffe();renderCourses();renderEuro();renderStyle();renderApprendre();renderObj();}
 // nav
 document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("act"));
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("act"));
   b.classList.add("act");document.getElementById("t-"+b.dataset.tab).classList.add("act");
-  const R={jour:renderJour,semaine:renderSemaine,sport:renderSport,bouffe:renderBouffe,euro:renderEuro,style:renderStyle,apprendre:renderApprendre,obj:renderObj};
+  const R={jour:renderJour,semaine:renderSemaine,sport:renderSport,bouffe:renderBouffe,courses:renderCourses,euro:renderEuro,style:renderStyle,apprendre:renderApprendre,obj:renderObj};
   if(R[b.dataset.tab])R[b.dataset.tab]();
   window.scrollTo(0,0);
 }));
