@@ -113,6 +113,15 @@ body{padding-bottom:78px;max-width:520px;margin:0 auto;min-height:100vh}
 .pgrid .ph .cap{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:2px 4px;text-align:center}
 .hbars{display:flex;gap:4px;align-items:flex-end;height:46px;margin-top:8px}
 .hbars .hb{flex:1;background:var(--or);border-radius:3px 3px 0 0;min-height:3px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.cal .hd{font-size:9px;text-transform:uppercase;color:var(--anthr);text-align:center;font-weight:700}
+.cal .cell{border:1px solid var(--ligne);border-radius:8px;min-height:54px;padding:3px 2px;background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:1px;overflow:hidden}
+.cal .cell.mut{opacity:.32;cursor:default;background:transparent}
+.cal .cell.selq{border-color:var(--or);box-shadow:0 0 0 1.5px var(--or)}
+.cal .cell.tdy{background:#FCF8EC}
+.cal .dn{font-size:10px;font-weight:800}
+.cal .ics{font-size:9px;line-height:1}
+.cal .dl{font-size:8px;color:var(--anthr);line-height:1.15;overflow:hidden}
 body.dark{--creme:#161b24;--bleu:#E8EBF1;--anthr:#AEB6C4;--ligne:#2c3543;--on:#22304a;--off:#2a2722}
 body.dark .card,body.dark .daycard,body.dark .acc,body.dark .pill,body.dark .step button,
 body.dark .nav,body.dark input,body.dark textarea,body.dark .pomo .box2,body.dark .pomo .ctrls button{background:#1f2733;color:var(--bleu)}
@@ -125,6 +134,7 @@ body.dark .nav button{color:#7e879a}body.dark .nav button.act{color:var(--bleu)}
 body.dark .bar{background:#2c3543}
 body.dark .pill.g.act{background:#1e3a26;color:#9fdcae}body.dark .pill.r.act{background:#3a1f24;color:#e8a8b0}
 body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#2a2722;color:var(--anthr)}
+body.dark .cal .cell{background:#1f2733}body.dark .cal .cell.tdy{background:#23262f}
 </style>
 </head>
 <body>
@@ -153,6 +163,7 @@ body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#
 <div class="tab act" id="t-jour"><div class="wrap" id="jour"></div></div>
 <div class="tab" id="t-semaine"><div class="wrap" id="semaine"></div></div>
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
+<div class="tab" id="t-menu"><div class="wrap" id="menu"></div></div>
 <div class="tab" id="t-courses"><div class="wrap" id="courses"></div></div>
 <div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
 <div class="tab" id="t-obj"><div class="wrap" id="obj"></div></div>
@@ -165,6 +176,7 @@ body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#
   <button data-tab="semaine"><span class="ic">🗓️</span>Semaine</button>
   <button data-tab="sport"><span class="ic">💪</span>Sport</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
+  <button data-tab="menu"><span class="ic">📆</span>Menu</button>
   <button data-tab="courses"><span class="ic">🛒</span>Courses</button>
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="style"><span class="ic">👔</span>Style</button>
@@ -271,7 +283,7 @@ const OBJ=[
 const LS="steve_v1";
 let S=JSON.parse(localStorage.getItem(LS)||"{}");
 S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{}; S.fin=S.fin||{}; S.weights=S.weights||[]; S.photos=S.photos||[]; S.read=S.read||[]; S.skills=S.skills||[]; S.mes=S.mes||{};
-let restT=null,restS=0;
+let restT=null,restS=0,menuSel=null;
 function sparkline(vals,w,hh){if(vals.length<2)return'';const mn=Math.min(...vals),mx=Math.max(...vals),rng=(mx-mn)||1;const pts=vals.map((v,i)=>{const x=(i/(vals.length-1))*(w-8)+4;const y=hh-4-((v-mn)/rng)*(hh-8);return x.toFixed(1)+','+y.toFixed(1);}).join(' ');return `<svg viewBox="0 0 ${w} ${hh}" style="width:100%;height:${hh}px;margin-top:8px"><polyline points="${pts}" fill="none" stroke="var(--or)" stroke-width="2"/></svg>`;}
 function streakEnerg(){let s=0;for(let k=DAYS.length-1;k>=0;k--){const d=DAYS[k];if(d.d>todayISO())continue;const t=S.track[d.d];if(t&&t.energ==='N')s++;else if(t&&t.energ==='O')break;else if(s>0)break;}return s;}
 function save(){localStorage.setItem(LS,JSON.stringify(S));}
@@ -284,6 +296,10 @@ function findToday(){const i=todayISO();let d=DAYS.find(x=>x.d===i);if(d)return 
 /* ---------------- RENDU ---------------- */
 function el(h){const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstChild;}
 function meal(k,v){return v?`<div class="meal"><span class="k">${k}</span><span class="v">${v}</span></div>`:"";}
+function mShort(t){if(!t)return"";t=t.replace(/\(.*?\)/g,"").replace(/\s+/g," ").trim();return t.length>20?t.slice(0,19)+"…":t;}
+const REC_MAP=[["bolo","Pâtes bolo épicée"],["chili","🆕 Chili con carne express (double → congèle)"],["curry","🆕 Curry de poulet coco + riz"],["riz sauté","🆕 Riz sauté œufs-légumes (anti-gaspi)"],["wraps","🆕 Wraps poulet express"],["yassa","Poulet poivron (yassa léger) + riz"],["poivron","Poulet poivron (yassa léger) + riz"],["gingembre","Poulet gingembre-ail + riz"],["omelette","Omelette épicée costaud"],["poisson","Poisson blanc épicé + patate douce"],["sardines","Sardines/maquereau express + riz (éco)"],["maquereau","Sardines/maquereau express + riz (éco)"],["lentilles","Lentilles-riz épicé + œuf (éco)"],["batch","Bowl poulet-riz (batch — le déj)"],["gainer","Gainer maison + whey (pdj des jours ON)"],["whey","Shake whey express (post-séance)"]];
+function findRec(txt){if(!txt)return null;const t=txt.toLowerCase();for(const p of REC_MAP){if(t.includes(p[0]))return RECIPES.find(r=>r.nm===p[1])||null;}return null;}
+function goRecipe(nm){document.querySelector('.nav button[data-tab="bouffe"]').click();setTimeout(()=>{document.querySelectorAll('#bouffe .acc').forEach(a=>{const n=a.querySelector('.nm');if(n&&n.textContent===nm){a.classList.add('open');a.scrollIntoView({behavior:'smooth',block:'center'});}});},80);}
 
 const OUTFIT={
  "2026-06-14":"Détente : joggers noirs + t-shirt + hoodie gris clair",
@@ -499,7 +515,7 @@ function renderSemaine(){
     const stxt={done:'FAIT',today:"AUJ.",on:(d.num?'Séance '+d.num:'ON'),off:'REPOS',exam:'🎓 EXAMS'}[d.type];
     const sc=(d.type==='today'||d.type==='exam')?'today':(done&&d.num?'done':d.type);
     h+=`<div class="daycard"><div class="top"><span class="dl">${d.lab}</span><span class="st ${sc}">${done&&d.num?'✓ '+stxt:stxt}</span></div>
-      <div class="sub">${d.seance}${d.diner&&!d.diner.startsWith('MARDI')?' · 🍽️ '+d.diner.split(':')[0]:''}<br>👔 ${outfitFor(d)}</div></div>`;
+      <div class="sub">${d.seance}<br>🍽️ ${mShort(d.diner)||'—'}${d.courses?' · 🛒 courses':''}<br>👔 ${outfitFor(d)}</div></div>`;
   });
   h+=`</div>`;
   c.innerHTML=h;
@@ -524,6 +540,58 @@ function renderBouffe(){
   c.querySelectorAll("[data-shop]").forEach(x=>x.addEventListener("click",()=>{const id=x.dataset.shop;S.shop[id]=!S.shop[id];save();renderBouffe();}));
 }
 
+function renderMenu(){
+  const c=document.getElementById("menu");
+  const ti=todayISO();
+  if(!menuSel||!DAYS.some(x=>x.d===menuSel))menuSel=findToday().d;
+  let h=`<div class="hint">Ton calendrier bouffe : le mois en un coup d'œil (🏋️ séance · 🛒 courses · le texte = le dîner du soir). <b>Tape un jour</b> → le détail complet s'affiche dessous.</div>`;
+  // grille mensuelle
+  h+=`<div class="card"><h2>📆 Le mois <span class="tag">6 août → 6 sept</span></h2><div class="cal">`;
+  ["L","M","M","J","V","S","D"].forEach(x=>h+=`<div class="hd">${x}</div>`);
+  const t=new Date(2026,7,3);
+  for(let k=0;k<35;k++){
+    const iso=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");
+    const d=DAYS.find(x=>x.d===iso);
+    if(!d){h+=`<div class="cell mut"><span class="dn">${t.getDate()}</span></div>`;}
+    else{const ic=(d.num?"🏋️":"")+(d.courses?"🛒":"");
+      h+=`<div class="cell${iso===menuSel?' selq':''}${iso===ti?' tdy':''}" data-cal="${iso}"><span class="dn">${t.getDate()}</span><span class="ics">${ic}</span><span class="dl">${mShort(d.diner)}</span></div>`;}
+    t.setDate(t.getDate()+1);
+  }
+  h+=`</div><div class="note" style="margin-top:8px">🏋️ = séance Basic Fit · 🛒 = jour de courses · petit texte = le dîner.</div></div>`;
+  // détail du jour sélectionné
+  const d=DAYS.find(x=>x.d===menuSel);
+  if(d){
+    const tag=d.num?("🏋️ Séance "+d.num):"REPOS";
+    h+=`<div class="card sec-today"><h2>${d.lab} — le détail <span class="tag">${tag}</span></h2>`;
+    if(d.courses)h+=`<div class="row"><div class="lab">🛒 <b>Courses ce jour-là</b><br>${d.courses}</div></div>`;
+    [["Petit-déj",d.pdj],["Déjeuner",d.dej],["Dîner",d.diner]].forEach(x=>{
+      const v=x[1];if(!v)return;const r=findRec(v);
+      h+=`<div class="meal"><span class="k">${x[0]}</span><span class="v">${v}${r?`<br><span class="pill g" data-rec="${r.nm}" style="display:inline-block;margin-top:5px;font-size:11px;padding:4px 10px">📖 Recette pas à pas — ${r.meta}</span>`:""}</span></div>`;
+    });
+    const i=DAYS.indexOf(d),nx=(i>=0&&i+1<DAYS.length)?DAYS[i+1]:null;
+    if(nx){let pv=[];
+      if((nx.dej||"").toLowerCase().includes("batch"))pv.push("🥡 Gamelle de demain : 150 g poulet + 100 g riz + légumes en boîte au frigo");
+      if(nx.num)pv.push("🎒 Sac Basic Fit prêt (demain : "+(nx.seance.includes("PUSH")?"PUSH":nx.seance.includes("PULL")?"PULL":"LEGS")+")");
+      if((nx.courses||"").indexOf("GROS PLEIN")>=0)pv.push("🛒 Demain gros plein du mois : la liste cochable t'attend dans l'onglet Courses");
+      if(pv.length)h+=`<div class="note" style="margin-top:8px"><b>À préparer la veille au soir :</b><br>${pv.join("<br>")}</div>`;}
+    h+=`</div>`;
+  }
+  // la semaine en détail
+  const i0=DAYS.findIndex(x=>x.d>=ti);const wk=DAYS.slice(Math.max(0,i0),Math.max(0,i0)+7);
+  h+=`<div class="card"><h2>🗓️ La semaine en détail <span class="tag">7 prochains jours</span></h2>`;
+  wk.forEach(d2=>{
+    h+=`<div class="daycard"><div class="top"><span class="dl">${d2.lab}</span><span class="st ${d2.num?'on':'off'}">${d2.num?'🏋️ Séance '+d2.num:'REPOS'}</span></div>
+      <div class="sub">${d2.courses?'🛒 <b>'+d2.courses+'</b><br>':''}🌅 ${d2.pdj||"—"}<br>🍱 ${d2.dej||"—"}<br>🌙 ${d2.diner||"—"}</div></div>`;
+  });
+  h+=`<div class="note" style="margin-top:6px">Quantités et étapes de chaque plat : onglet Bouffe (ou tape un jour dans le calendrier ↑).</div></div>`;
+  // tous les jours de courses du mois
+  h+=`<div class="card"><h2>🛒 Tous les jours de courses du mois</h2>`;
+  DAYS.filter(x=>x.courses).forEach(x=>{h+=`<div class="row"><div class="lab" style="flex:0 0 80px"><b>${x.lab}</b></div><div class="lab" style="flex:2">${x.courses}</div></div>`;});
+  h+=`<div class="note" style="margin-top:8px">Les listes cochables (gros plein du mois + frais de la semaine) : onglet 🛒 Courses.</div></div>`;
+  c.innerHTML=h;
+  c.querySelectorAll("[data-cal]").forEach(x=>x.addEventListener("click",()=>{menuSel=x.dataset.cal;renderMenu();}));
+  c.querySelectorAll("[data-rec]").forEach(x=>x.addEventListener("click",()=>goRecipe(x.dataset.rec)));
+}
 function renderCourses(){
   const c=document.getElementById("courses");
   let h=`<div class="hint">Ta section courses : quoi acheter pour la masse, quoi cuisiner, comment payer. Règle du mois : <b>les courses passent en TICKETS RESTO d'abord</b> (150 € ≈ ta bouffe du mois) — le cash sert au reste.</div>`;
@@ -770,13 +838,13 @@ function renderApprendre(){
   c.querySelectorAll('[data-tg]').forEach(el=>el.addEventListener('click',e=>{if(e.target.dataset.del!==undefined)return;const p=el.dataset.tg.split(':'),k=p[0],id=p[1];const it=S[k].find(x=>x.id===id);if(it){it.done=!it.done;save();renderApprendre();}}));
   c.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const p=b.dataset.del.split(':'),k=p[0],id=p[1];S[k]=S[k].filter(x=>x.id!==id);save();renderApprendre();}));
 }
-function renderAll(){renderJour();renderSemaine();renderSport();renderBouffe();renderCourses();renderEuro();renderStyle();renderApprendre();renderObj();}
+function renderAll(){renderJour();renderSemaine();renderSport();renderBouffe();renderMenu();renderCourses();renderEuro();renderStyle();renderApprendre();renderObj();}
 // nav
 document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("act"));
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("act"));
   b.classList.add("act");document.getElementById("t-"+b.dataset.tab).classList.add("act");
-  const R={jour:renderJour,semaine:renderSemaine,sport:renderSport,bouffe:renderBouffe,courses:renderCourses,euro:renderEuro,style:renderStyle,apprendre:renderApprendre,obj:renderObj};
+  const R={jour:renderJour,semaine:renderSemaine,sport:renderSport,bouffe:renderBouffe,menu:renderMenu,courses:renderCourses,euro:renderEuro,style:renderStyle,apprendre:renderApprendre,obj:renderObj};
   if(R[b.dataset.tab])R[b.dataset.tab]();
   window.scrollTo(0,0);
 }));
