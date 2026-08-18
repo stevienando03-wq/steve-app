@@ -333,6 +333,7 @@ const TIPS=[
  "Bonnet satin la nuit : tes twists tiennent 2× plus longtemps.",
 ];
 function outfitFor(day){return day.tenue||OUTFIT[day.d]||"tenue libre (voir onglet Style)";}
+function absForDay(day){const s=(day.seance||'')+' '+(day.type||'');if(/PUSH/i.test(s))return['A','haut des abdos + gainage'];if(/PULL/i.test(s))return['B','bas des abdos + obliques'];if(/LEGS/i.test(s))return['C','core profond + anti-rotation'];return null;}
 function dayReminders(day){
   const isTue=day.diner&&day.diner.indexOf('MARDI')===0;
   const jn=day.lab.split(' ')[0];
@@ -360,6 +361,7 @@ function renderJour(){
   let h=`<div class="card ${cls}"><h2>${day.lab}<span class="tag">${day.type==='exam'?'🎓 EXAMS':day.type==='off'?'REPOS':day.type==='done'?'FAIT':day.num?('Séance '+day.num+'/'+SEANCE_TOTAL):''}</span></h2>`;
   if(day.obj) h+=`<div class="row"><div class="lab">🎯 <b>Objectif n°1</b><br>${day.obj}</div></div>`;
   h+=`<div class="row"><div class="lab">🏋️ <b>${day.seance}</b></div></div>`;
+  {const _ab=day.num?absForDay(day):null; if(_ab) h+=`<div class="row"><div class="lab">🔥 <b>Abdos — Circuit ${_ab[0]}</b> · ${_ab[1]} · fin de séance ~10 min (détail : onglet Sport)</div></div>`;}
   h+=`<div class="row"><div class="lab">👔 <b>Tenue</b> — ${outfitFor(day)}</div></div>`;
   if(day.etude) h+=`<div class="row"><div class="lab">📚 ${day.etude}</div></div>`;
   if(day.copine) h+=`<div class="row"><div class="lab">❤️ ${day.copine}</div></div>`;
@@ -791,20 +793,25 @@ function renderStyle(){
   c.querySelectorAll('[data-delphoto]').forEach(function(b){b.addEventListener('click',function(){S.photos=S.photos.filter(function(p){return p.id!==b.dataset.delphoto;});save();renderStyle();});});
 }
 const PROG=[
- {t:"Échauffement (8-10 min)",x:"5 min cardio doux (vélo/rameur) + mobilité épaules/hanches + 1-2 séries légères sur le 1er exo. Jamais à froid."},
- {t:"PUSH — pecs / épaules / triceps",x:"Développé couché haltères — 4×8-10\nDéveloppé militaire assis — 3×8-10\nÉcarté poulie/pec-deck — 3×12-15\nÉlévations latérales — 4×12-15\nExtensions triceps poulie — 3×12-15\nOiseau (rear delt) — 3×15-20"},
- {t:"PULL — dos / biceps",x:"Tirage vertical (lat pulldown) — 4×8-10\nRowing assis machine — 4×10-12\nTirage horizontal poulie — 3×10-12\nFace pull — 3×15-20\nCurl haltères — 3×10-12\nCurl marteau — 3×12-15"},
- {t:"LEGS — sans charge avant-pied",x:"Presse à cuisses — 4×10-12\nHack squat — 3×10-12\nLeg curl ASSIS — 3×12-15\nLeg extension — 3×12-15\nHip thrust / pont — 3×12-15\nMollets ASSIS (pas debout) — 3×15-20"},
- {t:"Progression (la clé)",x:"Double progression : monte les reps jusqu'au haut de la fourchette, puis +1-2 kg et repars en bas. +1 rep ou +1-2 kg/semaine. Garde 1-2 reps en réserve. Deload toutes les 6-8 sem si stagnation."},
- {t:"Cardio & pied",x:"Cardio SANS impact (vélo, rameur, marche inclinée) 2-3×/sem. JAMAIS course/saut tant que la gêne avant-pied est là. Mobilité cheville 2 min/jour."},
- {t:"Récup",x:"Repos 60-90s en isolation, 2-3 min sur presse/hack. 2 ON / 1 OFF, jamais 2 OFF d'affilée. Sommeil 7-8h. Gainer maison dans l'heure après la séance."},
+ {t:"Échauffement (6-8 min max)",x:"5 min cardio doux (vélo/rameur) + mobilité épaules/hanches + 1-2 séries légères sur le 1er exo. Pas plus de 8 min — on garde le temps pour les abdos."},
+ {t:"PUSH — pecs / épaules / triceps (~45 min)",x:"Développé couché haltères — 4×8-10\nDéveloppé militaire assis — 3×8-10\nÉcarté pec-deck — 3×12-15\nSUPERSET (gain de temps) : Élévations latérales 4×15 + Extension triceps poulie 3×15\n→ FINIS PAR LE CIRCUIT ABDOS A"},
+ {t:"PULL — dos / biceps (~45 min)",x:"Tirage vertical (lat pulldown) — 4×8-10\nRowing assis machine — 4×10-12\nFace pull — 3×15-20\nSUPERSET : Curl haltères 3×10-12 + Curl marteau 3×12-15\n→ FINIS PAR LE CIRCUIT ABDOS B"},
+ {t:"LEGS — sans charge avant-pied (~45 min)",x:"Presse à cuisses — 4×10-12\nHack squat — 3×10-12\nSUPERSET : Leg curl ASSIS 3×12-15 + Leg extension 3×12-15\nHip thrust / pont — 3×12-15\nMollets ASSIS (pas debout) — 3×15-20\n→ FINIS PAR LE CIRCUIT ABDOS C"},
+ {t:"🔥 CIRCUIT ABDOS A — jours PUSH · haut des abdos + gainage (~9 min)",x:"En fin de séance, 3 tours, repos 30 s (superset les 2 premiers) :\nCrunch à la poulie haute, à genoux — 3×15-20  (EN CHARGE = la clé pour épaissir)\nRelevé de buste sur banc incliné — 3×15\nPlanche (gainage) — 3×40 s"},
+ {t:"🔥 CIRCUIT ABDOS B — jours PULL · bas des abdos + obliques (~9 min)",x:"Enchaîné, repos 30 s :\nRelevé de jambes suspendu à la barre (ou appui coudes) — 3×12-15  (le meilleur pour le bas + le « V »)\nReverse crunch au sol — 3×15\nRussian twist lesté — 3×20 (10/côté)\nPlanche latérale — 2×30 s/côté"},
+ {t:"🔥 CIRCUIT ABDOS C — jours LEGS · core profond + anti-rotation (~9 min)",x:"Enchaîné, repos 30 s :\nRoulette abdominale (ab wheel) OU crunch poulie — 3×10-12\nPallof press (anti-rotation à la poulie) — 3×12/côté\nHollow hold (bas du dos collé au sol) — 3×25-30 s\nMountain climbers lents — 3×30 s"},
+ {t:"Progression (la clé — abdos compris)",x:"Double progression : monte les reps jusqu'au haut de la fourchette, puis +1-2 kg et repars en bas. +1 rep ou +1-2 kg/semaine, 1-2 reps en réserve. LES ABDOS AUSSI se chargent (poulie, lest) — pas 300 crunchs au poids de corps. Deload toutes les 6-8 sem si stagnation."},
+ {t:"Cardio & pied (pour faire RESSORTIR les abdos)",x:"10-15 min de cardio SANS impact (vélo, rameur, marche inclinée) 2-3×/sem, en fin de séance ou les jours OFF. JAMAIS course/saut tant que la gêne avant-pied est là. C'est ce cardio + l'assiette qui révèlent les abdos que tu construis."},
+ {t:"Récup",x:"Repos 60-90s en isolation, 2-3 min sur presse/hack, 30 s sur le circuit abdos. 2 ON / 1 OFF, jamais 2 OFF d'affilée. Sommeil 7-8h. Shake whey + gainer dans l'heure après la séance."},
 ];
 function renderSport(){
   const c=document.getElementById("sport");
-  let h=`<div class="card sec-on"><h2>Basic Fit — reprise à 0 <span class="tag">séance 1 : ven 7 août</span></h2>
-    <div class="note">Compteur remis à <b>ZÉRO</b> — aucune séance d'avant ne compte, et c'est très bien comme ça. Rythme : 2 ON / 1 OFF, jamais 2 OFF d'affilée. Objectif : <b>≥ 14 séances en août</b> (le plan va jusqu'au 6 sept = 21 séances). Gêne avant-pied → LEGS toujours sans charge sur les orteils. Touche un titre pour le détail.</div></div>`;
-  h+=`<div class="card sec-today"><h2>⚠️ Les règles de la reprise</h2>
-    <div class="note">• Semaines 1-2 : <b>charges −30 à −40 %</b> vs juin, garde 2 reps en réserve — les courbatures arriveront bien assez vite.<br>• Semaine 3 : remonte progressivement, puis double progression normale.<br>• Règle des 5 min : le droit d'arrêter après 5 min — personne ne repart jamais.<br>• Basic Fit : entrée par QR code dans leur app, évite 18h-20h si tu peux.<br>• Shake whey dans les 2 h après chaque séance.</div></div>`;
+  let h=`<div class="card sec-on"><h2>Basic Fit — reprise à 0 <span class="tag">focus abdos</span></h2>
+    <div class="note">Compteur à <b>ZÉRO</b>, on repart proprement. Rythme : 2 ON / 1 OFF, jamais 2 OFF d'affilée. Objectif : <b>≥ 14 séances en août</b>. <b>Nouveau cap : des abdos qui se voient</b> → un circuit abdos EN CHARGE à <b>CHAQUE séance</b> (A les jours PUSH, B les PULL, C les LEGS), sans jamais dépasser 1h15. Gêne avant-pied → LEGS sans charge sur les orteils. Touche un titre pour le détail.</div></div>`;
+  h+=`<div class="card sec-today"><h2>🔥 Abdos visibles — la vérité utile</h2>
+    <div class="note">Un abdo qui se voit = <b>2 conditions</b>.<br><b>1. Le muscle assez épais</b> → c'est ce que font tes 3 circuits, <b>en charge</b> (poulie, lest), pas 300 crunchs au poids de corps.<br><b>2. Un taux de gras assez bas</b> pour qu'il apparaisse → ça se joue à la <b>cuisine</b>, pas à la salle.<br>Ton compromis (tu prends du muscle en même temps) : <b>lean bulk LENT</b> (+0,3-0,5 kg/mois max, cf. onglets Bouffe/Courses) + <b>10-15 min de cardio faible impact 2-3×/sem</b>. Tu construis des abdos épais maintenant ; dès que tu sécheras un peu, ils ressortiront déjà dessinés.</div></div>`;
+  h+=`<div class="card"><h2>⏱️ Séance efficace — 1h15 chrono</h2>
+    <div class="note">Échauffement 6-8 min → <b>les exos du jour ~45 min</b> (superset les isolations, repos 60-75 s) → <b>circuit abdos 8-10 min</b> → fini. Si tu débordes : coupe le dernier exo d'isolation, <b>jamais les abdos</b>. Minuteur de repos plus bas ↓</div></div>`;
   PROG.forEach(p=>{h+=`<div class="acc" data-acc><div class="h"><span class="nm">${p.t}</span><span class="meta">›</span></div><div class="b">${p.x}</div></div>`;});
   h+=`<div class="card"><h2>⏱️ Minuteur de repos</h2>
     <div style="font-size:40px;text-align:center;font-weight:800;color:var(--bleu)" id="restTime">${restS>0?restS+'s':'—'}</div>
