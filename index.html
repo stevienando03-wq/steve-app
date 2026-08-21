@@ -287,8 +287,9 @@ const COURSES = [
   ["Le frais de la semaine", ["Poulet 1 kg", "Œufs par 30", "Bœuf 5% 500 g", "Skyr 1 kg", "Pain complet", "Bananes", "Légumes surgelés", "Poisson blanc surgelé", "Patates douces"]]
 ];
 
-const CAT_IN  = ["Salaire", "Tickets resto", "Remboursement", "Autre"];
-const CAT_OUT = ["Courses", "Restaurant", "Transport", "Logement", "Santé", "Loisirs", "Abonnements", "Sport", "Autre"];
+const CAT_IN  = ["Salaire", "Tickets resto", "Remboursement", "Retrait d'épargne", "Autre"];
+const CAT_OUT = ["Courses", "Restaurant", "Transport", "Logement", "Santé", "Loisirs", "Abonnements", "Sport", "Mise de côté", "Autre"];
+const CAT_EPARGNE = {sortie:"Mise de côté", entree:"Retrait d'épargne"};
 
 /* ================= ÉTAT ================= */
 const LS = "steve_v1";
@@ -301,6 +302,7 @@ S.rdv     = S.rdv     || [];
 if (S.budget.soldeDebut === undefined) S.budget.soldeDebut = null;
 S.budget.mvts = S.budget.mvts || [];
 S.budget.mois = S.budget.mois || moisCourant();
+S.budget.histo = S.budget.histo || [];   // les mois cloturés, pour comparer
 function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
 
 /* ================= DATES ================= */
@@ -522,12 +524,12 @@ function renderSkills(){
 
 function renderEuro(){
   const b = S.budget;
-  if (b.mois !== moisCourant() && b.mvts.length === 0) b.mois = moisCourant();
   const entrees = b.mvts.filter(m => m.type === "in").reduce((a, m) => a + m.montant, 0);
   const sorties = b.mvts.filter(m => m.type === "out").reduce((a, m) => a + m.montant, 0);
   const base = (b.soldeDebut || 0) + entrees;
   const solde = base - sorties;
   const pct = base > 0 ? Math.max(0, Math.min(1, solde / base)) : 0;
+  const prec = b.histo.length ? b.histo[b.histo.length - 1] : null;
   let h = "";
 
   if (b.soldeDebut === null) {
@@ -542,6 +544,19 @@ function renderEuro(){
     });
     return;
   }
+
+  /* épargne : ce qui est mis de côté moins ce qui est repris, sur tous les mois */
+  function epargneDe(mvts) {
+    let mis = 0, repris = 0;
+    mvts.forEach(m => {
+      if (m.type === "out" && m.cat === CAT_EPARGNE.sortie) mis += m.montant;
+      if (m.type === "in" && m.cat === CAT_EPARGNE.entree) repris += m.montant;
+    });
+    return {mis:mis, repris:repris, net:mis - repris};
+  }
+  const epMois = epargneDe(b.mvts);
+  let epTotal = epMois.net;
+  b.histo.forEach(m => { epTotal += (m.epargne || 0); });
 
   const R = 62, C = 2 * Math.PI * R;
   h += '<div class="card"><h2>Mon solde <span class="tag">' + MOIS[new Date().getMonth()] + '</span></h2>' +
@@ -558,6 +573,15 @@ function renderEuro(){
        '<div class="box"><div class="n">' + Math.round(entrees - sorties) + ' €</div><div class="t">net du mois</div></div>' +
        '</div></div>';
 
+  /* épargne */
+  h += '<div class="card sec-or"><h2>Mon épargne <span class="tag">' + Math.round(epTotal) + ' € au total</span></h2>' +
+       '<div class="kpi"><div class="box v"><div class="n">' + Math.round(epMois.mis) + ' €</div><div class="t">mis de côté ce mois</div></div>' +
+       '<div class="box r"><div class="n">' + Math.round(epMois.repris) + ' €</div><div class="t">repris ce mois</div></div>' +
+       '<div class="box"><div class="n">' + Math.round(epTotal) + ' €</div><div class="t">épargne cumulée</div></div></div>' +
+       '<div class="note" style="margin-top:9px">Pour mettre de côté, ajoute une dépense avec la catégorie ' +
+       '<b>Mise de côté</b> : elle sort de ton disponible et vient grossir cette ligne. Pour piocher dedans, ' +
+       'ajoute une entrée <b>Retrait d\'épargne</b>. Objectif : un mois de salaire d\'avance.</div></div>';
+
   h += '<div class="card sec-vert"><h2>J\'ai reçu de l\'argent</h2>' +
        '<div class="form"><input type="number" inputmode="decimal" id="inM" placeholder="Montant">' +
        '<select id="inC">' + CAT_IN.map(c => '<option>' + c + '</option>').join("") + '</select></div>' +
@@ -568,33 +592,63 @@ function renderEuro(){
        '<select id="outC">' + CAT_OUT.map(c => '<option>' + c + '</option>').join("") + '</select></div>' +
        '<button class="btn light" id="addOut">Ajouter cette dépense</button></div>';
 
+  /* tableaux par catégorie, avec la colonne du mois précédent si elle existe */
   const parCat = {in:{}, out:{}};
   b.mvts.forEach(m => { parCat[m.type][m.cat] = (parCat[m.type][m.cat] || 0) + m.montant; });
+
   function tableauCat(type, titre, total, couleur) {
-    const cats = Object.keys(parCat[type]).sort((a, x) => parCat[type][x] - parCat[type][a]);
+    const catsPrec = prec ? (prec.cats && prec.cats[type] ? prec.cats[type] : {}) : {};
+    const toutes = Object.keys(parCat[type]).concat(Object.keys(catsPrec))
+                     .filter((v, i, a) => a.indexOf(v) === i)
+                     .sort((a, x) => (parCat[type][x] || 0) - (parCat[type][a] || 0));
     let t = '<div class="card"><h2>' + titre + ' <span class="tag">' + Math.round(total) + ' €</span></h2>';
-    if (!cats.length) { return t + '<div class="note">Rien pour l\'instant ce mois-ci.</div></div>'; }
+    if (!toutes.length) return t + '<div class="note">Rien pour l\'instant ce mois-ci.</div></div>';
     t += '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
          '<tr style="border-bottom:1px solid var(--ligne)">' +
-         '<th style="text-align:left;padding:6px 0;font-size:11px;color:var(--anthr);text-transform:uppercase">Catégorie</th>' +
-         '<th style="text-align:right;font-size:11px;color:var(--anthr);text-transform:uppercase">Nombre</th>' +
-         '<th style="text-align:right;font-size:11px;color:var(--anthr);text-transform:uppercase">Montant</th>' +
-         '<th style="text-align:right;font-size:11px;color:var(--anthr);text-transform:uppercase">Part</th></tr>';
-    cats.forEach(c => {
+         '<th style="text-align:left;padding:6px 0;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Catégorie</th>' +
+         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Nb</th>' +
+         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Ce mois</th>' +
+         (prec ? '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">' + prec.libelle + '</th>' +
+                 '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Écart</th>' : '') +
+         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Part</th></tr>';
+    toutes.forEach(c => {
+      const v = parCat[type][c] || 0, vp = catsPrec[c] || 0, ecart = v - vp;
       const n = b.mvts.filter(m => m.type === type && m.cat === c).length;
-      const p = total > 0 ? parCat[type][c] / total * 100 : 0;
+      const p = total > 0 ? v / total * 100 : 0;
+      const coulEcart = (type === "out" ? (ecart > 0 ? "var(--rouge)" : "var(--vert)")
+                                        : (ecart > 0 ? "var(--vert)" : "var(--rouge)"));
       t += '<tr style="border-bottom:1px solid #F0ECE2"><td style="padding:8px 0">' + c + '</td>' +
            '<td style="text-align:right;color:var(--anthr)">' + n + '</td>' +
-           '<td style="text-align:right;font-weight:700;color:' + couleur + '">' + Math.round(parCat[type][c]) + ' €</td>' +
+           '<td style="text-align:right;font-weight:700;color:' + couleur + '">' + Math.round(v) + ' €</td>' +
+           (prec ? '<td style="text-align:right;color:var(--anthr)">' + Math.round(vp) + ' €</td>' +
+                   '<td style="text-align:right;font-weight:600;color:' + (ecart === 0 ? "var(--anthr)" : coulEcart) + '">' +
+                   (ecart > 0 ? "+" : "") + Math.round(ecart) + ' €</td>' : '') +
            '<td style="text-align:right;color:var(--anthr)">' + Math.round(p) + ' %</td></tr>';
     });
     t += '<tr><td style="padding:9px 0;font-weight:700">Total</td><td></td>' +
          '<td style="text-align:right;font-weight:800;color:' + couleur + '">' + Math.round(total) + ' €</td>' +
+         (prec ? '<td style="text-align:right;font-weight:700">' + Math.round(type === "out" ? prec.sorties : prec.entrees) + ' €</td><td></td>' : '') +
          '<td style="text-align:right;font-weight:700">100 %</td></tr></table></div>';
     return t;
   }
   h += tableauCat("out", "Où part l'argent", sorties, "var(--rouge)");
   h += tableauCat("in", "Ce qui rentre", entrees, "var(--vert)");
+
+  /* comparaison globale avec le mois précédent */
+  if (prec) {
+    const dS = sorties - prec.sorties, dE = entrees - prec.entrees, dN = (entrees - sorties) - (prec.entrees - prec.sorties);
+    h += '<div class="card"><h2>Comparé à ' + prec.libelle + '</h2>' +
+         '<div class="kpi"><div class="box"><div class="n" style="color:' + (dE >= 0 ? "var(--vert)" : "var(--rouge)") + '">' +
+         (dE > 0 ? "+" : "") + Math.round(dE) + ' €</div><div class="t">entrées</div></div>' +
+         '<div class="box"><div class="n" style="color:' + (dS <= 0 ? "var(--vert)" : "var(--rouge)") + '">' +
+         (dS > 0 ? "+" : "") + Math.round(dS) + ' €</div><div class="t">sorties</div></div>' +
+         '<div class="box"><div class="n" style="color:' + (dN >= 0 ? "var(--vert)" : "var(--rouge)") + '">' +
+         (dN > 0 ? "+" : "") + Math.round(dN) + ' €</div><div class="t">net</div></div></div>' +
+         '<div class="note" style="margin-top:9px">' +
+         (dS <= 0 ? "Tu dépenses moins que le mois dernier. C'est exactement ce qu'on veut voir."
+                  : "Tu as dépensé " + Math.round(dS) + " € de plus. Regarde quelle ligne a bougé dans le tableau au-dessus.") +
+         '</div></div>';
+  }
 
   h += '<div class="card"><h2>Le détail <span class="tag">' + b.mvts.length + ' mouvements</span></h2>';
   if (b.mvts.length) {
@@ -606,7 +660,28 @@ function renderEuro(){
     });
   } else { h += '<div class="note">Rien pour l\'instant.</div>'; }
   h += '<button class="btn or" id="resetMois" style="margin-top:14px">Clôturer le mois et repartir de zéro</button>' +
-       '<div class="note" style="margin-top:8px">Le solde actuel devient ton point de départ du mois suivant, et la liste se vide.</div></div>';
+       '<div class="note" style="margin-top:8px">Le mois est archivé pour la comparaison, ton solde devient le point de départ du suivant, et la liste se vide.</div></div>';
+
+  /* historique des mois clôturés */
+  if (b.histo.length) {
+    h += '<div class="card"><h2>Les mois précédents</h2>' +
+         '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+         '<tr style="border-bottom:1px solid var(--ligne)">' +
+         '<th style="text-align:left;padding:6px 0;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Mois</th>' +
+         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Entrées</th>' +
+         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Sorties</th>' +
+         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Net</th>' +
+         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Épargne</th></tr>';
+    b.histo.slice().reverse().forEach(m => {
+      const net = m.entrees - m.sorties;
+      h += '<tr style="border-bottom:1px solid #F0ECE2"><td style="padding:8px 0">' + m.libelle + '</td>' +
+           '<td style="text-align:right;color:var(--vert)">' + Math.round(m.entrees) + ' €</td>' +
+           '<td style="text-align:right;color:var(--rouge)">' + Math.round(m.sorties) + ' €</td>' +
+           '<td style="text-align:right;font-weight:700">' + (net > 0 ? "+" : "") + Math.round(net) + ' €</td>' +
+           '<td style="text-align:right;color:var(--or);font-weight:600">' + Math.round(m.epargne || 0) + ' €</td></tr>';
+    });
+    h += '</table></div>';
+  }
 
   el("euro").innerHTML = h;
 
@@ -624,8 +699,17 @@ function renderEuro(){
     S.budget.mvts.splice(+x.dataset.del, 1); save(); renderEuro();
   }));
   el("resetMois").addEventListener("click", () => {
-    if (!confirm("Clôturer le mois ? Ton solde actuel devient le point de départ et la liste des mouvements est vidée.")) return;
-    S.budget.soldeDebut = solde; S.budget.mvts = []; S.budget.mois = moisCourant(); save(); renderEuro();
+    if (!confirm("Clôturer le mois ? Il sera archivé pour que tu puisses comparer, et la liste repart à zéro.")) return;
+    const d = new Date(), moisFini = MOIS[d.getMonth()] + " " + d.getFullYear();
+    S.budget.histo.push({
+      mois: S.budget.mois, libelle: moisFini,
+      soldeDebut: S.budget.soldeDebut, soldeFin: solde,
+      entrees: entrees, sorties: sorties, epargne: epMois.net,
+      cats: {in: Object.assign({}, parCat.in), out: Object.assign({}, parCat.out)}
+    });
+    if (S.budget.histo.length > 12) S.budget.histo.shift();
+    S.budget.soldeDebut = solde; S.budget.mvts = []; S.budget.mois = moisCourant();
+    save(); renderEuro();
   });
 }
 
