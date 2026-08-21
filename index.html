@@ -174,42 +174,86 @@ const RDV = [
 ];
 
 const SKILLS = [
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"Power BI", cible:"Construire un tableau de bord qui se met à jour tout seul",
-   why:"Tu fais déjà tout sous Excel. Power BI est ce que les entreprises demandent maintenant, et c'est le plus gros écart entre un profil comptable et un profil analyste.",
-   res:"Microsoft Learn, parcours Data Analyst, gratuit. Refais ton reporting mensuel dedans, c'est le meilleur exercice."},
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"Power BI", cible:"Un tableau de bord qui se met à jour tout seul",
+   why:"Tu fais tout sous Excel. Power BI est ce que les entreprises demandent aujourd'hui, et c'est le plus gros écart entre un profil comptable et un profil analyste.",
+   faire:"Reprends ton reporting mensuel Astridsen et refais-le dans Power BI, en te connectant directement à l'export Pennylane. Deux heures le dimanche pendant six semaines.",
+   liens:[["Parcours Power BI, gratuit","https://learn.microsoft.com/fr-fr/training/browse/?products=power-bi"],
+          ["Kenji Explains, chaîne YouTube finance et data","https://www.youtube.com/@KenjiExplains"]],
+   lire:"La certification PL-300 vaut le coup une fois que tu sais faire. Elle se voit sur un CV."},
+
   {cat:"Ce qui fait la différence sur un CV finance", nm:"Modélisation financière", cible:"Un modèle à trois états qui tourne, sans référence circulaire",
-   why:"C'est la compétence qui sépare un contrôleur de gestion d'un analyste financier. Elle s'apprend en construisant, pas en lisant.",
-   res:"Refais le business plan Astridsen depuis zéro avec bilan, compte de résultat et trésorerie liés entre eux."},
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"SQL", cible:"Sortir une donnée d'une base sans passer par quelqu'un",
-   why:"Dès que la boîte a un ERP ou un entrepôt de données, savoir écrire une requête te rend autonome.",
-   res:"SQLBolt puis Mode Analytics, deux heures par semaine suffisent."},
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"Anglais financier", cible:"Tenir une réunion de clôture en anglais sans préparer",
-   why:"Tu es bilingue à l'écrit. C'est l'oral en contexte technique qui se travaille : vocabulaire comptable, chiffres, reporting.",
-   res:"Podcasts FT News Briefing le matin, et écris tes commentaires de reporting en anglais une fois par mois."},
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"IFRS et consolidation", cible:"Comprendre un jeu de comptes consolidés sans aide",
-   why:"Tu consolides déjà huit entités. Formaliser la théorie derrière transforme une pratique en argument d'entretien.",
-   res:"Ton cours IFRS de l'ESG, plus les états financiers d'un groupe coté que tu lis en entier une fois."},
-  {cat:"Ce qui te fera avancer plus vite", nm:"Prise de parole", cible:"Présenter en CODIR sans notes",
-   why:"Tu présentes déjà chaque mois. Passer de lire ses slides à raconter ses chiffres change la façon dont on te perçoit.",
-   res:"Enregistre-toi trois minutes avant chaque CODIR et réécoute. C'est désagréable et c'est ce qui marche."},
-  {cat:"Ce qui te fera avancer plus vite", nm:"Négociation", cible:"Savoir demander une augmentation ou un salaire d'embauche",
-   why:"Tu vas négocier ton premier vrai contrat dans quelques mois. Ça se prépare, ça ne s'improvise pas.",
-   res:"Never Split the Difference, de Chris Voss. Puis note ton chiffre cible et ton minimum avant chaque entretien."},
-  {cat:"Ce qui te fera avancer plus vite", nm:"Écrire clairement", cible:"Une note d'une page qu'un dirigeant lit en entier",
-   why:"Un bon chiffre mal expliqué ne sert à rien. Savoir écrire court est rare et se remarque tout de suite.",
-   res:"Une note de synthèse par mois sur un sujet de ton travail, une page, jamais deux."},
-  {cat:"Le style de vie qui tient sur la durée", nm:"Sommeil régulier", cible:"Se coucher avant 23h30 cinq soirs sur sept",
-   why:"Tout le reste en dépend : la salle, la concentration, l'humeur. C'est le levier avec le meilleur rendement.",
-   res:"Alarme de coucher, téléphone hors de la chambre."},
-  {cat:"Le style de vie qui tient sur la durée", nm:"Trois séances par semaine minimum", cible:"Ne jamais descendre en dessous, même en période chargée",
-   why:"La régularité bat l'intensité. Trois séances tenues toute l'année valent mieux que six pendant un mois.",
-   res:"Sac préparé la veille. Règle des cinq minutes les jours sans motivation."},
+   why:"C'est ce qui sépare un contrôleur de gestion d'un analyste financier. Ça ne s'apprend qu'en construisant.",
+   faire:"Refais le business plan du groupe depuis une feuille vide : compte de résultat, bilan et trésorerie liés entre eux, avec une zone d'hypothèses. Puis casse-le et répare-le.",
+   liens:[["Corporate Finance Institute, cours et modèles","https://corporatefinanceinstitute.com/"],
+          ["La Lettre Vernimmen, gratuite tous les mois","https://www.vernimmen.net/Lire/Lettre_Vernimmen.php"]],
+   lire:"Le Vernimmen, Finance d'entreprise. C'est la référence en France, tu peux le lire par chapitres."},
+
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"SQL", cible:"Sortir une donnée d'une base sans demander à personne",
+   why:"Dès qu'une entreprise a un ERP ou un entrepôt de données, savoir écrire une requête te rend autonome. C'est aussi ce qui te permettra d'alimenter Power BI proprement.",
+   faire:"Une demi-heure le soir, trois fois par semaine, jusqu'à finir SQLBolt. Puis rejoue les mêmes requêtes sur tes propres données.",
+   liens:[["SQLBolt, exercices interactifs","https://sqlbolt.com/"],
+          ["Le tutoriel SQL de Mode, plus poussé","https://mode.com/sql-tutorial/"]],
+   lire:"Après SQLBolt, vise les jointures et les fonctions de fenêtrage. C'est ce qu'on demande en entretien."},
+
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"Anglais financier", cible:"Tenir une réunion de clôture en anglais sans la préparer",
+   why:"Tu es à l'aise à l'écrit. C'est l'oral en contexte technique qui se travaille : le vocabulaire comptable, les chiffres, le reporting.",
+   faire:"Écris les commentaires de ton reporting en anglais une fois par mois. Et vingt minutes d'écoute par jour dans les transports.",
+   liens:[["BBC Learning English, gratuit","https://www.bbc.co.uk/learningenglish/"],
+          ["Toastmasters Paris bilingue, on y parle les deux langues","https://toastmasters-paris-bilingue.org/"]],
+   lire:"Apprends par cœur les vingt termes de ton quotidien : accruals, deferred income, trial balance, write-off, headcount."},
+
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"IFRS et consolidation", cible:"Lire un jeu de comptes consolidés sans aide",
+   why:"Tu consolides déjà huit entités. Mettre la théorie derrière ta pratique transforme une tâche en argument d'entretien.",
+   faire:"Prends le rapport annuel d'un groupe coté que tu connais, LVMH ou Hermès, et lis les annexes en entier. Une fois. C'est long et ça change tout.",
+   liens:[["Focus IFRS, la référence française","https://www.focusifrs.com/"],
+          ["Autorité des normes comptables","https://www.anc.gouv.fr/"]],
+   lire:"Le règlement 99-02 pour la consolidation française, et IFRS 10 et 16 pour l'international."},
+
+  {cat:"Ce qui te fera avancer plus vite", nm:"Prise de parole", cible:"Présenter en comité de direction sans notes",
+   why:"Tu présentes déjà chaque mois. Passer de lire ses slides à raconter ses chiffres change la façon dont on te regarde.",
+   faire:"Enregistre-toi trois minutes avant chaque comité, puis réécoute. C'est désagréable et c'est ce qui marche le mieux.",
+   liens:[["Club Étincelle, Paris 13e, trois visites gratuites","https://club-etincelle.org/"],
+          ["Club Expressions, Paris 12e, deux lundis par mois","https://toastmastersexpressions.fr/"]],
+   lire:"Un club de prise de parole coûte moins de cent euros par an et te fait progresser plus vite que n'importe quelle vidéo."},
+
+  {cat:"Ce qui te fera avancer plus vite", nm:"Négociation salariale", cible:"Savoir demander sans avoir la gorge serrée",
+   why:"Tu vas négocier ton premier vrai contrat dans quelques mois. Cinq minutes de conversation peuvent valoir plusieurs milliers d'euros par an.",
+   faire:"Avant chaque entretien, écris trois chiffres sur un papier : ce que tu demandes, ce que tu acceptes, ce que tu refuses. Et ne donne jamais ton chiffre en premier si tu peux l'éviter.",
+   liens:[["Baromètre des salaires finance, Apec","https://www.apec.fr/tous-nos-metiers.html"],
+          ["Salaires par poste, Compta Online","https://www.compta-online.com/"]],
+   lire:"Never Split the Difference, de Chris Voss. Court, concret, écrit par un négociateur du FBI."},
+
+  {cat:"Ce qui te fera avancer plus vite", nm:"Écrire clairement", cible:"Une note d'une page qu'un dirigeant lit jusqu'au bout",
+   why:"Un bon chiffre mal expliqué ne sert à rien. Savoir écrire court est rare, et ça se remarque tout de suite.",
+   faire:"Une note de synthèse par mois sur un sujet de ton travail. Une page, jamais deux. La conclusion en premier, le détail après.",
+   liens:[["Les publications de la DFCG, association des directeurs financiers","https://www.dfcg.fr/"]],
+   lire:"Regarde comment sont écrites les notes de l'ACPR ou de la Banque de France : conclusion d'abord, preuve ensuite."},
+
+  {cat:"Ce qui te fera avancer plus vite", nm:"Réseau professionnel", cible:"Dix personnes qui pensent à toi quand un poste s'ouvre",
+   why:"La moitié des postes ne sont jamais publiés. Ton réseau actuel se limite à tes collègues et ta promo, c'est trop peu.",
+   faire:"Un message par semaine à quelqu'un dont le métier t'intéresse, pour poser une question précise, jamais pour demander un poste. Et un événement DFCG ou Apec par trimestre.",
+   liens:[["Événements DFCG","https://www.dfcg.fr/"],["Ateliers et rencontres Apec","https://www.apec.fr/candidat.html"]],
+   lire:"Les anciens de ton école sont ta ressource la plus sous-utilisée. Cherche ESG Finance sur LinkedIn, filtre par entreprise."},
+
+  {cat:"Le style de vie qui tient sur la durée", nm:"Sommeil régulier", cible:"Couché avant 23h30, cinq soirs sur sept",
+   why:"Tout dépend de ça : la salle, la concentration, l'humeur. C'est le levier avec le meilleur rendement, et le plus facile à négliger.",
+   faire:"Une alarme de coucher à 22h45, et le téléphone qui charge hors de la chambre. La deuxième partie compte plus que la première.",
+   liens:[], lire:"Ton réveil est fixe de toute façon à cause du travail. C'est l'heure du coucher qui décide de ta nuit."},
+
+  {cat:"Le style de vie qui tient sur la durée", nm:"Trois séances par semaine, minimum", cible:"Ne jamais descendre en dessous, même en période chargée",
+   why:"La régularité bat l'intensité. Trois séances tenues toute l'année valent mieux que six pendant un mois puis rien.",
+   faire:"Sac préparé la veille, posé devant la porte. Les jours sans motivation, applique la règle des cinq minutes : tu as le droit de repartir après cinq minutes. Personne ne repart.",
+   liens:[], lire:"Ton cycle est déjà calé dans l'onglet Sport, tu n'as plus à décider."},
+
   {cat:"Le style de vie qui tient sur la durée", nm:"Lecture", cible:"Vingt minutes par jour",
-   why:"C'est ce qui alimente tout le reste, y compris ta façon d'écrire et de parler.",
-   res:"Un livre en cours en permanence, lu le soir à la place du téléphone."},
-  {cat:"Le style de vie qui tient sur la durée", nm:"Finances personnelles", cible:"Un mois d'avance sur ton compte",
-   why:"Tu sais piloter la trésorerie d'un groupe de huit sociétés. Applique la même rigueur à la tienne.",
-   res:"L'onglet Budget de cette app, tenu chaque semaine. Puis un virement automatique le jour de la paie."}
+   why:"C'est ce qui alimente le reste, y compris ta façon d'écrire et de parler.",
+   faire:"Un livre en cours en permanence, sur la table de nuit, lu à la place du téléphone. Vingt pages par soir suffisent.",
+   liens:[], lire:"Alterne : un livre de métier, un livre qui n'a rien à voir. Sinon tu décroches au bout de trois semaines."},
+
+  {cat:"Le style de vie qui tient sur la durée", nm:"Tes finances à toi", cible:"Un mois de salaire d'avance sur ton compte",
+   why:"Tu pilotes la trésorerie d'un groupe de huit sociétés. Applique-toi la même rigueur, c'est ce qui te rendra libre de refuser un poste.",
+   faire:"L'onglet Budget, tenu chaque dimanche soir, cinq minutes. Puis un virement automatique le jour de la paie, avant de dépenser quoi que ce soit.",
+   liens:[], lire:"Vise d'abord un mois d'avance, ensuite seulement tu penseras à placer."}
 ];
 
 const PROG = [
@@ -437,8 +481,8 @@ function renderSport(){
 }
 
 function renderSkills(){
-  let h = '<div class="hint">Ce que tu veux savoir faire dans un an. Touche les barres pour marquer où tu en es, ' +
-          'et note ce que tu as fait pour garder une trace.</div>';
+  let h = '<div class="hint">Ce que tu veux savoir faire dans un an. Pour chacune : pourquoi ça compte, ' +
+          'quoi faire concrètement, et où aller. Touche les barres pour marquer où tu en es.</div>';
   let catCourante = "";
   SKILLS.forEach((sk, i) => {
     if (sk.cat !== catCourante) {
@@ -452,8 +496,15 @@ function renderSkills(){
          '<div class="why">' + sk.why + '</div>' +
          '<div class="dots">' + [1,2,3,4,5].map(n =>
            '<span class="' + (st.n >= n ? "on" : "") + '" data-sk="' + i + '" data-n="' + n + '"></span>').join("") + '</div>' +
-         '<div class="res"><b>Objectif :</b> ' + sk.cible + '<br><b>Par où commencer :</b> ' + sk.res + '</div>' +
-         '<textarea style="margin-top:9px;min-height:44px" data-sknote="' + i + '" placeholder="Ce que tu as fait, ce que tu as compris.">' + (st.note || "") + '</textarea></div>';
+         '<div class="res"><b>L\'objectif :</b> ' + sk.cible + '</div>' +
+         '<div class="res" style="border-top:0;padding-top:4px"><b>Ce que tu fais :</b> ' + sk.faire + '</div>';
+    if (sk.liens && sk.liens.length) {
+      h += '<div class="res" style="border-top:0;padding-top:6px"><b>Où aller :</b><br>' +
+           sk.liens.map(l => '<a href="' + l[1] + '" target="_blank" rel="noopener" ' +
+             'style="color:var(--or);font-weight:600;text-decoration:none">' + l[0] + '</a>').join('<br>') + '</div>';
+    }
+    if (sk.lire) h += '<div class="res" style="border-top:0;padding-top:6px;font-style:italic">' + sk.lire + '</div>';
+    h += '<textarea style="margin-top:9px;min-height:44px" data-sknote="' + i + '" placeholder="Ce que tu as fait, ce que tu as compris.">' + (st.note || "") + '</textarea></div>';
   });
   el("skills").innerHTML = h;
   el("skills").querySelectorAll("[data-sk]").forEach(d => d.addEventListener("click", () => {
@@ -517,19 +568,33 @@ function renderEuro(){
        '<select id="outC">' + CAT_OUT.map(c => '<option>' + c + '</option>').join("") + '</select></div>' +
        '<button class="btn light" id="addOut">Ajouter cette dépense</button></div>';
 
-  const parCat = {};
-  b.mvts.filter(m => m.type === "out").forEach(m => { parCat[m.cat] = (parCat[m.cat] || 0) + m.montant; });
-  const cats = Object.keys(parCat).sort((a, x) => parCat[x] - parCat[a]);
-  if (cats.length) {
-    h += '<div class="card"><h2>Où part l\'argent ce mois-ci</h2>';
+  const parCat = {in:{}, out:{}};
+  b.mvts.forEach(m => { parCat[m.type][m.cat] = (parCat[m.type][m.cat] || 0) + m.montant; });
+  function tableauCat(type, titre, total, couleur) {
+    const cats = Object.keys(parCat[type]).sort((a, x) => parCat[type][x] - parCat[type][a]);
+    let t = '<div class="card"><h2>' + titre + ' <span class="tag">' + Math.round(total) + ' €</span></h2>';
+    if (!cats.length) { return t + '<div class="note">Rien pour l\'instant ce mois-ci.</div></div>'; }
+    t += '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+         '<tr style="border-bottom:1px solid var(--ligne)">' +
+         '<th style="text-align:left;padding:6px 0;font-size:11px;color:var(--anthr);text-transform:uppercase">Catégorie</th>' +
+         '<th style="text-align:right;font-size:11px;color:var(--anthr);text-transform:uppercase">Nombre</th>' +
+         '<th style="text-align:right;font-size:11px;color:var(--anthr);text-transform:uppercase">Montant</th>' +
+         '<th style="text-align:right;font-size:11px;color:var(--anthr);text-transform:uppercase">Part</th></tr>';
     cats.forEach(c => {
-      const p = sorties > 0 ? parCat[c] / sorties * 100 : 0;
-      h += '<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:13px">' +
-           '<span>' + c + '</span><b>' + Math.round(parCat[c]) + ' €</b></div>' +
-           '<div class="bar"><i style="width:' + p + '%"></i></div></div>';
+      const n = b.mvts.filter(m => m.type === type && m.cat === c).length;
+      const p = total > 0 ? parCat[type][c] / total * 100 : 0;
+      t += '<tr style="border-bottom:1px solid #F0ECE2"><td style="padding:8px 0">' + c + '</td>' +
+           '<td style="text-align:right;color:var(--anthr)">' + n + '</td>' +
+           '<td style="text-align:right;font-weight:700;color:' + couleur + '">' + Math.round(parCat[type][c]) + ' €</td>' +
+           '<td style="text-align:right;color:var(--anthr)">' + Math.round(p) + ' %</td></tr>';
     });
-    h += '</div>';
+    t += '<tr><td style="padding:9px 0;font-weight:700">Total</td><td></td>' +
+         '<td style="text-align:right;font-weight:800;color:' + couleur + '">' + Math.round(total) + ' €</td>' +
+         '<td style="text-align:right;font-weight:700">100 %</td></tr></table></div>';
+    return t;
   }
+  h += tableauCat("out", "Où part l'argent", sorties, "var(--rouge)");
+  h += tableauCat("in", "Ce qui rentre", entrees, "var(--vert)");
 
   h += '<div class="card"><h2>Le détail <span class="tag">' + b.mvts.length + ' mouvements</span></h2>';
   if (b.mvts.length) {
