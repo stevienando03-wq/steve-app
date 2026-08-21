@@ -79,6 +79,8 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .rdv .c .h{font-size:12px;color:var(--or);font-weight:600;margin-top:1px}
 .rdv .c .w{font-size:12px;color:var(--anthr);margin-top:4px;line-height:1.45}
 .rdv.urgent .j{background:var(--rougebg)}
+.gcal{display:inline-block;margin-top:7px;font-size:11.5px;font-weight:700;color:var(--bleu);
+  background:var(--creme);border:1px solid var(--ligne);border-radius:16px;padding:5px 12px;text-decoration:none}
 .donut{display:block;margin:4px auto 0}
 .donut-c{font-size:27px;font-weight:800;fill:var(--bleu)}
 .donut-l{font-size:9px;fill:var(--anthr);text-transform:uppercase;letter-spacing:.6px}
@@ -422,21 +424,27 @@ function renderSemaine(){
       h += '<div class="rdv' + (j <= 3 ? ' urgent' : '') + '"><div class="j"><div class="n">' + d.getDate() + '</div>' +
            '<div class="m">' + MOIS_C[d.getMonth()] + '</div></div><div class="c"><div class="t">' + r.t + '</div>' +
            '<div class="h">' + libelleLong(r.d) + ", " + r.h.replace(":", "h") + '</div>' +
-           (r.note ? '<div class="w">' + r.note + '</div>' : '') + '</div></div>';
+           (r.note ? '<div class="w">' + r.note + '</div>' : '') +
+           '<a class="gcal" href="' + lienGoogle(r) + '" target="_blank" rel="noopener">Ajouter à Google Agenda</a>' +
+           '</div></div>';
     });
   } else { h += '<div class="note">Rien de prévu pour le moment.</div>'; }
   h += '<div class="form"><input type="text" id="rdvT" placeholder="Ajouter : intitulé"><input type="date" id="rdvD">' +
        '<input type="time" id="rdvH" value="09:00"></div>' +
        '<button class="btn light" id="addRdv">Ajouter ce rendez-vous</button></div>';
 
-  h += '<div class="card"><h2>Calendrier <span class="tag">rappels 3 jours avant</span></h2>' +
-       '<div class="note">Ton calendrier contient les séances, tes rendez-vous et ta réunion du jeudi. ' +
-       'Chaque rendez-vous a trois rappels : trois jours avant, la veille, et deux heures avant.</div>' +
-       '<button class="btn" id="dlIcs">Télécharger le calendrier</button>' +
+  h += '<div class="card sec-or"><h2>Mettre tout ça dans Google Agenda</h2>' +
+       '<div class="note"><b>Le plus simple, rendez-vous par rendez-vous :</b> le bouton gris sous chaque ' +
+       'rendez-vous ci-dessus l\'ouvre dans Google Agenda, déjà rempli. Tu cliques sur Enregistrer et il est ' +
+       'dans ton agenda perso, tout de suite. Tu peux y régler tes rappels comme tu veux.</div>' +
+       '<div class="note" style="margin-top:10px"><b>Ou tout d\'un coup :</b> télécharge le fichier et importe-le ' +
+       'dans Google Agenda (Paramètres, Importer et exporter). Séances, réunion du jeudi et rendez-vous arrivent ensemble.</div>' +
+       '<button class="btn" id="dlIcs">Télécharger tout le calendrier</button>' +
        '<button class="btn light" id="copyIcs">Copier le lien d\'abonnement</button>' +
-       '<div class="note" style="margin-top:10px">Sur le téléphone, le téléchargement ouvre le fichier, tu choisis Google Agenda. ' +
-       'Sur ordinateur, le lien d\'abonnement se colle dans Google Agenda, Autres agendas, À partir de l\'URL. ' +
-       'Le calendrier se met alors à jour tout seul.</div></div>';
+       '<div class="note" style="margin-top:10px"><b>À savoir sur l\'abonnement.</b> Il se met à jour tout seul, ' +
+       'mais Google ne relit le fichier que toutes les huit à vingt-quatre heures : rien n\'apparaît dans la minute. ' +
+       'Et sur un calendrier abonné, Google ignore mes rappels et applique les siens. Pour les régler : Google Agenda, ' +
+       'les trois points à côté du calendrier, Paramètres, Notifications.</div></div>';
 
   el("semaine").innerHTML = h;
 
@@ -740,6 +748,26 @@ function renderBouffe(){
 }
 
 /* ================= CALENDRIER ================= */
+/* lien qui ouvre Google Agenda avec l'evenement deja rempli, dans l'agenda personnel */
+function lienGoogle(r){
+  const hm = r.h.split(":");
+  const debut = parse(r.d);
+  debut.setHours(+hm[0], +hm[1], 0, 0);
+  const fin = new Date(debut.getTime() + (r.dur || 60) * 60000);
+  function fmt(d){
+    return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0") +
+           "T" + String(d.getHours()).padStart(2, "0") + String(d.getMinutes()).padStart(2, "0") + "00";
+  }
+  const p = new URLSearchParams({
+    action: "TEMPLATE",
+    text: r.t,
+    dates: fmt(debut) + "/" + fmt(fin),
+    ctz: "Europe/Paris",
+    details: (r.note || "") + "\n\nPense à régler tes rappels : trois jours avant, la veille, deux heures avant."
+  });
+  return "https://calendar.google.com/calendar/render?" + p.toString();
+}
+
 function icsDate(d, h){
   return d.replace(/-/g, "") + "T" + h.replace(":", "") + "00";
 }
