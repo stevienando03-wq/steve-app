@@ -10,884 +10,661 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<link rel="icon" href="icon.svg">
 <title>Meilleure version de moi-même</title>
 <style>
 :root{
   --bleu:#14213D; --creme:#F5F1E8; --anthr:#4A5568; --or:#C8A24B;
-  --on:#E3E8F0; --off:#F2EFE7; --vert:#1E6B33; --vertbg:#DFF0D8;
-  --rouge:#9C2330; --rougebg:#F8D7DA; --ligne:#E3DFD4;
+  --vert:#1E6B33; --vertbg:#DFF0D8; --rouge:#9C2330; --rougebg:#F8D7DA;
+  --ligne:#E3DFD4; --bleuclair:#8FA8C8;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 html,body{background:var(--creme);color:var(--bleu);
-  font-family:-apple-system,'Segoe UI',Roboto,Aptos,system-ui,sans-serif;font-size:16px;-webkit-text-size-adjust:100%}
-body{padding-bottom:78px;max-width:520px;margin:0 auto;min-height:100vh}
-.head{background:var(--bleu);color:#fff;padding:18px 18px 14px;position:sticky;top:0;z-index:20}
-.head h1{font-size:18px;font-weight:700;letter-spacing:.3px}
-.head .mots{font-size:11px;color:#B9C2D6;margin-top:3px;text-transform:uppercase;letter-spacing:1px}
-.head .date{font-size:12px;color:var(--or);margin-top:6px;font-weight:600}
+  font-family:-apple-system,'Segoe UI',Roboto,system-ui,sans-serif;font-size:16px;-webkit-text-size-adjust:100%}
+body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
+.head{background:var(--bleu);color:#fff;padding:16px 18px 13px;position:sticky;top:0;z-index:20}
+.head h1{font-size:17px;font-weight:700}
+.head .date{font-size:12px;color:var(--or);margin-top:4px;font-weight:600}
+.head button{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.14);border:0;color:#fff;
+  width:34px;height:34px;border-radius:9px;font-size:15px;cursor:pointer}
 .wrap{padding:14px}
-.card{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:14px;margin-bottom:12px;
-  box-shadow:0 1px 2px rgba(20,33,61,.04)}
-.card h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--anthr);margin-bottom:10px;font-weight:700}
-.card h2 .tag{float:right;font-size:11px;color:var(--or)}
-.sec-on{border-left:4px solid #8FA8C8}.sec-off{border-left:4px solid var(--or)}
-.sec-done{border-left:4px solid #5BA86B}.sec-today{border-left:4px solid var(--or);background:#FCF8EC}
-.row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F0ECE2;gap:10px}
+.card{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:15px;margin-bottom:12px}
+.card h2{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--anthr);margin-bottom:10px;font-weight:700}
+.card h2 .tag{float:right;font-size:11px;color:var(--or);text-transform:none;letter-spacing:0}
+.hero{background:var(--bleu);color:#fff;border:0}
+.hero h2{color:#B9C2D6}
+.hero .big{font-size:26px;font-weight:800;line-height:1.15;margin:2px 0 6px}
+.hero .sub{font-size:13px;color:#C3CADB;line-height:1.5}
+.sec-or{border-left:4px solid var(--or)}
+.sec-vert{border-left:4px solid #5BA86B}
+.sec-rouge{border-left:4px solid var(--rouge)}
+.row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0ECE2;gap:10px}
 .row:last-child{border-bottom:0}
-.row .lab{font-size:13px;color:var(--anthr);flex:1}
+.row .lab{font-size:13.5px;color:var(--anthr);flex:1;line-height:1.45}
 .row .lab b{color:var(--bleu)}
-.meal{font-size:13px;line-height:1.5;color:var(--bleu);padding:8px 0;border-bottom:1px solid #F0ECE2}
-.meal:last-child{border-bottom:0}
-.meal .k{display:inline-block;width:62px;font-size:11px;text-transform:uppercase;color:var(--or);font-weight:700;vertical-align:top}
-.meal .v{display:inline-block;width:calc(100% - 66px)}
-.pill{border:1px solid var(--ligne);background:#fff;border-radius:20px;padding:7px 14px;font-size:13px;font-weight:600;
-  color:var(--anthr);cursor:pointer;transition:.12s}
-.pill.g.act{background:var(--vertbg);border-color:#9BC6A4;color:var(--vert)}
-.pill.r.act{background:var(--rougebg);border-color:#E0A4AB;color:var(--rouge)}
-.pills{display:flex;gap:8px}
+.note{font-size:12.5px;color:var(--anthr);line-height:1.55}
+.pill{border:1px solid var(--ligne);background:#fff;border-radius:20px;padding:8px 15px;font-size:13px;
+  font-weight:600;color:var(--anthr);cursor:pointer;display:inline-block}
+.pill.on{background:var(--vertbg);border-color:#9BC6A4;color:var(--vert)}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:block;width:100%;text-align:center;background:var(--bleu);color:#fff;border:0;padding:13px;
+  border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;margin-top:10px}
+.btn.light{background:#fff;color:var(--bleu);border:1px solid var(--ligne)}
+.btn.or{background:var(--or)}
 .step{display:flex;align-items:center;gap:12px}
-.step button{width:34px;height:34px;border-radius:9px;border:1px solid var(--ligne);background:#fff;font-size:20px;
+.step button{width:36px;height:36px;border-radius:9px;border:1px solid var(--ligne);background:#fff;font-size:20px;
   color:var(--bleu);font-weight:700;cursor:pointer;line-height:1}
-.step .val{min-width:54px;text-align:center;font-weight:700;font-size:15px}
-.bar{height:9px;background:#EEE9DD;border-radius:6px;overflow:hidden;margin-top:5px}
+.step .val{min-width:56px;text-align:center;font-weight:700;font-size:15px}
+.bar{height:9px;background:#EEE9DD;border-radius:6px;overflow:hidden;margin-top:6px}
 .bar > i{display:block;height:100%;background:var(--or);border-radius:6px}
-.bar.over > i{background:var(--rouge)}
-.bar.warn > i{background:#D99A2B}
-.kpi{display:flex;gap:10px;flex-wrap:wrap}
-.kpi .box{flex:1;min-width:78px;background:var(--bleu);color:#fff;border-radius:12px;padding:11px 8px;text-align:center}
-.kpi .box.alt{background:var(--anthr)}
-.kpi .box .n{font-size:21px;font-weight:800;line-height:1}
-.kpi .box .t{font-size:10px;color:#C3CADB;margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
-.daycard{border:1px solid var(--ligne);border-radius:12px;padding:11px;margin-bottom:9px;background:#fff}
-.daycard .top{display:flex;justify-content:space-between;align-items:center}
-.daycard .dl{font-weight:700;font-size:14px}
-.daycard .st{font-size:11px;padding:2px 9px;border-radius:10px;font-weight:700}
-.st.on{background:var(--on);color:var(--bleu)}.st.off{background:var(--off);color:var(--anthr)}
-.st.done{background:var(--vertbg);color:var(--vert)}.st.today{background:var(--or);color:#fff}
-.daycard .sub{font-size:12px;color:var(--anthr);margin-top:6px;line-height:1.45}
+.bar.vert > i{background:#5BA86B}
 .acc{border:1px solid var(--ligne);border-radius:12px;margin-bottom:9px;overflow:hidden;background:#fff}
-.acc>.h{padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
-.acc>.h .nm{font-weight:700;font-size:13px}
-.acc>.h .meta{font-size:11px;color:var(--or);font-weight:600}
-.acc>.b{display:none;padding:0 14px 14px;font-size:13px;line-height:1.6;color:var(--anthr);white-space:pre-line;border-top:1px solid #F0ECE2}
-.acc.open>.b{display:block}
-.chk{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13px;border-bottom:1px solid #F0ECE2;cursor:pointer}
-.chk:last-child{border-bottom:0}
-.chk .bx{width:20px;height:20px;border:2px solid var(--ligne);border-radius:6px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
-.chk.on .bx{background:var(--vert);border-color:var(--vert)}
-.chk.on .nm{text-decoration:line-through;color:#A9A293}
-.chk .px{margin-left:auto;font-size:11px;color:var(--anthr)}
-.catname{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--or);font-weight:700;margin:12px 0 4px}
-.spend{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #F0ECE2}
-.spend .c{flex:1;font-size:13px}
-.spend .amt{font-size:12px;color:var(--anthr);min-width:84px;text-align:right}
-.spend input{width:66px;padding:6px;border:1px solid var(--ligne);border-radius:8px;font-size:13px;text-align:right}
-.note{font-size:12px;color:var(--anthr);line-height:1.5}
-.big{font-size:26px;font-weight:800}
+.acc > .h{padding:13px 15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.acc > .h .nm{font-weight:700;font-size:13.5px}
+.acc > .h .meta{font-size:11px;color:var(--or);font-weight:600;white-space:nowrap}
+.acc > .b{display:none;padding:0 15px 14px;font-size:13px;line-height:1.65;color:var(--anthr);white-space:pre-line;border-top:1px solid #F0ECE2}
+.acc.open > .b{display:block}
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#fff;border-top:1px solid var(--ligne);
-  display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom);overflow-x:auto;-webkit-overflow-scrolling:touch}
-.nav::-webkit-scrollbar{display:none}
-.nav button{flex:1 0 auto;min-width:60px;border:0;background:none;padding:9px 2px 8px;cursor:pointer;color:#A9A293;font-size:10px;font-weight:600}
+  display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;border:0;background:none;padding:9px 2px 8px;cursor:pointer;color:#A9A293;font-size:10px;font-weight:600}
 .nav button .ic{font-size:19px;display:block;margin-bottom:2px}
 .nav button.act{color:var(--bleu)}
-.nav button.act .ic{transform:translateY(-1px)}
 .tab{display:none}.tab.act{display:block}
-.hint{background:#FCF8EC;border:1px dashed var(--or);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--anthr);line-height:1.5;margin-bottom:12px}
-.miniobj{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F0ECE2;font-size:13px}
-.miniobj:last-child{border:0}.miniobj b{color:var(--bleu)}.miniobj .c{color:var(--anthr);text-align:right;max-width:55%}
-.headbtns{position:absolute;top:14px;right:14px;display:flex;gap:8px}
-.headbtns button{background:rgba(255,255,255,.14);border:0;color:#fff;width:34px;height:34px;border-radius:9px;font-size:15px;cursor:pointer}
-.alert{border-left:4px solid var(--rouge);background:#FCF3F2}
-.pomo{position:fixed;inset:0;background:rgba(10,15,25,.86);display:none;align-items:center;justify-content:center;z-index:50}
-.pomo.open{display:flex}
-.pomo .box2{background:#fff;border-radius:18px;padding:24px;width:84%;max-width:300px;text-align:center}
-.pomo .ph{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--or);font-weight:700}
-.pomo .time{font-size:56px;font-weight:800;color:var(--bleu);margin:6px 0;font-variant-numeric:tabular-nums}
-.pomo .ctrls{display:flex;gap:10px;justify-content:center;margin-top:14px}
-.pomo .ctrls button{flex:1;padding:11px;border-radius:10px;border:1px solid var(--ligne);background:var(--creme);color:var(--bleu);font-weight:700;cursor:pointer}
-.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.pgrid .ph{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--off)}
-.pgrid .ph img{width:100%;height:100%;object-fit:cover;display:block}
-.pgrid .ph .del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);color:#fff;border:0;border-radius:6px;font-size:12px;width:22px;height:22px;cursor:pointer}
-.pgrid .ph .cap{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:2px 4px;text-align:center}
-.hbars{display:flex;gap:4px;align-items:flex-end;height:46px;margin-top:8px}
-.hbars .hb{flex:1;background:var(--or);border-radius:3px 3px 0 0;min-height:3px}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
-.cal .hd{font-size:9px;text-transform:uppercase;color:var(--anthr);text-align:center;font-weight:700}
-.cal .cell{border:1px solid var(--ligne);border-radius:8px;min-height:54px;padding:3px 2px;background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:1px;overflow:hidden}
-.cal .cell.mut{opacity:.32;cursor:default;background:transparent}
-.cal .cell.selq{border-color:var(--or);box-shadow:0 0 0 1.5px var(--or)}
-.cal .cell.tdy{background:#FCF8EC}
-.cal .dn{font-size:10px;font-weight:800}
-.cal .ics{font-size:9px;line-height:1}
-.cal .dl{font-size:8px;color:var(--anthr);line-height:1.15;overflow:hidden}
-body.dark{--creme:#161b24;--bleu:#E8EBF1;--anthr:#AEB6C4;--ligne:#2c3543;--on:#22304a;--off:#2a2722}
-body.dark .card,body.dark .daycard,body.dark .acc,body.dark .pill,body.dark .step button,
-body.dark .nav,body.dark input,body.dark textarea,body.dark .pomo .box2,body.dark .pomo .ctrls button{background:#1f2733;color:var(--bleu)}
-body.dark .card{border-color:#2c3543}
-body.dark .hint{background:#2a2410}
-body.dark .sec-today,body.dark .alert{background:#23262f}
+.rdv{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #F0ECE2;align-items:flex-start}
+.rdv:last-child{border-bottom:0}
+.rdv .j{background:var(--creme);border-radius:10px;padding:6px 9px;text-align:center;min-width:52px;flex:none}
+.rdv .j .n{font-size:17px;font-weight:800;line-height:1}
+.rdv .j .m{font-size:9.5px;text-transform:uppercase;color:var(--anthr);letter-spacing:.4px}
+.rdv .c{flex:1}
+.rdv .c .t{font-weight:700;font-size:13.5px}
+.rdv .c .h{font-size:12px;color:var(--or);font-weight:600;margin-top:1px}
+.rdv .c .w{font-size:12px;color:var(--anthr);margin-top:4px;line-height:1.45}
+.rdv.urgent .j{background:var(--rougebg)}
+.donut{display:block;margin:4px auto 0}
+.donut-c{font-size:27px;font-weight:800;fill:var(--bleu)}
+.donut-l{font-size:9px;fill:var(--anthr);text-transform:uppercase;letter-spacing:.6px}
+.mvt{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #F0ECE2;font-size:13px;gap:8px}
+.mvt:last-child{border-bottom:0}
+.mvt .g{flex:1}
+.mvt .cat{font-size:11px;color:var(--anthr)}
+.mvt .amt{font-weight:700;white-space:nowrap}
+.mvt .amt.in{color:var(--vert)}
+.mvt .amt.out{color:var(--rouge)}
+.mvt .del{background:none;border:0;color:#C9C2B4;font-size:15px;cursor:pointer;padding:0 2px}
+.form{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.form input,.form select{flex:1;min-width:88px;padding:11px;border:1px solid var(--ligne);border-radius:10px;
+  font-size:14px;font-family:inherit;background:#fff;color:var(--bleu)}
+.kpi{display:flex;gap:10px}
+.kpi .box{flex:1;background:var(--creme);border-radius:12px;padding:11px 8px;text-align:center}
+.kpi .box .n{font-size:18px;font-weight:800}
+.kpi .box .t{font-size:9.5px;color:var(--anthr);margin-top:3px;text-transform:uppercase;letter-spacing:.4px}
+.kpi .box.v .n{color:var(--vert)}.kpi .box.r .n{color:var(--rouge)}
+.skill{border:1px solid var(--ligne);border-radius:12px;padding:12px;margin-bottom:9px;background:#fff}
+.skill .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.skill .nm{font-weight:700;font-size:13.5px}
+.skill .lvl{font-size:11px;color:var(--or);font-weight:700;white-space:nowrap}
+.skill .why{font-size:12px;color:var(--anthr);margin-top:5px;line-height:1.5}
+.skill .dots{display:flex;gap:5px;margin-top:9px}
+.skill .dots span{width:26px;height:8px;border-radius:4px;background:#EEE9DD;cursor:pointer}
+.skill .dots span.on{background:var(--or)}
+.skill .res{font-size:11.5px;color:var(--anthr);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid #F0ECE2}
+.chk{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;border-bottom:1px solid #F0ECE2;cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk .bx{width:20px;height:20px;border:2px solid var(--ligne);border-radius:6px;flex:none;display:flex;
+  align-items:center;justify-content:center;font-size:13px;color:#fff}
+.chk.on .bx{background:var(--vert);border-color:var(--vert)}
+.chk.on .nm{text-decoration:line-through;color:#A9A293}
+.hint{background:#FCF8EC;border:1px dashed var(--or);border-radius:11px;padding:11px 13px;font-size:12.5px;
+  color:var(--anthr);line-height:1.55;margin-bottom:12px}
+textarea{width:100%;border:1px solid var(--ligne);border-radius:10px;padding:10px;font-size:13.5px;
+  font-family:inherit;color:var(--bleu);min-height:60px;background:#fff}
+body.dark{--creme:#161b24;--bleu:#E8EBF1;--anthr:#AEB6C4;--ligne:#2c3543}
+body.dark .card,body.dark .acc,body.dark .skill,body.dark .nav,body.dark input,body.dark select,
+body.dark textarea,body.dark .pill,body.dark .step button{background:#1f2733;color:var(--bleu)}
 body.dark .head{background:#0e1729}
-body.dark .kpi .box{background:#2a3346}body.dark .kpi .box.alt{background:#3a4456}
-body.dark .nav button{color:#7e879a}body.dark .nav button.act{color:var(--bleu)}
+body.dark .hero{background:#26304a}
+body.dark .kpi .box,body.dark .rdv .j{background:#2a3346}
+body.dark .hint{background:#2a2410}
 body.dark .bar{background:#2c3543}
-body.dark .pill.g.act{background:#1e3a26;color:#9fdcae}body.dark .pill.r.act{background:#3a1f24;color:#e8a8b0}
-body.dark .st.on{background:#22304a;color:#cdd6e6}body.dark .st.off{background:#2a2722;color:var(--anthr)}
-body.dark .cal .cell{background:#1f2733}body.dark .cal .cell.tdy{background:#23262f}
+body.dark .nav button{color:#7e879a}
+body.dark .donut-c{fill:#E8EBF1}
 </style>
 </head>
 <body>
+
 <div class="head">
   <h1>Meilleure version de moi-même</h1>
-  <div class="mots">Confiant · Sportif · Bien dans ma peau</div>
   <div class="date" id="hdate"></div>
-  <div class="headbtns">
-    <button id="pomoBtn" title="Pomodoro">⏱</button>
-    <button id="darkBtn" title="Mode sombre">🌙</button>
-  </div>
-</div>
-<div class="pomo" id="pomo">
-  <div class="box2">
-    <div class="ph" id="pomoPhase">Travail</div>
-    <div class="time" id="pomoTime">25:00</div>
-    <div class="note" id="pomoCount">0 pomodoro fait(s)</div>
-    <div class="ctrls">
-      <button id="pomoStart">Démarrer</button>
-      <button id="pomoReset">Reset</button>
-    </div>
-    <div class="ctrls"><button id="pomoClose" style="flex:1">Fermer</button></div>
-  </div>
+  <button id="darkBtn" title="Mode sombre">🌙</button>
 </div>
 
 <div class="tab act" id="t-jour"><div class="wrap" id="jour"></div></div>
 <div class="tab" id="t-semaine"><div class="wrap" id="semaine"></div></div>
-<div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
-<div class="tab" id="t-menu"><div class="wrap" id="menu"></div></div>
-<div class="tab" id="t-courses"><div class="wrap" id="courses"></div></div>
-<div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
-<div class="tab" id="t-obj"><div class="wrap" id="obj"></div></div>
-<div class="tab" id="t-style"><div class="wrap" id="style"></div></div>
 <div class="tab" id="t-sport"><div class="wrap" id="sport"></div></div>
-<div class="tab" id="t-apprendre"><div class="wrap" id="apprendre"></div></div>
+<div class="tab" id="t-skills"><div class="wrap" id="skills"></div></div>
+<div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
+<div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
 
 <div class="nav">
   <button class="act" data-tab="jour"><span class="ic">📌</span>Aujourd'hui</button>
   <button data-tab="semaine"><span class="ic">🗓️</span>Semaine</button>
   <button data-tab="sport"><span class="ic">💪</span>Sport</button>
-  <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
-  <button data-tab="menu"><span class="ic">📆</span>Menu</button>
-  <button data-tab="courses"><span class="ic">🛒</span>Courses</button>
+  <button data-tab="skills"><span class="ic">🚀</span>Skills</button>
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
-  <button data-tab="style"><span class="ic">👔</span>Style</button>
-  <button data-tab="apprendre"><span class="ic">📖</span>Apprendre</button>
-  <button data-tab="obj"><span class="ic">🎯</span>Cap</button>
+  <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
 </div>
 
 <script>
-/* ---------------- DONNÉES (mises à jour par Claude) ---------------- */
-const DAYS=[
- {d:"2026-08-06",lab:"Jeu 6 août",type:"off",seance:"Retour de voyage — repos, déballage, lessive",pdj:"Libre",dej:"Libre (route du retour)",diner:"Simple sur le stock : omelette ou sardines-riz",courses:"Repère ce qui manque → GROS PLEIN samedi (liste : onglet 🛒 Courses)",etude:"Rien ce soir — installe-toi. Demain : Basic Fit, séance 1.",copine:"Vous rentrez du Sud ensemble — atterrissage en douceur",obj:"Valise défaite + lessive lancée + sac de salle PRÊT pour demain"},
- {d:"2026-08-07",lab:"Ven 7 août",type:"on",num:1,seance:"Séance 1 · PUSH — REPRISE À 0 (charges −30/40 %, garde 2 reps en réserve)",pdj:"Œufs + pain (la whey arrive demain avec le gros plein)",dej:"Vite fait : sardines-riz préparé la veille, ou déj dehors (TR)",diner:"Poulet gingembre-ail + riz (si stock), sinon lentilles-riz épicé",courses:"Appoint si besoin : œufs, lait, pain (~5 €)",etude:"Mémoire : liste 6-8 contacts d'entretien + envoie les sollicitations ce soir",copine:"Soir copine",obj:"Séance 1 faite = la reprise est lancée. Peu importe les charges."},
- {d:"2026-08-08",lab:"Sam 8 août",type:"on",num:2,seance:"Séance 2 · PULL (léger — reprise)",pdj:"Skyr + flocons + banane",dej:"BATCH : cuis 450 g poulet + 300 g riz → 3 boîtes (mange-en 1)",diner:"Pâtes bolo épicée (double la sauce → congèle 2)",courses:"🛒 GROS PLEIN DU MOIS (~55-60 €, TR d'abord) : socle + WHEY 1 kg — liste : onglet Courses",etude:"Mémoire : relis ton guide d'entretien + propose des créneaux",copine:""},
- {d:"2026-08-09",lab:"Dim 9 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Gainer + whey",dej:"Bowl batch",diner:"Chili con carne express (double → congèle 2)",courses:"",etude:"Mémoire : grille d'analyse du ch.5 prête (thèmes + verbatims à repérer)",copine:"Sortie / balade"},
- {d:"2026-08-10",lab:"Lun 10 août",type:"on",num:3,seance:"Séance 3 · LEGS (léger, pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poisson blanc épicé + patate douce",courses:"",etude:"Mémoire : relance les contacts muets + cale les RDV de la semaine",copine:""},
- {d:"2026-08-11",lab:"Mar 11 août",type:"on",num:4,seance:"Séance 4 · PUSH (encore −20 %)",pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",diner:"Poulet poivron (yassa léger) + riz",courses:"",etude:"Entretien n°1 si calé — sinon 2 lectures + fiches (biblio normée)",copine:""},
- {d:"2026-08-12",lab:"Mer 12 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Riz sauté œufs-légumes (anti-gaspi)",courses:"RÉAPPRO frais (~15 €, TR) : poulet 1 kg (batch demain), œufs x12, lait, bananes",etude:"Retranscris l'entretien fait — à chaud, 1 h max",copine:""},
- {d:"2026-08-13",lab:"Jeu 13 août",type:"on",num:5,seance:"Séance 5 · PULL",pdj:"Gainer + whey",dej:"Bowl batch (gamelle) — cuis le nouveau BATCH ce soir",diner:"Curry de poulet coco + riz (+ BATCH en parallèle)",courses:"",etude:"Entretien n°2 + notes à chaud",copine:""},
- {d:"2026-08-14",lab:"Ven 14 août",type:"on",num:6,seance:"Séance 6 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Chili (du congélo) — zéro cuisine",courses:"",etude:"Rien de lourd — pose tout, c'est le week-end du 15",copine:"Soir copine"},
- {d:"2026-08-15",lab:"Sam 15 août",type:"off",seance:"REPOS (férié) — profite",pdj:"Skyr + flocons + banane",dej:"Libre — profite",diner:"Libre",courses:"",etude:"Repos total.",copine:"Férié ensemble ❤️"},
- {d:"2026-08-16",lab:"Dim 16 août",type:"on",num:7,seance:"Séance 7 · PUSH",pdj:"Gainer + whey",dej:"BATCH : 450 g poulet + 300 g riz → 3 boîtes",diner:"Omelette épicée costaud",courses:"",etude:"Mémoire : retranscriptions à jour + relance les entretiens restants",copine:""},
- {d:"2026-08-17",lab:"Lun 17 août",type:"on",num:8,seance:"Séance 8 · PULL",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poulet gingembre-ail + riz",courses:"",etude:"Entretien n°3 + notes à chaud",copine:""},
- {d:"2026-08-18",lab:"Mar 18 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Sardines/maquereau express + riz",courses:"",etude:"Entretien n°4 + notes à chaud",copine:""},
- {d:"2026-08-19",lab:"Mer 19 août",type:"on",num:9,seance:"Séance 9 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Wraps poulet express",courses:"RÉAPPRO frais (~15 €, TR) : poulet 1 kg, œufs x12, lait, légumes surgelés",etude:"Ch.5 : commence la rédaction (résultats des entretiens 1-4)",copine:""},
- {d:"2026-08-20",lab:"Jeu 20 août",type:"on",num:10,seance:"Séance 10 · PUSH",pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle) — BATCH ce soir",diner:"Curry coco (reste) ou lentilles-riz épicé",courses:"",etude:"Entretien n°5 + notes à chaud",copine:""},
- {d:"2026-08-21",lab:"Ven 21 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Chili (congélo)",courses:"",etude:"Ch.5 : suite rédaction (30-45 min, pas plus)",copine:"Soir copine"},
- {d:"2026-08-22",lab:"Sam 22 août",type:"on",num:11,seance:"Séance 11 · PULL",pdj:"Gainer + whey",dej:"BATCH → 3 boîtes",diner:"Poisson blanc épicé + patate douce",courses:"Socle léger (~10-12 €, TR) : riz/pâtes si entamés, bananes, légumes",etude:"Entretien n°6 — objectif : tous les entretiens FAITS cette semaine",copine:""},
- {d:"2026-08-23",lab:"Dim 23 août",type:"on",num:12,seance:"Séance 12 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch",diner:"Riz sauté œufs-légumes",courses:"",etude:"Ch.5 : analyse croisée (points communs / divergences entre répondants)",copine:"Sortie / brunch"},
- {d:"2026-08-24",lab:"Lun 24 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",diner:"Omelette épicée costaud",courses:"",etude:"Ch.6 : discussion — confronte les résultats à tes hypothèses",copine:""},
- {d:"2026-08-25",lab:"Mar 25 août",type:"on",num:13,seance:"Séance 13 · PUSH",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Pâtes bolo (congélo)",courses:"",etude:"Ch.6 : préconisations concrètes (dont le cas Astridsen)",copine:""},
- {d:"2026-08-26",lab:"Mer 26 août",type:"on",num:14,seance:"Séance 14 · PULL",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poulet poivron (yassa léger) + riz",courses:"RÉAPPRO frais (~15 €, TR) : poulet, œufs x12, lait, bananes",etude:"Conclusion + intro relue (les deux doivent se répondre)",copine:""},
- {d:"2026-08-27",lab:"Jeu 27 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Sardines/maquereau express + riz",courses:"",etude:"Biblio aux normes (NOM Prénom, année) + annexes (guide + retranscriptions)",copine:""},
- {d:"2026-08-28",lab:"Ven 28 août",type:"on",num:15,seance:"Séance 15 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle) — BATCH ce soir",diner:"Curry de poulet coco + riz",courses:"",etude:"Relecture complète 1/2 : le FOND (fil rouge, transitions, hypothèses)",copine:"Soir copine"},
- {d:"2026-08-29",lab:"Sam 29 août",type:"on",num:16,seance:"Séance 16 · PUSH",pdj:"Gainer + whey",dej:"BATCH → 3 boîtes",diner:"Chili (congélo)",courses:"Socle léger (~12 €, TR)",etude:"Relecture 2/2 : la FORME (TNR 12, interligne 1,5, marges, pagination, sommaire)",copine:""},
- {d:"2026-08-30",lab:"Dim 30 août",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Skyr + flocons + banane",dej:"Bowl batch",diner:"Libre — tu l'as mérité",courses:"",etude:"Corrections finales + génère le PDF définitif",copine:"Sortie / balade",obj:"PDF final du mémoire PRÊT ce soir"},
- {d:"2026-08-31",lab:"Lun 31 août",type:"on",num:17,seance:"Séance 17 · PULL",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poulet gingembre-ail + riz",courses:"",etude:"🚨 DÉPÔT sur ESG Learn AUJOURD'HUI — n'attends pas la deadline de demain",copine:"",obj:"Mémoire DÉPOSÉ ce soir = zéro stress demain"},
- {d:"2026-09-01",lab:"Mar 1 sept",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Œufs + pain",dej:"Bowl batch (gamelle)",diner:"Riz sauté œufs-légumes",courses:"",etude:"Deadline officielle 23h59 — vérifie l'accusé de dépôt ESG Learn",copine:"",obj:"Dépôt confirmé (accusé reçu)"},
- {d:"2026-09-02",lab:"Mer 2 sept",type:"on",num:18,seance:"Séance 18 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Poisson blanc épicé + patate douce",courses:"",etude:"Soutenance (14-18/09) : plan du PPT — 20 min de présentation",copine:""},
- {d:"2026-09-03",lab:"Jeu 3 sept",type:"on",num:19,seance:"Séance 19 · PUSH",pdj:"Gainer + whey",dej:"Bowl batch (gamelle)",diner:"Pâtes bolo épicée (double → congèle)",courses:"",etude:"Soutenance : slides — première passe",copine:""},
- {d:"2026-09-04",lab:"Ven 4 sept",type:"off",seance:"REPOS — marche 20-30 min",pdj:"Skyr + flocons + banane",dej:"Bowl batch (gamelle)",diner:"Omelette épicée costaud",courses:"",etude:"Soutenance : slides finis + notes orales",copine:"Soir copine"},
- {d:"2026-09-05",lab:"Sam 5 sept",type:"on",num:20,seance:"Séance 20 · PULL",pdj:"Gainer + whey",dej:"BATCH → 3 boîtes",diner:"Curry de poulet coco + riz",courses:"Frais (~15 €, TR)",etude:"Répétition à voix haute ×1, chrono 20 min",copine:""},
- {d:"2026-09-06",lab:"Dim 6 sept",type:"on",num:21,seance:"Séance 21 · LEGS (pas avant-pied)",pdj:"Gainer + whey",dej:"Bowl batch",diner:"Libre",courses:"",etude:"Repos ou répétition légère — tu es prêt",copine:"Sortie"},
-];
-const SEANCE_TOTAL=DAYS.filter(d=>d.num).length;
-const SEANCE_MIN=Math.ceil(SEANCE_TOTAL*0.85);
-const RECIPES=[
- {nm:"Shake whey express (post-séance)",meta:"27 g P · 320 kcal · ~0,90 €",
-  b:"30 g whey (1 dose) · 400 ml lait (ou eau).\n1. Shaker, 30 secondes.\n2. Dans les 2 h après la séance — ou au pdj des jours pressés."},
- {nm:"Gainer maison + whey (pdj des jours ON)",meta:"50 g P · 800 kcal · ~1,60 €",
-  b:"400 ml lait · 60 g avoine · 30 g whey · 1 banane · 15 g beurre de cacahuète.\n1. Tout au blender (ou shaker + banane écrasée), 30 s.\n2. Le matin des jours de salle. (Plus de whey ? Remplace par 150 g de skyr.)"},
- {nm:"Bowl poulet-riz (batch — le déj)",meta:"42 g P · 700 kcal · ~1,35 €",
-  b:"150 g poulet cuit (du batch) · 100 g riz · légumes.\n1. Jour des courses : cuis 450 g poulet + 300 g riz d'un coup.\n2. Répartis en 3 boîtes.\n3. Réchauffe + filet d'huile + épices."},
- {nm:"Omelette épicée costaud",meta:"35 g P · 620 kcal · ~1,10 €",
-  b:"4 œufs · 2 pain · 30 g fromage · 1/2 oignon · piment · paprika.\n1. Oignon 2 min.\n2. Œufs + épices.\n3. Fromage, plie 4 min. + pain."},
- {nm:"Lentilles-riz épicé + œuf (éco)",meta:"28 g P · 650 kcal · ~1,00 €",
-  b:"100 g lentilles (ou 1 boîte) · 80 g riz · oignon · ail · cumin · paprika · piment · 1-2 œufs.\n1. Riz + lentilles cuits.\n2. Oignon+ail+épices 3 min.\n3. Œuf(s) dessus."},
- {nm:"Poisson blanc épicé + patate douce",meta:"35 g P · 620 kcal · ~1,30 €",
-  b:"150 g colin surgelé · 200 g patate douce · paprika+piment+ail · citron.\n1. Patate douce four 25 min 200°C.\n2. Poisson épicé, poêle 3-4 min/face, citron. + brocoli."},
- {nm:"Pâtes bolo épicée",meta:"40 g P · 790 kcal · ~1,35 €",
-  b:"100 g pâtes · 125 g bœuf 5% · oignon · 2 c.às concentré tomate · piment · ail.\n1. Pâtes 9 min.\n2. Oignon+ail+bœuf 6 min.\n3. Concentré+piment 5 min. (Double, congèle 2.)"},
- {nm:"Poulet poivron (yassa léger) + riz",meta:"45 g P · 740 kcal · ~1,45 €",
-  b:"150 g poulet · 1 poivron · oignon · citron · piment · ail · 100 g riz.\n1. Mariner 10 min.\n2. Saisir 6 min.\n3. Poivron+oignon 5 min, remettre poulet."},
- {nm:"Poulet gingembre-ail + riz",meta:"45 g P · 710 kcal · ~1,40 €",
-  b:"150 g poulet · 100 g riz · gingembre · ail · oignon · paprika.\n1. Riz.\n2. Gingembre+ail+oignon 2 min.\n3. Poulet+paprika 7-8 min."},
- {nm:"Sardines/maquereau express + riz (éco)",meta:"30 g P · 600 kcal · ~1,15 €",
-  b:"1 boîte sardines/maquereau · 100 g riz · légumes surgelés · piment · citron.\n1. Riz + légumes.\n2. Émiette la boîte dessus, citron + piment. Zéro cuisson."},
- {nm:"🆕 Chili con carne express (double → congèle)",meta:"38 g P · 720 kcal · ~1,40 €",
-  b:"125 g bœuf 5% · 1 boîte haricots rouges · 1/2 boîte tomates concassées · oignon · ail · cumin+paprika+piment · 80 g riz.\n1. Oignon+ail+bœuf 6 min.\n2. Tomates+haricots+épices 10 min à feu doux.\n3. Sur riz. Fais ×2, congèle 2 portions = tes soirs de flemme."},
- {nm:"🆕 Curry de poulet coco + riz",meta:"44 g P · 750 kcal · ~1,70 €",
-  b:"150 g poulet · 100 ml lait de coco · oignon · ail · curry + gingembre · 100 g riz.\n1. Oignon+ail 2 min.\n2. Poulet+curry 6 min.\n3. Lait de coco 5 min à feu doux. Change complètement du yassa."},
- {nm:"🆕 Riz sauté œufs-légumes (anti-gaspi)",meta:"26 g P · 640 kcal · ~1,00 €",
-  b:"Reste de riz · 3 œufs · légumes surgelés · sauce soja · ail.\n1. Légumes à la poêle 4 min.\n2. Riz + soja 3 min à feu vif.\n3. Œufs battus, remue 2 min. Le riz de la veille est PARFAIT pour ça."},
- {nm:"🆕 Wraps poulet express",meta:"40 g P · 680 kcal · ~1,50 €",
-  b:"2 tortillas · 150 g poulet (du batch) · crudités · sauce = skyr + citron + ail.\n1. Réchauffe le poulet.\n2. Tartine la sauce, garnis, roule.\n3. Quasi zéro vaisselle."},
-];
-const GROS_PLEIN=[
- "💪 WHEY 1 kg nature/choco ~17-25 € (Lidl la moins chère, sinon Action/Decathlon)",
- "Avoine 2×1 kg ~3 €","Riz 2 kg ~3 €","Pâtes 2×1 kg ~2,40 €",
- "Lentilles + pois chiches ~3 €","Haricots rouges ×2 ~1,60 €","Tomates concassées ×2 ~1,40 €",
- "Sardines/maquereau ×4 ~4 €","Beurre de cacahuète ~2,50 €","Huile ~5 €",
- "Concentré de tomate + bouillon ~1,50 €","Lait de coco ~1,20 €","Tortillas ×8 ~1,50 €",
- "Épices manquantes (cumin/curry/paprika/piment) ~3 €","Lait UHT 6×1 L ~6 €",
-];
-const FRAIS_SEM=[
- "Poulet 1 kg (le batch) ~6 €","Œufs ×30 ~5,50 €","Bœuf 5 % 500 g ~4 €",
- "Skyr 1 kg ~3 €","Lait 2 L ~2 € (si le pack de 6 est fini)","Pain complet ~1,20 €",
- "Bananes 1 kg ~1,50 €","Légumes surgelés ~2 €","Poisson blanc surgelé ~4 € (1 sem sur 2)",
- "Patates douces ~2,50 € (1 sem sur 2)",
-];
-/* Enveloppes d'août (recalées 06/08 à la demande de Steve). Les 150 € de TR = enveloppe courses à part. */
-const FIN={
- budgets:[["Courses (cash, en + des TR)",40],["Whey (1× le mois)",25],["Sorties / loisirs",60],
-   ["Coiffure",25],["Lavage",20],["Santé / soin",20],["Imprévus",30]],
- leviers:[["Courses","TR d'abord, cash ensuite"],["Resto","cuisiner > commander"],["Abos IA","garder l'essentiel"],
-   ["Jeux in-app","couper"],["Lavage","grouper les machines"],["Vinted","plutôt que neuf"]],
-};
-const OBJ=[
- ["Énergisantes","~3/jour en juin","0 — la série continue"],["Salle","arrêt depuis mi-juillet","Basic Fit dès le 7/08 : repartir à 0 → ≥ 14 séances en août"],
- ["Poids","~65 kg","+4-6 kg propres en 6 mois"],["Cuisine","batch rodé","batch + 1 plat nouveau/sem, ≤ 1 livraison/sem"],
- ["Mémoire","entretiens à mener","déposé le 31/08 (deadline 01/09 23h59)"],["Couple","voyage dans le Sud fait ✈️","1 attention/sem + anniv 15/12 préparé"],
- ["Style","base OK","souliers cuir + SPF50 dès la paie"],["Lecture / apprendre","irrégulier","20 min/jour"],
-];
-/* ---------------- ÉTAT (sauvé sur le tél) ---------------- */
-const LS="steve_v1";
-let S=JSON.parse(localStorage.getItem(LS)||"{}");
-S.track=S.track||{}; S.shop=S.shop||{}; S.spend=S.spend||{}; S.fin=S.fin||{}; S.weights=S.weights||[]; S.photos=S.photos||[]; S.read=S.read||[]; S.skills=S.skills||[]; S.mes=S.mes||{};
-let restT=null,restS=0,menuSel=null;
-function sparkline(vals,w,hh){if(vals.length<2)return'';const mn=Math.min(...vals),mx=Math.max(...vals),rng=(mx-mn)||1;const pts=vals.map((v,i)=>{const x=(i/(vals.length-1))*(w-8)+4;const y=hh-4-((v-mn)/rng)*(hh-8);return x.toFixed(1)+','+y.toFixed(1);}).join(' ');return `<svg viewBox="0 0 ${w} ${hh}" style="width:100%;height:${hh}px;margin-top:8px"><polyline points="${pts}" fill="none" stroke="var(--or)" stroke-width="2"/></svg>`;}
-function streakEnerg(){let s=0;for(let k=DAYS.length-1;k>=0;k--){const d=DAYS[k];if(d.d>todayISO())continue;const t=S.track[d.d];if(t&&t.energ==='N')s++;else if(t&&t.energ==='O')break;else if(s>0)break;}return s;}
-function save(){localStorage.setItem(LS,JSON.stringify(S));}
-function dayState(d){return S.track[d]||(S.track[d]={seance:false,eau:0,energ:null,jeux:null,scroll:null,prieres:0});}
-function todayISO(){const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");}
-function findToday(){const i=todayISO();let d=DAYS.find(x=>x.d===i);if(d)return d;
-  // sinon: 1er jour à venir, sinon le dernier
-  let f=DAYS.find(x=>x.d>=i);return f||DAYS[DAYS.length-1];}
+/* ================= RÉGLAGES ================= */
+const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
 
-/* ---------------- RENDU ---------------- */
-function el(h){const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstChild;}
-function meal(k,v){return v?`<div class="meal"><span class="k">${k}</span><span class="v">${v}</span></div>`:"";}
-function mShort(t){if(!t)return"";t=t.replace(/\(.*?\)/g,"").replace(/\s+/g," ").trim();return t.length>20?t.slice(0,19)+"…":t;}
-const REC_MAP=[["bolo","Pâtes bolo épicée"],["chili","🆕 Chili con carne express (double → congèle)"],["curry","🆕 Curry de poulet coco + riz"],["riz sauté","🆕 Riz sauté œufs-légumes (anti-gaspi)"],["wraps","🆕 Wraps poulet express"],["yassa","Poulet poivron (yassa léger) + riz"],["poivron","Poulet poivron (yassa léger) + riz"],["gingembre","Poulet gingembre-ail + riz"],["omelette","Omelette épicée costaud"],["poisson","Poisson blanc épicé + patate douce"],["sardines","Sardines/maquereau express + riz (éco)"],["maquereau","Sardines/maquereau express + riz (éco)"],["lentilles","Lentilles-riz épicé + œuf (éco)"],["batch","Bowl poulet-riz (batch — le déj)"],["gainer","Gainer maison + whey (pdj des jours ON)"],["whey","Shake whey express (post-séance)"]];
-function findRec(txt){if(!txt)return null;const t=txt.toLowerCase();for(const p of REC_MAP){if(t.includes(p[0]))return RECIPES.find(r=>r.nm===p[1])||null;}return null;}
-function goRecipe(nm){document.querySelector('.nav button[data-tab="bouffe"]').click();setTimeout(()=>{document.querySelectorAll('#bouffe .acc').forEach(a=>{const n=a.querySelector('.nm');if(n&&n.textContent===nm){a.classList.add('open');a.scrollIntoView({behavior:'smooth',block:'center'});}});},80);}
+/* Cycle 2 jours ON / 1 jour OFF, calé sur le vendredi 21 août 2026 :
+   ce jour-là LEGS, le lendemain PUSH, le surlendemain repos. Tout se calcule tout seul ensuite. */
+const CYCLE_DEBUT = "2026-08-21";
+const CYCLE = ["LEGS","PUSH","REPOS","PULL","LEGS","REPOS","PUSH","PULL","REPOS"];
 
-const OUTFIT={
- "2026-06-14":"Détente : joggers noirs + t-shirt + hoodie gris clair",
- "2026-06-15":"Chino écru + polo BOSS navy rentré + ceinture + sneakers blanches",
- "2026-06-18":"Pantalon noir carreaux fins + chemise blanche waffle rentrée + sneakers",
- "2026-06-19":"Chino écru + chemise lin sauge ouverte + t-shirt blanc dessous + sneakers",
- "2026-06-20":"VivaTech (event tech, networking + beaucoup de marche) : chino écru OU jean brut foncé + polo BOSS navy rentré (ou chemise bleu ciel) + ceinture cuir + sneakers blanches PROPRES. + surchemise/teddy si frais. Soigné mais relax. Tel chargé + bouteille d'eau.",
- "2026-06-21":"Jean + blouson teddy vert foncé + t-shirt blanc + sneakers (concert)",
- "2026-06-22":"Pantalon BOSS navy + polo navy à pois rentré + sneakers",
- "2026-06-23":"Chino écru + chemise bleu/blanc rayée rentrée + sneakers",
- "2026-06-24":"Pantalon habillé clair + chemise bleu ciel rentrée + blazer noir si frais",
- "2026-06-25":"Pantalon velours côtelé marron + chemise à carreaux noir/gris + t-shirt blanc + bottes",
- "2026-06-26":"Chino écru + polo BOSS navy rentré + sneakers",
- "2026-06-27":"Short Adidas vert + t-shirt waffle écru + sneakers",
- "2026-06-28":"Joggers gris + sweat olive/kaki + t-shirt",
- "2026-06-29":"Pantalon Scherrer noir + chemise blanche waffle rentrée + sneakers",
- "2026-06-30":"Chino écru + chemise lin sauge ouverte + t-shirt blanc + sneakers",
-};
-const TIPS=[
- "Sac de salle préparé la veille, devant la porte. La friction, pas la motivation.",
- "Eau gazeuse au frigo = ton anti-canette. Le geste compte autant que la caféine.",
- "Avant de commander : mange d'abord l'omelette (10 min). Tu ne commanderas pas.",
- "Tel en niveaux de gris : les réseaux perdent la moitié de leur pouvoir.",
- "Révision active : refais le cas sur feuille, ne relis pas le corrigé.",
- "Règle des 5 min à la salle : le droit d'arrêter après 5 min. Personne ne repart.",
- "Une attention copine ≠ un cadeau : message audio, plat apporté, sortie annoncée.",
- "Tel en charge HORS de la chambre. Ce qui te lève, c'est le réveil, pas le feed.",
- "Batch le jour des courses : 450 g poulet + 300 g riz = 3 déj prêts.",
- "Lit fait le matin = première victoire de la journée, donne le ton.",
- "Souliers cuir = ton achat n°1 dès la paie (les sneakers blanches ne passent pas en CODIR).",
- "Bonnet satin la nuit : tes twists tiennent 2× plus longtemps.",
+const RECURRENT = [
+  {jour:4, h:"20:30", dur:90, t:"Réunion hebdomadaire", note:"Tous les jeudis soir. Séance de sport le matin ce jour-là si c'est un jour ON."}
 ];
-function outfitFor(day){return day.tenue||OUTFIT[day.d]||"tenue libre (voir onglet Style)";}
-function absForDay(day){const s=(day.seance||'')+' '+(day.type||'');if(/PUSH/i.test(s))return['A','haut des abdos + gainage'];if(/PULL/i.test(s))return['B','bas des abdos + obliques'];if(/LEGS/i.test(s))return['C','core profond + anti-rotation'];return null;}
-function dayReminders(day){
-  const isTue=day.diner&&day.diner.indexOf('MARDI')===0;
-  const jn=day.lab.split(' ')[0];
-  let R=[];
-  const _on=(day.type==='on'||day.type==='done');
-  R.push([_on?"06h30":"07h15","⏰ Réveil + grand verre d'eau"]);
-  if(_on)R.push(["06h45","🏋️ Basic Fit — séance ~50 min (sac prêt la veille)"]);
-  else R.push(["aprèm","🚶 Marche 20-30 min (récup)"]);
-  R.push(["matin","👔 Tenue : "+outfitFor(day)]);
-  R.push(["lever·midi·aprèm·soir","💧 Eau : 1 verre à chaque ancre (cible 2,5 L)"]);
-  if(day.etude)R.push([isTue?"en journée":"19h30","📚 "+day.etude+(isTue?" — pas chez toi ce soir":"")]);
-  if(day.copine)R.push(["—","❤️ "+day.copine]);
-  if(jn==='Ven')R.push(["18h30","🤙 Appel hebdo (famille/admin)"]);
-  R.push(["soir","🧹 Propreté : 10 min de rangement"]);
-  R.push(["soir","📖 Lecture : 20 min"]);
-  R.push(["22h30","📵 Écrans coupés (tel hors chambre)"]);
-  R.push([_on?"23h00":"23h15","😴 Coucher — vise ~7h30 de sommeil"]);
-  return R;
+
+const RDV = [
+  {d:"2026-09-02", h:"16:00", dur:45,  t:"Rendez-vous santé",           note:"Mercredi, en pleine journée de travail. Pose deux heures maintenant, pas la veille."},
+  {d:"2026-09-05", h:"11:00", dur:60,  t:"Rendez-vous santé",           note:"Samedi matin, rien à poser."},
+  {d:"2026-09-07", h:"13:00", dur:150, t:"Rattrapage Handimanagement",  note:"Lundi début d'après-midi. Pose ta demi-journée et révise le week-end du 5."},
+  {d:"2026-09-08", h:"17:30", dur:75,  t:"État des lieux de sortie",    note:"Mardi. Tu finis à 18h30 : préviens ton manager et pars plus tôt. Appartement vide et propre, compteurs relevés."}
+];
+
+const SKILLS = [
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"Power BI", cible:"Construire un tableau de bord qui se met à jour tout seul",
+   why:"Tu fais déjà tout sous Excel. Power BI est ce que les entreprises demandent maintenant, et c'est le plus gros écart entre un profil comptable et un profil analyste.",
+   res:"Microsoft Learn, parcours Data Analyst, gratuit. Refais ton reporting mensuel dedans, c'est le meilleur exercice."},
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"Modélisation financière", cible:"Un modèle à trois états qui tourne, sans référence circulaire",
+   why:"C'est la compétence qui sépare un contrôleur de gestion d'un analyste financier. Elle s'apprend en construisant, pas en lisant.",
+   res:"Refais le business plan Astridsen depuis zéro avec bilan, compte de résultat et trésorerie liés entre eux."},
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"SQL", cible:"Sortir une donnée d'une base sans passer par quelqu'un",
+   why:"Dès que la boîte a un ERP ou un entrepôt de données, savoir écrire une requête te rend autonome.",
+   res:"SQLBolt puis Mode Analytics, deux heures par semaine suffisent."},
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"Anglais financier", cible:"Tenir une réunion de clôture en anglais sans préparer",
+   why:"Tu es bilingue à l'écrit. C'est l'oral en contexte technique qui se travaille : vocabulaire comptable, chiffres, reporting.",
+   res:"Podcasts FT News Briefing le matin, et écris tes commentaires de reporting en anglais une fois par mois."},
+  {cat:"Ce qui fait la différence sur un CV finance", nm:"IFRS et consolidation", cible:"Comprendre un jeu de comptes consolidés sans aide",
+   why:"Tu consolides déjà huit entités. Formaliser la théorie derrière transforme une pratique en argument d'entretien.",
+   res:"Ton cours IFRS de l'ESG, plus les états financiers d'un groupe coté que tu lis en entier une fois."},
+  {cat:"Ce qui te fera avancer plus vite", nm:"Prise de parole", cible:"Présenter en CODIR sans notes",
+   why:"Tu présentes déjà chaque mois. Passer de lire ses slides à raconter ses chiffres change la façon dont on te perçoit.",
+   res:"Enregistre-toi trois minutes avant chaque CODIR et réécoute. C'est désagréable et c'est ce qui marche."},
+  {cat:"Ce qui te fera avancer plus vite", nm:"Négociation", cible:"Savoir demander une augmentation ou un salaire d'embauche",
+   why:"Tu vas négocier ton premier vrai contrat dans quelques mois. Ça se prépare, ça ne s'improvise pas.",
+   res:"Never Split the Difference, de Chris Voss. Puis note ton chiffre cible et ton minimum avant chaque entretien."},
+  {cat:"Ce qui te fera avancer plus vite", nm:"Écrire clairement", cible:"Une note d'une page qu'un dirigeant lit en entier",
+   why:"Un bon chiffre mal expliqué ne sert à rien. Savoir écrire court est rare et se remarque tout de suite.",
+   res:"Une note de synthèse par mois sur un sujet de ton travail, une page, jamais deux."},
+  {cat:"Le style de vie qui tient sur la durée", nm:"Sommeil régulier", cible:"Se coucher avant 23h30 cinq soirs sur sept",
+   why:"Tout le reste en dépend : la salle, la concentration, l'humeur. C'est le levier avec le meilleur rendement.",
+   res:"Alarme de coucher, téléphone hors de la chambre."},
+  {cat:"Le style de vie qui tient sur la durée", nm:"Trois séances par semaine minimum", cible:"Ne jamais descendre en dessous, même en période chargée",
+   why:"La régularité bat l'intensité. Trois séances tenues toute l'année valent mieux que six pendant un mois.",
+   res:"Sac préparé la veille. Règle des cinq minutes les jours sans motivation."},
+  {cat:"Le style de vie qui tient sur la durée", nm:"Lecture", cible:"Vingt minutes par jour",
+   why:"C'est ce qui alimente tout le reste, y compris ta façon d'écrire et de parler.",
+   res:"Un livre en cours en permanence, lu le soir à la place du téléphone."},
+  {cat:"Le style de vie qui tient sur la durée", nm:"Finances personnelles", cible:"Un mois d'avance sur ton compte",
+   why:"Tu sais piloter la trésorerie d'un groupe de huit sociétés. Applique la même rigueur à la tienne.",
+   res:"L'onglet Budget de cette app, tenu chaque semaine. Puis un virement automatique le jour de la paie."}
+];
+
+const PROG = [
+  {t:"PUSH, pecs épaules triceps", x:"Développé couché haltères, 4 séries de 8 à 10\nDéveloppé militaire assis, 3 de 8 à 10\nÉcarté pec-deck, 3 de 12 à 15\nSuperset : élévations latérales 4 de 15 et extension triceps poulie 3 de 15\nPuis circuit abdos A"},
+  {t:"PULL, dos et biceps", x:"Tirage vertical, 4 séries de 8 à 10\nRowing assis machine, 4 de 10 à 12\nFace pull, 3 de 15 à 20\nSuperset : curl haltères 3 de 10 à 12 et curl marteau 3 de 12 à 15\nPuis circuit abdos B"},
+  {t:"LEGS, sans charge sur l'avant-pied", x:"Presse à cuisses, 4 séries de 10 à 12\nHack squat, 3 de 10 à 12\nSuperset : leg curl assis 3 de 12 à 15 et leg extension 3 de 12 à 15\nHip thrust, 3 de 12 à 15\nMollets assis, 3 de 15 à 20\nPuis circuit abdos C"},
+  {t:"Circuit abdos A, les jours PUSH", x:"Trois tours, trente secondes de repos :\nCrunch à la poulie haute à genoux, 15 à 20\nRelevé de buste sur banc incliné, 15\nPlanche, 40 secondes"},
+  {t:"Circuit abdos B, les jours PULL", x:"Trois tours, trente secondes de repos :\nRelevé de jambes suspendu, 12 à 15\nReverse crunch au sol, 15\nRussian twist lesté, 20\nPlanche latérale, 30 secondes de chaque côté"},
+  {t:"Circuit abdos C, les jours LEGS", x:"Trois tours, trente secondes de repos :\nRoulette abdominale ou crunch poulie, 10 à 12\nPallof press, 12 de chaque côté\nHollow hold, 25 à 30 secondes\nMountain climbers lents, 30 secondes"},
+  {t:"Comment progresser", x:"Monte les répétitions jusqu'au haut de la fourchette, puis ajoute un ou deux kilos et repars en bas. Garde toujours une ou deux répétitions en réserve. Les abdos se chargent aussi, sinon ils ne grossissent pas."},
+  {t:"Pour que les abdos se voient", x:"Deux conditions. Le muscle assez épais, c'est la salle. Un taux de gras assez bas, c'est la cuisine. En prise de masse lente, tu construis maintenant et ils ressortiront quand tu sécheras. Dix à quinze minutes de vélo ou de marche inclinée deux à trois fois par semaine y aident, sans impact pour ton pied."}
+];
+
+const RECETTES = [
+  {nm:"Shake whey après la séance", meta:"27 g de protéines", b:"30 g de whey, 400 ml de lait. Dans les deux heures qui suivent."},
+  {nm:"Gainer du matin", meta:"50 g de protéines", b:"400 ml de lait, 60 g d'avoine, 30 g de whey, une banane, 15 g de beurre de cacahuète. Au blender."},
+  {nm:"Bowl poulet riz, le déjeuner", meta:"42 g de protéines", b:"150 g de poulet du batch, 100 g de riz, légumes. Cuis 450 g de poulet et 300 g de riz d'un coup, ça fait trois boîtes."},
+  {nm:"Omelette épicée", meta:"35 g de protéines", b:"4 œufs, 2 tranches de pain, 30 g de fromage, un demi-oignon, piment et paprika."},
+  {nm:"Chili con carne", meta:"38 g de protéines", b:"125 g de bœuf 5%, une boîte de haricots rouges, une demi-boîte de tomates, oignon, ail, cumin, riz. Fais-en le double et congèle."},
+  {nm:"Curry de poulet coco", meta:"44 g de protéines", b:"150 g de poulet, 100 ml de lait de coco, oignon, ail, curry, gingembre, riz."},
+  {nm:"Poulet gingembre ail", meta:"45 g de protéines", b:"150 g de poulet, gingembre, ail, oignon, paprika, 100 g de riz."},
+  {nm:"Poisson blanc patate douce", meta:"35 g de protéines", b:"150 g de colin surgelé, 200 g de patate douce au four, paprika, citron, brocoli."},
+  {nm:"Pâtes bolognaise", meta:"40 g de protéines", b:"100 g de pâtes, 125 g de bœuf 5%, oignon, concentré de tomate, piment. Double la sauce et congèle."},
+  {nm:"Sardines riz, zéro cuisson", meta:"30 g de protéines", b:"Une boîte de sardines, 100 g de riz, légumes surgelés, citron, piment."},
+  {nm:"Riz sauté aux œufs", meta:"26 g de protéines", b:"Le riz de la veille, 3 œufs, légumes surgelés, sauce soja, ail."},
+  {nm:"Wraps poulet", meta:"40 g de protéines", b:"2 tortillas, 150 g de poulet, crudités, sauce au skyr citron ail."}
+];
+
+const COURSES = [
+  ["Le plein du mois", ["Whey 1 kg", "Avoine 2 kg", "Riz 2 kg", "Pâtes 2 kg", "Lentilles et pois chiches", "Haricots rouges", "Tomates concassées", "Sardines ou maquereau", "Beurre de cacahuète", "Huile", "Lait de coco", "Tortillas", "Épices", "Lait UHT 6 litres"]],
+  ["Le frais de la semaine", ["Poulet 1 kg", "Œufs par 30", "Bœuf 5% 500 g", "Skyr 1 kg", "Pain complet", "Bananes", "Légumes surgelés", "Poisson blanc surgelé", "Patates douces"]]
+];
+
+const CAT_IN  = ["Salaire", "Tickets resto", "Remboursement", "Autre"];
+const CAT_OUT = ["Courses", "Restaurant", "Transport", "Logement", "Santé", "Loisirs", "Abonnements", "Sport", "Autre"];
+
+/* ================= ÉTAT ================= */
+const LS = "steve_v1";
+let S = JSON.parse(localStorage.getItem(LS) || "{}");
+S.track   = S.track   || {};
+S.shop    = S.shop    || {};
+S.skills  = S.skills  || {};
+S.budget  = S.budget  || {};
+S.rdv     = S.rdv     || [];
+if (S.budget.soldeDebut === undefined) S.budget.soldeDebut = null;
+S.budget.mvts = S.budget.mvts || [];
+S.budget.mois = S.budget.mois || moisCourant();
+function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
+
+/* ================= DATES ================= */
+const JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+const JOURS_C = ["dim","lun","mar","mer","jeu","ven","sam"];
+const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const MOIS_C = ["janv","févr","mars","avr","mai","juin","juil","août","sept","oct","nov","déc"];
+function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function auj(){ return iso(new Date()); }
+function moisCourant(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
+function parse(s){ const p=s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+function joursEntre(a,b){ return Math.round((parse(b)-parse(a))/86400000); }
+function plusJours(s,n){ const d=parse(s); d.setDate(d.getDate()+n); return iso(d); }
+function libelle(s){ const d=parse(s); return JOURS_C[d.getDay()]+" "+d.getDate()+" "+MOIS_C[d.getMonth()]; }
+function libelleLong(s){ const d=parse(s); return JOURS[d.getDay()]+" "+d.getDate()+" "+MOIS[d.getMonth()]; }
+
+/* type de séance du jour, calculé depuis le début du cycle */
+function seanceDu(dateIso){
+  const n = joursEntre(CYCLE_DEBUT, dateIso);
+  const i = ((n % CYCLE.length) + CYCLE.length) % CYCLE.length;
+  return CYCLE[i];
 }
+function estTravail(dateIso){ return TRAVAIL.jours.indexOf(parse(dateIso).getDay()) >= 0; }
+function creneauSport(dateIso){
+  const d = parse(dateIso).getDay();
+  if (d === 4) return "le matin avant le travail, tu as ta réunion à 20h30";
+  if (estTravail(dateIso)) return "après le travail, vers 19h00";
+  return "quand tu veux dans la journée";
+}
+/* rendez-vous d'un jour donné, fixes plus les tiens */
+function rdvDu(dateIso){
+  let out = RDV.concat(S.rdv).filter(r => r.d === dateIso);
+  const jour = parse(dateIso).getDay();
+  RECURRENT.forEach(r => { if (r.jour === jour) out.push({d:dateIso, h:r.h, dur:r.dur, t:r.t, note:r.note, rec:true}); });
+  return out.sort((a,b) => a.h.localeCompare(b.h));
+}
+function prochainsRdv(n){
+  const t = auj();
+  let out = RDV.concat(S.rdv).filter(r => r.d >= t).sort((a,b) => (a.d+a.h).localeCompare(b.d+b.h));
+  return out.slice(0, n);
+}
+
+/* ================= RENDU ================= */
+function el(id){ return document.getElementById(id); }
+
 function renderJour(){
-  const c=document.getElementById("jour");c.innerHTML="";
-  const day=findToday();const st=dayState(day.d);
-  const cls={done:"sec-done",today:"sec-today",on:"sec-on",off:"sec-off",exam:"sec-today"}[day.type];
-  // bandeau
-  let h=`<div class="card ${cls}"><h2>${day.lab}<span class="tag">${day.type==='exam'?'🎓 EXAMS':day.type==='off'?'REPOS':day.type==='done'?'FAIT':day.num?('Séance '+day.num+'/'+SEANCE_TOTAL):''}</span></h2>`;
-  if(day.obj) h+=`<div class="row"><div class="lab">🎯 <b>Objectif n°1</b><br>${day.obj}</div></div>`;
-  h+=`<div class="row"><div class="lab">🏋️ <b>${day.seance}</b></div></div>`;
-  {const _ab=day.num?absForDay(day):null; if(_ab) h+=`<div class="row"><div class="lab">🔥 <b>Abdos — Circuit ${_ab[0]}</b> · ${_ab[1]} · fin de séance ~10 min (détail : onglet Sport)</div></div>`;}
-  h+=`<div class="row"><div class="lab">👔 <b>Tenue</b> — ${outfitFor(day)}</div></div>`;
-  if(day.etude) h+=`<div class="row"><div class="lab">📚 ${day.etude}</div></div>`;
-  if(day.copine) h+=`<div class="row"><div class="lab">❤️ ${day.copine}</div></div>`;
-  if(day.courses) h+=`<div class="row"><div class="lab">🛒 ${day.courses}</div></div>`;
-  h+=`</div>`;
-  // rappels du jour
-  h+=`<div class="card"><h2>Rappels du jour</h2>`;
-  dayReminders(day).forEach(([t,x])=>{h+=`<div class="row"><div class="lab">${x}</div><span class="px">${t}</span></div>`;});
-  h+=`<div class="note" style="margin-top:8px">Les vraies alarmes arrivent via ton Google Agenda (calendrier abonné). Ici = la vue d'ensemble.</div></div>`;
-  // gamelle de demain (tupperware pour le taf)
-  (function(){
-    const i=DAYS.indexOf(day), tmr=(i>=0&&i+1<DAYS.length)?DAYS[i+1]:null;
-    if(!tmr)return;
-    let msg,sub;
-    const dej=(tmr.dej||"");
-    if(dej.indexOf('COLLÈGUES')>=0){msg="Demain midi : repas avec les collègues 🍽️";sub="Pas de gamelle à préparer.";}
-    else if(dej.toLowerCase().indexOf('batch')>=0){msg="🥡 Prépare ta gamelle ce soir";sub="150 g poulet (du batch) + 100 g riz + légumes dans une boîte. Sors-la du frigo demain matin.";}
-    else {msg="🥡 Demain midi";sub=dej||"—";}
-    h+=`<div class="card sec-on"><h2>Préparer ce soir pour demain <span class="tag">${tmr.lab}</span></h2>
-      <div class="row"><div class="lab">🥡 <b>${msg}</b><br>${sub}</div></div>
-      <div class="row"><div class="lab">👔 Tenue : ${outfitFor(tmr)}</div></div>`;
-    if(tmr.type==='on'||tmr.type==='done') h+=`<div class="row"><div class="lab">🎒 Prépare ton sac de salle (séance demain matin)</div></div>`;
-    if((day.courses||"").indexOf('RÉAPPRO')>=0||(day.dej||"").indexOf('BATCH')>=0)
-      h+=`<div class="note" style="margin-top:6px">🍳 Ce soir aussi : (re)lance ton batch poulet+riz pour 3 jours.</div>`;
-    h+=`</div>`;
-  })();
-  // repas
-  if(day.pdj||day.dej||day.diner){
-    h+=`<div class="card"><h2>Repas du jour</h2>${meal('Petit-déj',day.pdj)}${meal('Déjeuner',day.dej)}${meal('Dîner',day.diner)}
-    <div class="note" style="margin-top:8px">Détail des recettes → onglet Bouffe.</div></div>`;
+  const t = auj(), s = seanceDu(t), st = S.track[t] || (S.track[t] = {seance:false, eau:0});
+  const rdvs = rdvDu(t), prochains = prochainsRdv(3);
+  let h = "";
+
+  h += '<div class="card hero"><h2>Aujourd\'hui</h2>' +
+       '<div class="big">' + (s === "REPOS" ? "Repos" : "Séance " + s) + '</div>' +
+       '<div class="sub">' + (s === "REPOS"
+         ? "Journée sans salle. Marche vingt minutes si tu peux, et couche-toi tôt."
+         : "Ta séance se cale " + creneauSport(t) + ". Le détail est dans l'onglet Sport.") +
+       (estTravail(t) ? "<br>Travail de " + TRAVAIL.debut + " à " + TRAVAIL.fin + "." : "") +
+       '</div></div>';
+
+  if (rdvs.length) {
+    h += '<div class="card sec-or"><h2>Ton programme du jour</h2>';
+    rdvs.forEach(r => {
+      h += '<div class="row"><div class="lab"><b>' + r.h.replace(":", "h") + '</b> &nbsp; ' + r.t +
+           (r.note ? '<br><span style="font-size:12px">' + r.note + '</span>' : '') + '</div></div>';
+    });
+    h += '</div>';
   }
-  // bloc étude + pomodoro
-  if(day.etude){
-    const isTue=day.diner&&day.diner.indexOf('MARDI')===0;
-    h+=`<div class="card"><h2>📚 Bloc étude <span class="tag">${isTue?'en journée':'19h30'}</span></h2>
-      <div class="row"><div class="lab">${day.etude}${isTue?' (pas chez toi ce soir → cale-le en journée)':''}</div></div>
-      <div class="note" style="margin-top:6px">Révision active : refais un cas sur feuille, ne relis pas.</div>
-      <div class="pills" style="margin-top:8px"><span class="pill g" id="studyPomo">▶ Lancer le Pomodoro 25/5</span></div></div>`;
+
+  h += '<div class="card"><h2>Mon suivi</h2>' +
+       '<div class="row"><div class="lab">Séance faite</div><div class="pills">' +
+       '<span class="pill' + (st.seance ? ' on' : '') + '" data-act="seance">' + (st.seance ? "Oui" : "Pas encore") + '</span></div></div>' +
+       '<div class="row"><div class="lab">Eau, verres de 30 cl</div>' +
+       '<div class="step"><button data-act="eau" data-v="-1">-</button><span class="val">' + st.eau + ' / 8</span>' +
+       '<button data-act="eau" data-v="1">+</button></div></div>' +
+       '<div class="bar' + (st.eau >= 8 ? ' vert' : '') + '"><i style="width:' + Math.min(100, st.eau / 8 * 100) + '%"></i></div>' +
+       '<div style="padding-top:12px"><textarea data-note placeholder="Une ligne sur ta journée, si tu veux.">' + (st.note || "") + '</textarea></div></div>';
+
+  if (prochains.length) {
+    h += '<div class="card"><h2>Ce qui arrive</h2>';
+    prochains.forEach(r => {
+      const j = joursEntre(auj(), r.d), d = parse(r.d);
+      h += '<div class="rdv' + (j <= 3 ? ' urgent' : '') + '"><div class="j"><div class="n">' + d.getDate() + '</div>' +
+           '<div class="m">' + MOIS_C[d.getMonth()] + '</div></div><div class="c"><div class="t">' + r.t + '</div>' +
+           '<div class="h">' + r.h.replace(":", "h") + ", " + (j === 0 ? "aujourd'hui" : j === 1 ? "demain" : "dans " + j + " jours") + '</div>' +
+           (r.note ? '<div class="w">' + r.note + '</div>' : '') + '</div></div>';
+    });
+    h += '</div>';
   }
-  // score + série
-  (function(){
-    let done=0,tot=0;
-    if(day.type==='on'){tot++; if(st.seance)done++;}
-    tot+=5; if(st.energ==='N')done++; if(st.jeux==='O')done++; if(st.scroll==='O')done++; if(st.eau>=8)done++; if((st.lecture||0)>=20)done++;
-    // série sans énergisante (en remontant jusqu'à aujourd'hui)
-    let streak=0; const idx=DAYS.indexOf(day);
-    for(let k=idx;k>=0;k--){const s=S.track[DAYS[k].d]; if(DAYS[k].type==='done'){continue;} if(s&&s.energ==='N')streak++; else if(s&&s.energ==='O')break; else if(k<idx)break;}
-    h+=`<div class="card"><h2>Score du jour <span class="tag">${done}/${tot}</span></h2>
-      <div class="bar"><i style="width:${tot?done/tot*100:0}%"></i></div>
-      <div class="note" style="margin-top:6px">🔥 Série sans énergisante : <b>${streak} j</b>. Coche tes habitudes ci-dessous, le score monte.</div></div>`;
-  })();
-  // tracking
-  h+=`<div class="card"><h2>Mon suivi du jour <span class="pill g" data-act="allok" style="float:right;font-size:11px;padding:4px 10px">✓ Tout bon</span></h2>
-    <div class="row"><div class="lab">Séance faite</div><div class="pills"><span class="pill g ${st.seance?'act':''}" data-act="seance">${st.seance?'✓ Fait':'À faire'}</span></div></div>
-    <div class="row"><div class="lab">Énergisante</div><div class="pills">
-      <span class="pill g ${st.energ==='N'?'act':''}" data-act="energ" data-v="N">Aucune ✓</span>
-      <span class="pill r ${st.energ==='O'?'act':''}" data-act="energ" data-v="O">Bue</span></div></div>
-    <div class="row"><div class="lab">Jeux ≤ 1h</div><div class="pills">
-      <span class="pill g ${st.jeux==='O'?'act':''}" data-act="jeux" data-v="O">Tenu ✓</span>
-      <span class="pill r ${st.jeux==='N'?'act':''}" data-act="jeux" data-v="N">Dépassé</span></div></div>
-    <div class="row"><div class="lab">Scroll maîtrisé</div><div class="pills">
-      <span class="pill g ${st.scroll==='O'?'act':''}" data-act="scroll" data-v="O">Oui ✓</span>
-      <span class="pill r ${st.scroll==='N'?'act':''}" data-act="scroll" data-v="N">Subi</span></div></div>
-    <div class="row"><div class="lab">Eau (verres 0,3 L · cible 8 = 2,5 L)</div>
-      <div class="step"><button data-act="eau" data-v="-1">−</button><span class="val">${st.eau}/8</span><button data-act="eau" data-v="1">+</button></div></div>
-    <div class="bar" style="margin:-2px 0 8px"><i style="width:${st.eau/8*100}%"></i></div>
-    <div class="row"><div class="lab">Propreté (10 min rangement)</div><div class="pills">
-      <span class="pill g ${st.proprete==='O'?'act':''}" data-act="proprete" data-v="O">Fait ✓</span></div></div>
-    <div class="row"><div class="lab">Lecture (min)</div>
-      <div class="step"><button data-act="lecture" data-v="-10">−</button><span class="val">${st.lecture||0}</span><button data-act="lecture" data-v="10">+</button></div></div>
-    <div class="row"><div class="lab">Humeur / énergie</div><div class="pills">${[1,2,3,4,5].map(n=>`<span class="pill ${st.humeur==n?'g act':''}" data-act="humeur" data-v="${n}">${n}</span>`).join('')}</div></div>
-    <div style="padding-top:8px"><div class="lab" style="margin-bottom:4px">📝 Note du jour</div>
-      <textarea data-note placeholder="Rechute ? victoire ? une ligne sur ta journée…" style="width:100%;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit;color:var(--bleu);min-height:46px">${st.note||''}</textarea></div>
-  </div>`;
-  // astuce
-  h+=`<div class="card"><h2>Astuce du jour</h2><div class="note">💡 ${TIPS[(new Date().getDate())%TIPS.length]}</div></div>`;
-  c.innerHTML=h;
-  c.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
-    const a=b.dataset.act, v=b.dataset.v, s=dayState(day.d);
-    if(a==="seance") s.seance=!s.seance;
-    else if(a==="eau") s.eau=Math.max(0,Math.min(8,s.eau+(+v)));
-    else if(a==="lecture") s.lecture=Math.max(0,Math.min(180,(s.lecture||0)+(+v)));
-    else if(a==="allok"){ if(day.type==='on'||day.type==='done')s.seance=true; s.energ='N'; s.jeux='O'; s.scroll='O'; s.eau=8; s.proprete='O'; }
-    else s[a]= s[a]===v? null : v;
-    save();renderJour();
+  el("jour").innerHTML = h;
+
+  el("jour").querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
+    const a = b.dataset.act, s2 = S.track[auj()];
+    if (a === "seance") s2.seance = !s2.seance;
+    if (a === "eau") s2.eau = Math.max(0, Math.min(8, s2.eau + (+b.dataset.v)));
+    save(); renderJour();
   }));
-  const ta=c.querySelector("[data-note]");
-  if(ta) ta.addEventListener("change",()=>{const s=dayState(day.d); s.note=ta.value; save();});
-  const sp=c.querySelector("#studyPomo");
-  if(sp) sp.addEventListener("click",()=>document.getElementById("pomoBtn").click());
+  const ta = el("jour").querySelector("[data-note]");
+  if (ta) ta.addEventListener("change", () => { S.track[auj()].note = ta.value; save(); });
 }
 
 function renderSemaine(){
-  const c=document.getElementById("semaine");c.innerHTML="";
-  // KPIs
-  let fait=0,energN=0,jeux=0,scroll=0,eauOK=0,lect=0,planON=0;
-  DAYS.forEach(d=>{
-    if(d.type==='done'){fait++;}
-    if(d.num&&d.type!=='done')planON++;
-    const s=S.track[d.d];
-    if(s){ if(s.seance&&d.type!=='done')fait++; if(s.energ==='N')energN++; if(s.jeux==='O')jeux++;
-      if(s.scroll==='O')scroll++; if(s.eau>=8)eauOK++; lect+=s.lecture||0; }
+  let h = '<div class="card"><h2>Tes sept prochains jours</h2>';
+  for (let i = 0; i < 7; i++) {
+    const d = plusJours(auj(), i), s = seanceDu(d), rdvs = rdvDu(d);
+    const tag = s === "REPOS" ? "repos" : s;
+    h += '<div class="row"><div class="lab"><b>' + (i === 0 ? "Aujourd'hui" : libelle(d)) + '</b>' +
+         (estTravail(d) ? ' &nbsp;<span style="font-size:11px;color:#A9A293">bureau ' + TRAVAIL.debut + " à " + TRAVAIL.fin + '</span>' : '') +
+         (rdvs.length ? '<br><span style="font-size:12px">' + rdvs.map(r => r.h.replace(":", "h") + " " + r.t).join(", ") + '</span>' : '') +
+         '</div><span class="pill' + (s === "REPOS" ? '' : ' on') + '">' + tag + '</span></div>';
+  }
+  h += '</div>';
+
+  const prochains = prochainsRdv(8);
+  h += '<div class="card sec-or"><h2>Rendez-vous à venir</h2>';
+  if (prochains.length) {
+    prochains.forEach(r => {
+      const j = joursEntre(auj(), r.d), d = parse(r.d);
+      h += '<div class="rdv' + (j <= 3 ? ' urgent' : '') + '"><div class="j"><div class="n">' + d.getDate() + '</div>' +
+           '<div class="m">' + MOIS_C[d.getMonth()] + '</div></div><div class="c"><div class="t">' + r.t + '</div>' +
+           '<div class="h">' + libelleLong(r.d) + ", " + r.h.replace(":", "h") + '</div>' +
+           (r.note ? '<div class="w">' + r.note + '</div>' : '') + '</div></div>';
+    });
+  } else { h += '<div class="note">Rien de prévu pour le moment.</div>'; }
+  h += '<div class="form"><input type="text" id="rdvT" placeholder="Ajouter : intitulé"><input type="date" id="rdvD">' +
+       '<input type="time" id="rdvH" value="09:00"></div>' +
+       '<button class="btn light" id="addRdv">Ajouter ce rendez-vous</button></div>';
+
+  h += '<div class="card"><h2>Calendrier <span class="tag">rappels 3 jours avant</span></h2>' +
+       '<div class="note">Ton calendrier contient les séances, tes rendez-vous et ta réunion du jeudi. ' +
+       'Chaque rendez-vous a trois rappels : trois jours avant, la veille, et deux heures avant.</div>' +
+       '<button class="btn" id="dlIcs">Télécharger le calendrier</button>' +
+       '<button class="btn light" id="copyIcs">Copier le lien d\'abonnement</button>' +
+       '<div class="note" style="margin-top:10px">Sur le téléphone, le téléchargement ouvre le fichier, tu choisis Google Agenda. ' +
+       'Sur ordinateur, le lien d\'abonnement se colle dans Google Agenda, Autres agendas, À partir de l\'URL. ' +
+       'Le calendrier se met alors à jour tout seul.</div></div>';
+
+  el("semaine").innerHTML = h;
+
+  el("addRdv").addEventListener("click", () => {
+    const t = el("rdvT").value.trim(), d = el("rdvD").value, hh = el("rdvH").value;
+    if (!t || !d) { alert("Il manque l'intitulé ou la date."); return; }
+    S.rdv.push({d:d, h:hh, dur:60, t:t, note:""}); save(); renderSemaine(); renderJour();
   });
-  let h=`<div class="card"><h2>Tableau de bord — reprise <span class="tag">6 août → 6 sept</span></h2><div class="kpi">
-    <div class="box"><div class="n">${fait}/${SEANCE_TOTAL}</div><div class="t">Séances</div></div>
-    <div class="box alt"><div class="n">${energN}</div><div class="t">Jours sans énerg.</div></div>
-    <div class="box alt"><div class="n">${eauOK}</div><div class="t">Jours 2,5 L</div></div>
-    <div class="box"><div class="n">${lect}</div><div class="t">Lecture (min)</div></div>
-   </div>
-   <div class="lab" style="font-size:11px;margin-top:10px">Séances ${fait}/${SEANCE_TOTAL} — minimum vital ${SEANCE_MIN}</div>
-   <div class="bar ${fait>=SEANCE_MIN?'':(fait>=SEANCE_MIN*0.7?'warn':'over')}"><i style="width:${Math.min(100,fait/SEANCE_TOTAL*100)}%"></i></div>
-   <div class="note" style="margin-top:9px">Tu coches dans « Aujourd'hui », ça monte ici tout seul.</div></div>`;
-  // bilan de la semaine
-  (function(){const dim=new Date().getDay()===0;
-   h+=`<div class="card ${dim?'sec-today':''}"><h2>Bilan de la semaine${dim?" — c'est dimanche !":''}</h2>
-     <div class="note">${fait} séance(s) · ${energN} jour(s) sans énergisante · ${eauOK} jour(s) à 2,5 L · ${lect} min de lecture.<br>${dim?'Lis ces chiffres, note ce qui a marché/coincé, et ajuste la semaine qui vient.':'Reviens dimanche soir pour le bilan et les ajustements.'}</div></div>`;
-  })();
-  // poids
-  const w=S.weights;
-  h+=`<div class="card"><h2>Suivi du poids <span class="tag">lean bulk</span></h2>`;
-  if(w.length){
-    const last=w[w.length-1], prev=w.length>1?w[w.length-2]:null, delta=prev?(last.v-prev.v):0;
-    h+=`<div class="kpi"><div class="box"><div class="n">${last.v} kg</div><div class="t">Dernier (${last.d.slice(8)}/${last.d.slice(5,7)})</div></div>
-      <div class="box alt"><div class="n">${delta>0?'+':''}${delta.toFixed(1)}</div><div class="t">vs précédent</div></div></div>${sparkline(w.map(x=>x.v),300,56)}
-      <div class="note" style="margin-top:6px">Historique : ${w.slice(-6).map(x=>x.v+'kg ('+x.d.slice(8)+'/'+x.d.slice(5,7)+')').join(' · ')}</div>`;
-  } else { h+=`<div class="note">Pas encore de pesée. Pèse-toi 1×/sem, même jour, à jeun.</div>`; }
-  h+=`<div class="spend" style="margin-top:8px"><span class="c">Ajouter une pesée (kg)</span><input type="number" inputmode="decimal" data-weight placeholder="ex 65.5"></div>
-    <div class="note">Lean bulk = +0,5-0,7 kg/mois. Trop vite → baisse le gainer ; stagnation 2 sem → +1 portion glucides.</div></div>`;
-  // mensurations
-  h+=`<div class="card"><h2>Mensurations (cm)</h2>
-    <div class="spend"><span class="c">Tour de bras</span><input type="number" inputmode="decimal" data-mes="bras" value="${S.mes.bras||''}"></div>
-    <div class="spend"><span class="c">Tour de poitrine</span><input type="number" inputmode="decimal" data-mes="poitrine" value="${S.mes.poitrine||''}"></div>
-    <div class="spend"><span class="c">Tour de taille</span><input type="number" inputmode="decimal" data-mes="taille" value="${S.mes.taille||''}"></div>
-    <div class="note" style="margin-top:6px">Mesure 1×/mois, à froid. Bras qui grossit + taille stable = prise de masse propre.</div></div>`;
-  // badges série
-  const stk=streakEnerg();
-  h+=`<div class="card"><h2>Série sans énergisante <span class="tag">${stk} j</span></h2>
-    <div class="pills" style="flex-wrap:wrap;gap:6px">${[3,7,14,30].map(n=>`<span class="pill ${stk>=n?'g act':''}">${stk>=n?'✅':'🔒'} ${n} j</span>`).join('')}</div></div>`;
-  // bilan du mois
-  (function(){const prem=new Date().getDate()===1;
-   h+=`<div class="card ${prem?'sec-today':''}"><h2>Bilan du mois${prem?" — c'est le 1er !":''}</h2>
-     <div class="note">${fait} séances · ${energN} jours sans énergisante · ${lect} min de lecture (cumul affiché).<br>${prem?'Fais le point sur tes 6 axes et fixe le cap du mois.':'Reviens le 1er du mois pour le bilan mensuel des 6 axes.'}</div></div>`;
-  })();
-  // humeur de la semaine
-  h+=`<div class="card"><h2>Humeur / énergie</h2><div class="hbars">`;
-  DAYS.slice(-10).forEach(d=>{const s=S.track[d.d];const v=s&&s.humeur?+s.humeur:0;h+=`<div class="hb" style="height:${v?v/5*100:4}%;opacity:${v?1:.25}"></div>`;});
-  h+=`</div><div class="note" style="margin-top:6px">Note ton humeur dans « Aujourd'hui » (1-5). Repère les creux pour ajuster.</div></div>`;
-  // jours
-  h+=`<div class="card"><h2>Les jours</h2>`;
-  const ti=todayISO();
-  DAYS.forEach(d=>{
-    const s=S.track[d.d]; const done=(d.type==='done')||(s&&s.seance);
-    const stxt={done:'FAIT',today:"AUJ.",on:(d.num?'Séance '+d.num:'ON'),off:'REPOS',exam:'🎓 EXAMS'}[d.type];
-    const sc=(d.type==='today'||d.type==='exam')?'today':(done&&d.num?'done':d.type);
-    h+=`<div class="daycard"><div class="top"><span class="dl">${d.lab}</span><span class="st ${sc}">${done&&d.num?'✓ '+stxt:stxt}</span></div>
-      <div class="sub">${d.seance}<br>🍽️ ${mShort(d.diner)||'—'}${d.courses?' · 🛒 courses':''}<br>👔 ${outfitFor(d)}</div></div>`;
+  el("dlIcs").addEventListener("click", telechargerIcs);
+  el("copyIcs").addEventListener("click", function(){
+    const u = "https://stevienando03-wq.github.io/steve-app/steve.ics";
+    if (navigator.clipboard) navigator.clipboard.writeText(u).then(() => { this.textContent = "Lien copié"; });
+    else this.textContent = u;
   });
-  h+=`</div>`;
-  c.innerHTML=h;
-  const wi=c.querySelector("[data-weight]");
-  if(wi) wi.addEventListener("change",()=>{const v=parseFloat(wi.value.replace(",","."));if(!isNaN(v)){S.weights.push({d:todayISO(),v:v});save();renderSemaine();}});
-  c.querySelectorAll("[data-mes]").forEach(inp=>inp.addEventListener("change",()=>{const k=inp.dataset.mes;S.mes[k]=inp.value===''?'':parseFloat(inp.value.replace(",","."));save();}));
+}
+
+function renderSport(){
+  const s = seanceDu(auj());
+  let h = '<div class="card hero"><h2>Aujourd\'hui</h2><div class="big">' +
+          (s === "REPOS" ? "Repos" : s) + '</div><div class="sub">' +
+          (s === "REPOS" ? "Pas de salle. Marche, étirements, et au lit tôt." : "Séance " + creneauSport(auj()) + ".") +
+          '</div></div>';
+  h += '<div class="hint">Deux jours de salle, un jour de repos, en boucle. Le programme tourne tout seul : ' +
+       'PUSH, PULL, LEGS. Chaque séance finit par son circuit abdos.</div>';
+  PROG.forEach(p => {
+    h += '<div class="acc"><div class="h"><span class="nm">' + p.t + '</span><span class="meta">voir</span></div>' +
+         '<div class="b">' + p.x + '</div></div>';
+  });
+  h += '<div class="card"><h2>Minuteur de repos</h2>' +
+       '<div style="font-size:42px;text-align:center;font-weight:800" id="restT">prêt</div>' +
+       '<div class="pills" style="justify-content:center;margin-top:8px">' +
+       '<span class="pill" data-rest="60">60 s</span><span class="pill" data-rest="90">90 s</span>' +
+       '<span class="pill" data-rest="120">2 min</span><span class="pill" data-rest="0">Stop</span></div></div>';
+  el("sport").innerHTML = h;
+  el("sport").querySelectorAll(".acc").forEach(a =>
+    a.querySelector(".h").addEventListener("click", () => a.classList.toggle("open")));
+  el("sport").querySelectorAll("[data-rest]").forEach(b => b.addEventListener("click", () => {
+    clearInterval(window._rt); let n = +b.dataset.rest; const z = el("restT");
+    z.textContent = n > 0 ? n + " s" : "prêt";
+    if (n > 0) window._rt = setInterval(() => {
+      n--; if (n <= 0) { z.textContent = "C'est reparti"; clearInterval(window._rt); } else z.textContent = n + " s";
+    }, 1000);
+  }));
+}
+
+function renderSkills(){
+  let h = '<div class="hint">Ce que tu veux savoir faire dans un an. Touche les barres pour marquer où tu en es, ' +
+          'et note ce que tu as fait pour garder une trace.</div>';
+  let catCourante = "";
+  SKILLS.forEach((sk, i) => {
+    if (sk.cat !== catCourante) {
+      catCourante = sk.cat;
+      h += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--or);' +
+           'font-weight:700;margin:16px 0 8px">' + sk.cat + '</div>';
+    }
+    const st = S.skills[sk.nm] || {n:0, note:""};
+    h += '<div class="skill"><div class="top"><span class="nm">' + sk.nm + '</span>' +
+         '<span class="lvl">' + st.n + ' sur 5</span></div>' +
+         '<div class="why">' + sk.why + '</div>' +
+         '<div class="dots">' + [1,2,3,4,5].map(n =>
+           '<span class="' + (st.n >= n ? "on" : "") + '" data-sk="' + i + '" data-n="' + n + '"></span>').join("") + '</div>' +
+         '<div class="res"><b>Objectif :</b> ' + sk.cible + '<br><b>Par où commencer :</b> ' + sk.res + '</div>' +
+         '<textarea style="margin-top:9px;min-height:44px" data-sknote="' + i + '" placeholder="Ce que tu as fait, ce que tu as compris.">' + (st.note || "") + '</textarea></div>';
+  });
+  el("skills").innerHTML = h;
+  el("skills").querySelectorAll("[data-sk]").forEach(d => d.addEventListener("click", () => {
+    const sk = SKILLS[+d.dataset.sk].nm, n = +d.dataset.n;
+    const cur = S.skills[sk] || {n:0, note:""};
+    cur.n = (cur.n === n) ? n - 1 : n;
+    S.skills[sk] = cur; save(); renderSkills();
+  }));
+  el("skills").querySelectorAll("[data-sknote]").forEach(t => t.addEventListener("change", () => {
+    const sk = SKILLS[+t.dataset.sknote].nm;
+    const cur = S.skills[sk] || {n:0, note:""};
+    cur.note = t.value; S.skills[sk] = cur; save();
+  }));
+}
+
+function renderEuro(){
+  const b = S.budget;
+  if (b.mois !== moisCourant() && b.mvts.length === 0) b.mois = moisCourant();
+  const entrees = b.mvts.filter(m => m.type === "in").reduce((a, m) => a + m.montant, 0);
+  const sorties = b.mvts.filter(m => m.type === "out").reduce((a, m) => a + m.montant, 0);
+  const base = (b.soldeDebut || 0) + entrees;
+  const solde = base - sorties;
+  const pct = base > 0 ? Math.max(0, Math.min(1, solde / base)) : 0;
+  let h = "";
+
+  if (b.soldeDebut === null) {
+    h += '<div class="card"><h2>Pour commencer</h2>' +
+         '<div class="note">Entre ce que tu as sur ton compte aujourd\'hui. Ensuite tu ajoutes tes entrées et tes sorties, le cercle suit.</div>' +
+         '<div class="form"><input type="number" inputmode="decimal" id="initSolde" placeholder="Solde actuel en euros"></div>' +
+         '<button class="btn" id="setSolde">Enregistrer</button></div>';
+    el("euro").innerHTML = h;
+    el("setSolde").addEventListener("click", () => {
+      const v = parseFloat((el("initSolde").value || "").replace(",", "."));
+      if (!isNaN(v)) { S.budget.soldeDebut = v; S.budget.mois = moisCourant(); save(); renderEuro(); }
+    });
+    return;
+  }
+
+  const R = 62, C = 2 * Math.PI * R;
+  h += '<div class="card"><h2>Mon solde <span class="tag">' + MOIS[new Date().getMonth()] + '</span></h2>' +
+       '<svg class="donut" width="170" height="170" viewBox="0 0 170 170">' +
+       '<circle cx="85" cy="85" r="' + R + '" fill="none" stroke="#EEE9DD" stroke-width="15"></circle>' +
+       '<circle cx="85" cy="85" r="' + R + '" fill="none" stroke="' + (pct > .35 ? "#1E6B33" : pct > .15 ? "#C8A24B" : "#9C2330") + '" ' +
+       'stroke-width="15" stroke-linecap="round" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '" ' +
+       'transform="rotate(-90 85 85)"></circle>' +
+       '<text x="85" y="88" text-anchor="middle" class="donut-c">' + Math.round(solde) + ' €</text>' +
+       '<text x="85" y="106" text-anchor="middle" class="donut-l">disponible</text></svg>' +
+       '<div class="kpi" style="margin-top:10px">' +
+       '<div class="box v"><div class="n">+' + Math.round(entrees) + ' €</div><div class="t">entrées</div></div>' +
+       '<div class="box r"><div class="n">-' + Math.round(sorties) + ' €</div><div class="t">sorties</div></div>' +
+       '<div class="box"><div class="n">' + Math.round(entrees - sorties) + ' €</div><div class="t">net du mois</div></div>' +
+       '</div></div>';
+
+  h += '<div class="card sec-vert"><h2>J\'ai reçu de l\'argent</h2>' +
+       '<div class="form"><input type="number" inputmode="decimal" id="inM" placeholder="Montant">' +
+       '<select id="inC">' + CAT_IN.map(c => '<option>' + c + '</option>').join("") + '</select></div>' +
+       '<button class="btn light" id="addIn">Ajouter cette entrée</button></div>';
+
+  h += '<div class="card sec-rouge"><h2>J\'ai dépensé</h2>' +
+       '<div class="form"><input type="number" inputmode="decimal" id="outM" placeholder="Montant">' +
+       '<select id="outC">' + CAT_OUT.map(c => '<option>' + c + '</option>').join("") + '</select></div>' +
+       '<button class="btn light" id="addOut">Ajouter cette dépense</button></div>';
+
+  const parCat = {};
+  b.mvts.filter(m => m.type === "out").forEach(m => { parCat[m.cat] = (parCat[m.cat] || 0) + m.montant; });
+  const cats = Object.keys(parCat).sort((a, x) => parCat[x] - parCat[a]);
+  if (cats.length) {
+    h += '<div class="card"><h2>Où part l\'argent ce mois-ci</h2>';
+    cats.forEach(c => {
+      const p = sorties > 0 ? parCat[c] / sorties * 100 : 0;
+      h += '<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:13px">' +
+           '<span>' + c + '</span><b>' + Math.round(parCat[c]) + ' €</b></div>' +
+           '<div class="bar"><i style="width:' + p + '%"></i></div></div>';
+    });
+    h += '</div>';
+  }
+
+  h += '<div class="card"><h2>Le détail <span class="tag">' + b.mvts.length + ' mouvements</span></h2>';
+  if (b.mvts.length) {
+    b.mvts.slice().reverse().forEach((m, idx) => {
+      const vrai = b.mvts.length - 1 - idx;
+      h += '<div class="mvt"><div class="g"><div>' + m.cat + '</div><div class="cat">' + libelle(m.d) + '</div></div>' +
+           '<span class="amt ' + m.type + '">' + (m.type === "in" ? "+" : "-") + Math.round(m.montant) + ' €</span>' +
+           '<button class="del" data-del="' + vrai + '">✕</button></div>';
+    });
+  } else { h += '<div class="note">Rien pour l\'instant.</div>'; }
+  h += '<button class="btn or" id="resetMois" style="margin-top:14px">Clôturer le mois et repartir de zéro</button>' +
+       '<div class="note" style="margin-top:8px">Le solde actuel devient ton point de départ du mois suivant, et la liste se vide.</div></div>';
+
+  el("euro").innerHTML = h;
+
+  el("addIn").addEventListener("click", () => {
+    const v = parseFloat((el("inM").value || "").replace(",", "."));
+    if (isNaN(v) || v <= 0) return;
+    S.budget.mvts.push({d:auj(), type:"in", montant:v, cat:el("inC").value}); save(); renderEuro();
+  });
+  el("addOut").addEventListener("click", () => {
+    const v = parseFloat((el("outM").value || "").replace(",", "."));
+    if (isNaN(v) || v <= 0) return;
+    S.budget.mvts.push({d:auj(), type:"out", montant:v, cat:el("outC").value}); save(); renderEuro();
+  });
+  el("euro").querySelectorAll("[data-del]").forEach(x => x.addEventListener("click", () => {
+    S.budget.mvts.splice(+x.dataset.del, 1); save(); renderEuro();
+  }));
+  el("resetMois").addEventListener("click", () => {
+    if (!confirm("Clôturer le mois ? Ton solde actuel devient le point de départ et la liste des mouvements est vidée.")) return;
+    S.budget.soldeDebut = solde; S.budget.mvts = []; S.budget.mois = moisCourant(); save(); renderEuro();
+  });
 }
 
 function renderBouffe(){
-  const c=document.getElementById("bouffe");c.innerHTML="";
-  const i0=DAYS.findIndex(d=>d.d===todayISO());const wk=DAYS.slice(i0<0?0:i0,(i0<0?0:i0)+7);
-  const KW=['poulet','bœuf','œufs','riz','pâtes','lentilles','poisson','sardines','skyr','lait','pain','banane','patate douce','légumes','poivron','oignon','tomate','avoine','beurre de cacahuète','whey','haricots','lait de coco','tortillas','curry','wrap'];
-  const need=KW.filter(k=>wk.some(d=>((d.dej||'')+(d.diner||'')+(d.pdj||'')).toLowerCase().includes(k)));
-  let h=`<div class="card"><h2>🛒 Courses de la semaine <span class="tag">auto</span></h2><div class="note">D'après tes repas des 7 prochains jours :</div><div class="pills" style="flex-wrap:wrap;gap:6px;margin-top:8px">${need.map(k=>'<span class="pill">'+k+'</span>').join('')}</div><div class="note" style="margin-top:8px">Listes complètes (gros plein, frais, whey) : onglet 🛒 Courses.</div></div>`;
-  h+=`<div class="card"><h2>Recettes <span class="tag">quantités + coût</span></h2><div class="note" style="margin-bottom:8px">~2800-3000 kcal/j · ~140-150 g protéines · WHEY INCLUSE (tu t'y mets) · ~45-50 €/sem + whey ~25 €/mois.</div>`;
-  RECIPES.forEach((r,i)=>{h+=`<div class="acc" data-acc><div class="h"><span class="nm">${r.nm}</span><span class="meta">${r.meta}</span></div><div class="b">${r.b}</div></div>`;});
-  h+=`</div>`;
-  // les listes de courses vivent dans l'onglet 🛒 Courses
-  h+=`<div class="card"><h2>🛒 Les listes de courses</h2><div class="note">Gros plein du mois, frais de la semaine, guide whey et rotation des plats : tout est dans l'onglet <b>Courses</b> (à côté).</div></div>`;
-  c.innerHTML=h;
-  c.querySelectorAll("[data-acc]").forEach(a=>a.querySelector(".h").addEventListener("click",()=>a.classList.toggle("open")));
-  c.querySelectorAll("[data-shop]").forEach(x=>x.addEventListener("click",()=>{const id=x.dataset.shop;S.shop[id]=!S.shop[id];save();renderBouffe();}));
-}
-
-function renderMenu(){
-  const c=document.getElementById("menu");
-  const ti=todayISO();
-  if(!menuSel||!DAYS.some(x=>x.d===menuSel))menuSel=findToday().d;
-  let h=`<div class="hint">Ton calendrier bouffe : le mois en un coup d'œil (🏋️ séance · 🛒 courses · le texte = le dîner du soir). <b>Tape un jour</b> → le détail complet s'affiche dessous.</div>`;
-  // grille mensuelle
-  h+=`<div class="card"><h2>📆 Le mois <span class="tag">6 août → 6 sept</span></h2><div class="cal">`;
-  ["L","M","M","J","V","S","D"].forEach(x=>h+=`<div class="hd">${x}</div>`);
-  const t=new Date(2026,7,3);
-  for(let k=0;k<35;k++){
-    const iso=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");
-    const d=DAYS.find(x=>x.d===iso);
-    if(!d){h+=`<div class="cell mut"><span class="dn">${t.getDate()}</span></div>`;}
-    else{const ic=(d.num?"🏋️":"")+(d.courses?"🛒":"");
-      h+=`<div class="cell${iso===menuSel?' selq':''}${iso===ti?' tdy':''}" data-cal="${iso}"><span class="dn">${t.getDate()}</span><span class="ics">${ic}</span><span class="dl">${mShort(d.diner)}</span></div>`;}
-    t.setDate(t.getDate()+1);
-  }
-  h+=`</div><div class="note" style="margin-top:8px">🏋️ = séance Basic Fit · 🛒 = jour de courses · petit texte = le dîner.</div></div>`;
-  // détail du jour sélectionné
-  const d=DAYS.find(x=>x.d===menuSel);
-  if(d){
-    const tag=d.num?("🏋️ Séance "+d.num):"REPOS";
-    h+=`<div class="card sec-today"><h2>${d.lab} — le détail <span class="tag">${tag}</span></h2>`;
-    if(d.courses)h+=`<div class="row"><div class="lab">🛒 <b>Courses ce jour-là</b><br>${d.courses}</div></div>`;
-    [["Petit-déj",d.pdj],["Déjeuner",d.dej],["Dîner",d.diner]].forEach(x=>{
-      const v=x[1];if(!v)return;const r=findRec(v);
-      h+=`<div class="meal"><span class="k">${x[0]}</span><span class="v">${v}${r?`<br><span class="pill g" data-rec="${r.nm}" style="display:inline-block;margin-top:5px;font-size:11px;padding:4px 10px">📖 Recette pas à pas — ${r.meta}</span>`:""}</span></div>`;
+  let h = '<div class="hint">Le midi c\'est toujours le bowl du batch, sans réfléchir. Le soir tu piques dans la liste. ' +
+          'Un plat nouveau par semaine pour ne pas te lasser.</div>';
+  h += '<div class="card"><h2>Recettes <span class="tag">protéines par plat</span></h2>';
+  RECETTES.forEach(r => {
+    h += '<div class="acc"><div class="h"><span class="nm">' + r.nm + '</span><span class="meta">' + r.meta + '</span></div>' +
+         '<div class="b">' + r.b + '</div></div>';
+  });
+  h += '</div>';
+  COURSES.forEach((bloc, bi) => {
+    h += '<div class="card"><h2>' + bloc[0] + '</h2>';
+    bloc[1].forEach((it, ii) => {
+      const id = "c" + bi + "_" + ii;
+      h += '<div class="chk' + (S.shop[id] ? " on" : "") + '" data-shop="' + id + '"><span class="bx">' +
+           (S.shop[id] ? "✓" : "") + '</span><span class="nm">' + it + '</span></div>';
     });
-    const i=DAYS.indexOf(d),nx=(i>=0&&i+1<DAYS.length)?DAYS[i+1]:null;
-    if(nx){let pv=[];
-      if((nx.dej||"").toLowerCase().includes("batch"))pv.push("🥡 Gamelle de demain : 150 g poulet + 100 g riz + légumes en boîte au frigo");
-      if(nx.num)pv.push("🎒 Sac Basic Fit prêt (demain : "+(nx.seance.includes("PUSH")?"PUSH":nx.seance.includes("PULL")?"PULL":"LEGS")+")");
-      if((nx.courses||"").indexOf("GROS PLEIN")>=0)pv.push("🛒 Demain gros plein du mois : la liste cochable t'attend dans l'onglet Courses");
-      if(pv.length)h+=`<div class="note" style="margin-top:8px"><b>À préparer la veille au soir :</b><br>${pv.join("<br>")}</div>`;}
-    h+=`</div>`;
-  }
-  // la semaine en détail
-  const i0=DAYS.findIndex(x=>x.d>=ti);const wk=DAYS.slice(Math.max(0,i0),Math.max(0,i0)+7);
-  h+=`<div class="card"><h2>🗓️ La semaine en détail <span class="tag">7 prochains jours</span></h2>`;
-  wk.forEach(d2=>{
-    h+=`<div class="daycard"><div class="top"><span class="dl">${d2.lab}</span><span class="st ${d2.num?'on':'off'}">${d2.num?'🏋️ Séance '+d2.num:'REPOS'}</span></div>
-      <div class="sub">${d2.courses?'🛒 <b>'+d2.courses+'</b><br>':''}🌅 ${d2.pdj||"—"}<br>🍱 ${d2.dej||"—"}<br>🌙 ${d2.diner||"—"}</div></div>`;
+    h += '</div>';
   });
-  h+=`<div class="note" style="margin-top:6px">Quantités et étapes de chaque plat : onglet Bouffe (ou tape un jour dans le calendrier ↑).</div></div>`;
-  // tous les jours de courses du mois
-  h+=`<div class="card"><h2>🛒 Tous les jours de courses du mois</h2>`;
-  DAYS.filter(x=>x.courses).forEach(x=>{h+=`<div class="row"><div class="lab" style="flex:0 0 80px"><b>${x.lab}</b></div><div class="lab" style="flex:2">${x.courses}</div></div>`;});
-  h+=`<div class="note" style="margin-top:8px">Les listes cochables (gros plein du mois + frais de la semaine) : onglet 🛒 Courses.</div></div>`;
-  c.innerHTML=h;
-  c.querySelectorAll("[data-cal]").forEach(x=>x.addEventListener("click",()=>{menuSel=x.dataset.cal;renderMenu();}));
-  c.querySelectorAll("[data-rec]").forEach(x=>x.addEventListener("click",()=>goRecipe(x.dataset.rec)));
-}
-function renderCourses(){
-  const c=document.getElementById("courses");
-  let h=`<div class="hint">Ta section courses : quoi acheter pour la masse, quoi cuisiner, comment payer. Règle du mois : <b>les courses passent en TICKETS RESTO d'abord</b> (150 € ≈ ta bouffe du mois) — le cash sert au reste.</div>`;
-  h+=`<div class="card sec-today"><h2>💶 Le budget bouffe d'août</h2>
-    <div class="kpi"><div class="box"><div class="n">150 €</div><div class="t">Tickets resto</div></div>
-    <div class="box alt"><div class="n">~40 €</div><div class="t">Cash d'appoint</div></div>
-    <div class="box alt"><div class="n">~25 €</div><div class="t">Whey (1×)</div></div></div>
-    <div class="note" style="margin-top:8px">Gros plein ~55-60 € au départ, puis ~15 €/sem de frais. Plafond TR : 25 €/jour → si le plein dépasse, passe en caisse sur 2 jours ou complète en cash.</div></div>`;
-  h+=`<div class="card sec-on"><h2>🧾 Le gros plein du mois <span class="tag">1× — sam 8 août</span></h2>
-    <div class="note" style="margin-bottom:6px">Le socle sec qui tient tout le mois (~55-60 €). Coche en magasin :</div>`;
-  GROS_PLEIN.forEach((it,i)=>{const id="gp"+i;const on=S.shop[id]?'on':'';h+=`<div class="chk ${on}" data-shop="${id}"><span class="bx">${S.shop[id]?'✓':''}</span><span class="nm">${it}</span></div>`;});
-  h+=`<div class="note" style="margin-top:8px">Tout existe en marque distributeur — c'est le même riz, moitié prix.</div></div>`;
-  h+=`<div class="card"><h2>🥶 Le frais de la semaine <span class="tag">~15-18 €</span></h2>
-    <div class="note" style="margin-bottom:6px">À reprendre quand c'est fini (mercredi ou samedi) — pas tout à chaque fois :</div>`;
-  FRAIS_SEM.forEach((it,i)=>{const id="fr"+i;const on=S.shop[id]?'on':'';h+=`<div class="chk ${on}" data-shop="${id}"><span class="bx">${S.shop[id]?'✓':''}</span><span class="nm">${it}</span></div>`;});
-  h+=`<div class="note" style="margin-top:8px">Re-tape une ligne pour la décocher — la liste se réutilise chaque semaine.</div></div>`;
-  h+=`<div class="card sec-on"><h2>💪 La whey — tu t'y mets</h2>
-    <div class="meal"><span class="k">Laquelle</span><span class="v">Whey CONCENTRÉE classique, nature ou chocolat, 1 kg. Pas besoin d'isolate ni de marque chère.</span></div>
-    <div class="meal"><span class="k">Où</span><span class="v">Lidl (~13-17 €/kg, la moins chère), Action, Decathlon (~20 €). En ligne seulement si vraie promo.</span></div>
-    <div class="meal"><span class="k">Quand</span><span class="v">30 g (1 dose) dans les 2 h après la séance les jours ON + 30 g dans le gainer du matin. 1 kg ≈ 33 doses ≈ ton mois.</span></div>
-    <div class="meal"><span class="k">Le rôle</span><span class="v">Elle COMPLÈTE tes repas (elle t'amène à ~140-150 g de protéines/j pour ~65-70 kg), elle ne remplace JAMAIS un repas.</span></div></div>`;
-  h+=`<div class="card"><h2>🍳 Quoi cuisiner — la rotation anti-lassitude</h2>
-    <div class="meal"><span class="k">Midi</span><span class="v">Toujours pareil, zéro réflexion : bowl batch (poulet + riz + légumes). Un batch de 3 boîtes tous les 3 jours.</span></div>
-    <div class="meal"><span class="k">Soir</span><span class="v">Rotation sur ~10 plats (recettes : onglet Bouffe). Base : bolo, yassa, gingembre-ail, omelette, poisson-patate douce, sardines express, lentilles-riz.</span></div>
-    <div class="meal"><span class="k">Varier</span><span class="v">Chaque semaine 1 « plat nouveau » : chili con carne, curry coco, riz sauté, wraps poulet. Ils sont déjà placés dans ton planning.</span></div>
-    <div class="meal"><span class="k">Flemme</span><span class="v">Double les sauces (bolo, chili) → 2 portions au congélo = tes soirs de flemme, prêt en 12 min AVANT d'ouvrir Uber Eats.</span></div></div>`;
-  h+=`<div class="card"><h2>🧠 Réflexes en magasin</h2>
-    <div class="note">• TR d'abord, cash ensuite.<br>• Marque distributeur par défaut.<br>• Surgelés = zéro gâchis (légumes, poisson).<br>• Protéines les moins chères : œufs, lentilles, sardines — la whey vient en renfort.<br>• Jamais les courses le ventre vide.<br>• Un seul « plaisir » par plein — et c'est très bien comme ça.</div></div>`;
-  c.innerHTML=h;
-  c.querySelectorAll("[data-shop]").forEach(x=>x.addEventListener("click",()=>{const id=x.dataset.shop;S.shop[id]=!S.shop[id];save();renderCourses();}));
-}
-function renderEuro(){
-  const c=document.getElementById("euro");c.innerHTML="";
-  const f=S.fin;
-  const totSpent=FIN.budgets.reduce((a,b)=>a+(S.spend[b[0]]||0),0);
-  const totBud=FIN.budgets.reduce((a,b)=>a+b[1],0);
-  // 1. Réglages privés (saisie locale)
-  let h=`<div class="card"><h2>Mes chiffres <span class="tag">privés · ce tél seulement</span></h2>
-    <div class="spend"><span class="c">Solde dispo (€)</span><input type="number" inputmode="decimal" data-fin="solde" value="${f.solde??''}"></div>
-    <div class="spend"><span class="c">Coiffure prévue (€)</span><input type="number" inputmode="decimal" data-fin="coiffure" value="${f.coiffure??''}"></div>
-    <div class="spend"><span class="c">Découvert autorisé (€)</span><input type="number" inputmode="decimal" data-fin="decouvert" value="${f.decouvert??100}"></div>
-    <div class="spend"><span class="c">Jours avant la paie</span><input type="number" inputmode="numeric" data-fin="joursPaie" value="${f.joursPaie??''}"></div>
-    <div class="note" style="margin-top:8px">Ces chiffres restent sur ton téléphone — ils ne partent jamais en ligne.</div></div>`;
-  // 1bis. Budget d'août (chiffres donnés par Steve le 06/08)
-  h+=`<div class="card sec-today"><h2>💶 Budget août <span class="tag">au 06/08</span></h2>
-    <div class="kpi">
-      <div class="box"><div class="n">292 €</div><div class="t">Sur le compte</div></div>
-      <div class="box alt"><div class="n">150 €</div><div class="t">Tickets resto</div></div>
-      <div class="box alt"><div class="n">+10 €</div><div class="t">Rembt à venir</div></div>
-    </div>
-    <div class="note" style="margin-top:9px"><b>~452 € pour finir le mois.</b> La règle : les courses passent en <b>TR d'abord</b> (150 € ≈ ta bouffe du mois) → le cash (~302 €) couvre le reste : whey ~25 € (1 fois), coiffure, lavage, sorties. Ça laisse ~<b>10-11 €/jour</b> de cash — large si zéro livraison.</div>
-    <div class="note" style="margin-top:6px">Enveloppes détaillées ↓ « Mes dépenses du mois ». Listes de courses → onglet 🛒 Courses.</div></div>`;
-  // 2. Carte cash calculée (si solde rempli)
-  if(f.solde!=null && f.solde!==''){
-    const dispo=(+f.solde)-(+f.coiffure||0), dec=(f.decouvert==null||f.decouvert==='')?100:(+f.decouvert||0), marge=dispo+dec, jp=(+f.joursPaie||14), parJour=marge/jp;
-    h+=`<div class="card sec-off" style="border-left:4px solid var(--rouge);background:#FCF3F2">
-      <h2 style="color:var(--rouge)">⚠️ Cash jusqu'à la paie (~${jp} j)</h2>
-      <div class="kpi">
-        <div class="box" style="background:var(--rouge)"><div class="n">${dispo.toFixed(0)} €</div><div class="t">Reste après coiffure</div></div>
-        <div class="box alt"><div class="n">${marge.toFixed(0)} €</div><div class="t">Avec découvert</div></div>
-        <div class="box alt"><div class="n">${parJour.toFixed(1)} €</div><div class="t">Par jour max</div></div>
-      </div>
-      <div class="row" style="margin-top:6px"><div class="lab">💸 <b>Tu peux dépenser aujourd'hui</b></div><b style="font-size:18px;color:var(--rouge)">~${parJour.toFixed(0)} €</b></div>
-      <div class="note" style="margin-top:9px">
-        <b>On NE coupe PAS la bouffe</b> — couper les calories couperait tes gains. Manger ÉCO ≠ manger MOINS : œufs, lait, avoine, lentilles, riz, pâtes, PB = plein de calories + protéines pour des centimes. Surplus et prise de masse intacts.<br>
-        <b>Ce qu'on coupe :</b> 0 resto, 0 livraison, 0 jeux, 0 Vinted. Ta bouffe ~6-7 €/j → tu rentres sous les ${parJour.toFixed(0)} €/j.<br>
-        Un découvert qui sert à MANGER pour ta masse = bon découvert (~0,65 € d'agios/15 j), remboursé à la paie.
-      </div></div>`;
-  } else {
-    h+=`<div class="hint">Entre ton solde ci-dessus → je calcule ta marge jusqu'à la paie et ton budget/jour.</div>`;
-  }
-  // 3. Réappros d'août (payés en TR)
-  h+=`<div class="card"><h2>Réappros d'août <span class="tag">en TR</span></h2>
-    <div class="row"><div class="lab">Sam 08/08</div><div class="lab" style="flex:2">🛒 GROS PLEIN (socle du mois + whey 1 kg)</div><b>~55-60 €</b></div>
-    <div class="row"><div class="lab">Mer 12/08</div><div class="lab" style="flex:2">poulet 1 kg (batch), œufs x12, lait, bananes</div><b>~15 €</b></div>
-    <div class="row"><div class="lab">Mer 19/08</div><div class="lab" style="flex:2">poulet, œufs x12, lait, légumes surgelés</div><b>~15 €</b></div>
-    <div class="row"><div class="lab">Sam 22/08</div><div class="lab" style="flex:2">socle léger : riz/pâtes si finis, bananes</div><b>~10-12 €</b></div>
-    <div class="row"><div class="lab">Mer 26/08</div><div class="lab" style="flex:2">poulet, œufs x12, lait, bananes</div><b>~15 €</b></div>
-    <div class="row"><div class="lab">Sam 29/08</div><div class="lab" style="flex:2">socle léger</div><b>~12 €</b></div>
-    <div class="note" style="margin-top:8px"><b>~125-135 €</b> au total → ça tient dans tes <b>150 € de TR</b>. La whey (~25 €) part du cash si le magasin ne la prend pas en TR.</div></div>`;
-  // 4. Suivi dépenses (cibles génériques)
-  h+=`<div class="card"><h2>Mes dépenses du mois <span class="tag">${totSpent.toFixed(0)} / ${totBud} €</span></h2>`;
-  FIN.budgets.forEach(([cat,bud])=>{
-    const sp=S.spend[cat]||0; const pct=Math.min(100,bud?sp/bud*100:0);
-    const cls=sp>bud?'over':(pct>=80?'warn':'');
-    h+=`<div class="spend"><span class="c">${cat}</span><span class="amt">${sp.toFixed(0)} / ${bud} €</span>
-      <input type="number" inputmode="decimal" placeholder="+€" data-cat="${cat}"></div>
-      <div class="bar ${cls}"><i style="width:${pct}%"></i></div>`;
-  });
-  h+=`<div class="note" style="margin-top:10px">Tape un montant + Entrée pour l'ajouter. Barre rouge = budget dépassé.</div></div>`;
-  // 5. Leviers d'éco (générique)
-  h+=`<div class="card"><h2>Leviers d'économie</h2>`;
-  FIN.leviers.forEach(([p,t])=>{h+=`<div class="miniobj"><b>${p}</b><span class="c">${t}</span></div>`;});
-  h+=`<div class="note" style="margin-top:8px">Le détail chiffré de ton budget reste dans ton Excel (privé). Ici = le rappel des bons réflexes.</div></div>`;
-  c.innerHTML=h;
-  c.querySelectorAll("[data-cat]").forEach(inp=>{
-    inp.addEventListener("keydown",e=>{if(e.key==="Enter")addSpend(inp);});
-    inp.addEventListener("blur",()=>{if(inp.value)addSpend(inp);});
-  });
-  c.querySelectorAll("[data-fin]").forEach(inp=>{
-    inp.addEventListener("change",()=>{const k=inp.dataset.fin;S.fin[k]=inp.value===''?'':parseFloat(inp.value.replace(",","."));save();renderEuro();});
-  });
-  function addSpend(inp){const v=parseFloat(inp.value.replace(",","."));if(!isNaN(v)){const c=inp.dataset.cat;S.spend[c]=(S.spend[c]||0)+v;save();renderEuro();}}
+  el("bouffe").innerHTML = h;
+  el("bouffe").querySelectorAll(".acc").forEach(a =>
+    a.querySelector(".h").addEventListener("click", () => a.classList.toggle("open")));
+  el("bouffe").querySelectorAll("[data-shop]").forEach(x => x.addEventListener("click", () => {
+    S.shop[x.dataset.shop] = !S.shop[x.dataset.shop]; save(); renderBouffe();
+  }));
 }
 
-function renderObj(){
-  const c=document.getElementById("obj");c.innerHTML="";
-  let h=`<div class="hint">Tu en as marre de tout revoir sur ton tél : voici l'essentiel, toujours à portée. Pour la version complète (programme salle, fiches EDC, idées copine), reste dans le classeur Excel — cette appli est ton tableau de bord rapide.</div>`;
-  h+=`<div class="card"><h2>📅 Calendrier & rappels</h2>
-    <div class="note">Mets tes séances, étude, tenues et rappels dans ton agenda (avec alarmes).</div>
-    <a href="steve.ics" download="steve.ics" style="display:block;text-align:center;margin-top:10px;background:#14213D;color:#fff;text-decoration:none;padding:12px 16px;border-radius:10px;font-weight:700;font-size:14px">📥 Ajouter à mon calendrier</a>
-    <div class="note" style="margin-top:10px">📱 Sur le tél : ça télécharge le fichier → ouvre-le → « Ouvrir avec Google Agenda ».<br>🔄 Pour qu'il se mette à jour tout seul (sur ordi) : <span id="copyCal" style="color:var(--or);text-decoration:underline;cursor:pointer">copier le lien d'abonnement</span>, puis calendar.google.com → Autres agendas → À partir de l'URL.</div></div>`;
-  const RON=[["06h30","Réveil + grand verre d'eau"],["06h35","Tenue de sport (préparée la veille)"],["06h45","Basic Fit — échauffement + séance ~50 min"],["07h40","Retour à la maison"],["07h45","Douche + soin visage (nettoyant → hydratant → SPF)"],["08h05","Petit-déj : gainer + whey"],["08h25","Cheveux + barbe + habillage + parfum"],["08h45","Départ travail (~45 min)"],["09h30","Arrivée bureau ✅"]];
-  const ROFF=[["07h15","Réveil + grand verre d'eau"],["07h20","Petit-déj"],["07h40","Douche + soin + habillage"],["08h05","Marche 20-30 min (récup active, optionnel)"],["08h45","Départ travail (~45 min)"],["09h30","Arrivée bureau ✅"]];
-  h+=`<div class="card sec-on"><h2>⏰ Routine — jour de SALLE</h2>${RON.map(x=>`<div class="meal"><span class="k">${x[0]}</span><span class="v">${x[1]}</span></div>`).join('')}<div class="note" style="margin-top:6px">Salle le matin = elle ne saute pas (faite avant que la journée commence). Sac + tenue préparés la veille.</div></div>`;
-  h+=`<div class="card sec-off"><h2>⏰ Routine — jour OFF / repos</h2>${ROFF.map(x=>`<div class="meal"><span class="k">${x[0]}</span><span class="v">${x[1]}</span></div>`).join('')}</div>`;
-  h+=`<div class="card"><h2>😴 Sommeil</h2>
-    <div class="meal"><span class="k">22h30</span><span class="v">Écrans coupés, tel en charge HORS de la chambre</span></div>
-    <div class="meal"><span class="k">23h00</span><span class="v">Coucher les jours de salle (réveil 6h30 → 7h30 de sommeil)</span></div>
-    <div class="meal"><span class="k">23h15</span><span class="v">Coucher les jours off (réveil 7h15 → 8h de sommeil)</span></div>
-    <div class="note" style="margin-top:6px">7h30 de sommeil = ta cible (le muscle se construit la nuit). Heure de LEVER fixe = la vraie clé. Pas de canette après 14h (la caféine reste 6-8h). Chambre fraîche et sombre.</div></div>`;
-  h+=`<div class="card"><h2>Cap 6 mois — confiant, sportif, bien dans ma peau</h2>`;
-  OBJ.forEach(([a,d,t])=>{h+=`<div class="miniobj"><b>${a}</b><span class="c">${d} → ${t}</span></div>`;});
-  h+=`</div>`;
-  (function(){const now=new Date();let a=new Date(now.getFullYear(),11,15);if(a<now)a=new Date(now.getFullYear()+1,11,15);
-   const dl=Math.ceil((a-now)/86400000);
-   h+=`<div class="card"><h2>🎂 Anniversaire copine <span class="tag">15 déc</span></h2>
-     <div class="kpi"><div class="box"><div class="n">${dl}</div><div class="t">jours restants</div></div></div>
-     <div class="note" style="margin-top:8px">Dès septembre : note ses envies + 1 idée cadeau + 1 sortie/voyage. Oct-nov : réserve tôt. 15/12 : exécution, zéro impro.</div></div>`;
-  })();
-  h+=`<div class="card sec-today"><h2>Le rappel qui compte</h2><div class="note">
-   Reprise = régularité avant intensité : la séance du matin ne se négocie pas, sac prêt la veille. Mémoire : les ENTRETIENS RÉELS d'abord, la rédaction suit — dépôt le 31/08 (deadline 01/09 23h59). Budget serré : TR pour les courses, cash pour le reste, zéro livraison.</div></div>`;
-  (function(){const notes=DAYS.filter(d=>S.track[d.d]&&S.track[d.d].note&&S.track[d.d].note.trim());
-   h+=`<div class="card"><h2>📓 Mon journal <span class="tag">${notes.length}</span></h2>`;
-   if(notes.length){notes.slice(-12).reverse().forEach(d=>{h+=`<div class="meal"><span class="k" style="width:auto;min-width:78px">${d.lab.split(' ').slice(0,2).join(' ')}</span><span class="v" style="display:block">${S.track[d.d].note}</span></div>`;});}
-   else h+=`<div class="note">Tes « notes du jour » (onglet Aujourd'hui) s'archivent ici — pratique pour repérer tes patterns de rechute.</div>`;
-   h+=`</div>`;})();
-  h+=`<div class="card"><h2>Mes données <span class="tag">sur ce tél</span></h2>
-    <div class="note">Tout ton suivi (coches, eau, poids, notes, dépenses) est stocké sur CE téléphone uniquement. Sauvegarde de temps en temps pour ne rien perdre.</div>
-    <div class="pills" style="margin-top:10px;flex-wrap:wrap;gap:8px">
-      <span class="pill g" id="backup">⬇️ Sauvegarder</span>
-      <span class="pill" id="restoreBtn">⬆️ Restaurer</span>
-      <span class="pill r" id="reset">🗑️ Réinitialiser</span>
-    </div>
-    <input type="file" id="restoreFile" accept="application/json" style="display:none"></div>`;
-  c.innerHTML=h;
-  document.getElementById("reset").addEventListener("click",()=>{if(confirm("Effacer tout ton suivi (coches, eau, poids, dépenses) ?")){localStorage.removeItem(LS);S={track:{},shop:{},spend:{},fin:{},weights:[]};renderAll();}});
-  document.getElementById("backup").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(S)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ma-version-sauvegarde.json";a.click();});
-  const cc=document.getElementById("copyCal");
-  if(cc)cc.addEventListener("click",()=>{const u="https://stevienando03-wq.github.io/steve-app/steve.ics";if(navigator.clipboard){navigator.clipboard.writeText(u).then(()=>{cc.textContent="lien copié ✓";}).catch(()=>{cc.textContent=u;});}else{cc.textContent=u;}});
-  const rf=document.getElementById("restoreFile");
-  document.getElementById("restoreBtn").addEventListener("click",()=>rf.click());
-  rf.addEventListener("change",()=>{const f=rf.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);S=Object.assign({track:{},shop:{},spend:{},fin:{},weights:[]},o);save();renderAll();alert("Données restaurées.");}catch(e){alert("Fichier invalide.");}};r.readAsText(f);});
+/* ================= CALENDRIER ================= */
+function icsDate(d, h){
+  return d.replace(/-/g, "") + "T" + h.replace(":", "") + "00";
+}
+function construireIcs(){
+  const L = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Steve//Ma version//FR","CALSCALE:GREGORIAN",
+             "METHOD:PUBLISH","X-WR-CALNAME:Steve, ma semaine","X-WR-TIMEZONE:Europe/Paris",
+             "REFRESH-INTERVAL;VALUE=DURATION:PT6H","X-PUBLISHED-TTL:PT6H"];
+  function ev(uid, d, h, dur, titre, desc, alarmes){
+    const fin = new Date(parse(d).getTime());
+    const hm = h.split(":");
+    fin.setHours(+hm[0], +hm[1] + dur, 0, 0);
+    L.push("BEGIN:VEVENT", "UID:" + uid, "DTSTAMP:" + icsDate(auj(), "08:00") + "Z",
+           "DTSTART:" + icsDate(d, h),
+           "DTEND:" + icsDate(iso(fin), String(fin.getHours()).padStart(2,"0") + ":" + String(fin.getMinutes()).padStart(2,"0")),
+           "SUMMARY:" + titre);
+    if (desc) L.push("DESCRIPTION:" + desc.replace(/,/g, "\\,"));
+    (alarmes || []).forEach(a => L.push("BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:" + a[1].replace(/,/g,"\\,"),
+                                        "TRIGGER:" + a[0], "END:VALARM"));
+    L.push("END:VEVENT");
+  }
+  /* séances des 60 prochains jours */
+  for (let i = 0; i < 60; i++) {
+    const d = plusJours(auj(), i), s = seanceDu(d);
+    if (s === "REPOS") continue;
+    const dj = parse(d).getDay();
+    const h = (dj === 4 || dj === 0 || dj === 6) ? "09:00" : "19:00";
+    ev("sport-" + d + "@steve", d, h, 75, "Salle, " + s,
+       "Deux jours de salle un jour de repos. Le circuit abdos se fait en fin de séance.",
+       [["-PT2H", "Séance dans deux heures, prépare ton sac"]]);
+  }
+  /* réunion du jeudi, sur 60 jours */
+  for (let i = 0; i < 60; i++) {
+    const d = plusJours(auj(), i);
+    if (parse(d).getDay() !== 4) continue;
+    ev("hebdo-" + d + "@steve", d, "20:30", 90, "Réunion hebdomadaire", "",
+       [["-PT3H", "Réunion ce soir à 20h30"]]);
+  }
+  /* rendez-vous, avec rappels à trois jours, un jour et deux heures */
+  RDV.concat(S.rdv).forEach((r, i) => {
+    ev("rdv" + i + "-" + r.d + "@steve", r.d, r.h, r.dur || 60, r.t, r.note || "",
+       [["-P3D", r.t + " dans trois jours"], ["-P1D", r.t + " demain"], ["-PT2H", r.t + " dans deux heures"]]);
+  });
+  L.push("END:VCALENDAR");
+  return L.join("\r\n");
+}
+function telechargerIcs(){
+  const blob = new Blob([construireIcs()], {type:"text/calendar;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ma-semaine.ics";
+  a.click();
 }
 
-const OUTFITS=[
- {t:"👔 CODIR — Mardi 16",x:"Pantalon Scherrer noir + chemise bleu ciel RENTRÉE + blazer noir + ceinture cuir + sneakers blanches IMPEC. Barbe nette, Azzaro."},
- {t:"👔 CODIR — Mercredi 17",x:"Chino écru + polo BOSS navy RENTRÉ + ceinture cuir + sneakers blanches IMPEC. (Le navy casse l'écru → pas d'effet pyjama.)"},
- {t:"Smart casual 1",x:"Chino écru + polo BOSS navy rentré + ceinture + sneakers blanches."},
- {t:"Smart casual 2",x:"Pantalon noir à carreaux fins + chemise blanche waffle rentrée + sneakers."},
- {t:"Smart casual 3",x:"Chino écru + chemise lin vert sauge ouverte (manches retroussées) + t-shirt blanc dessous + sneakers."},
- {t:"Workwear 1",x:"Pantalon velours côtelé marron + chemise à carreaux noir/gris (ouverte sur t-shirt blanc) + bottes noires."},
- {t:"Workwear 2",x:"Jean + sweat olive/kaki + t-shirt Carhartt noir + bottes noires."},
- {t:"Streetwear 1",x:"Joggers gris + t-shirt Carhartt noir + hoodie gris clair + sneakers blanches."},
- {t:"Streetwear 2",x:"Jean + blouson teddy vert foncé + t-shirt blanc + sneakers blanches."},
- {t:"Streetwear 3",x:"Joggers noirs + sweat Nike noir + casquette sobre + sneakers blanches."},
- {t:"Été / chill",x:"Jean bleu clair + t-shirt rose pâle SEUL + sneakers — ou short sport + t-shirt uni à la maison."},
- {t:"🏋️ Salle",x:"Jogging noir (ou short sport noir) + t-shirt technique + sneakers de sport. Préparé la veille."},
-];
-function renderStyle(){
-  const c=document.getElementById("style");
-  let h=`<div class="card sec-today"><h2>Routine matin (ordre exact)</h2>
-    <div class="meal"><span class="k">Visage</span><span class="v">1. Nettoyant CeraVe → 2. Hydratant CeraVe → 3. SPF50 (⚠️ à acheter, La Roche-Posay ~17 €)</span></div>
-    <div class="meal"><span class="k">Cheveux</span><span class="v">Vaporise eau → Cantu Leave-in → scelle Crazy Locks → sponge brush en cercles → edges Red One + brosse à dents</span></div>
-    <div class="meal"><span class="k">Barbe</span><span class="v">Ton point fort : pleine et NETTE. Peigne, définis les contours, 1 goutte d'huile si ça tire.</span></div>
-    <div class="meal"><span class="k">Parfum</span><span class="v">Azzaro : 2 spritz (1 en espace fermé), col + poignet, jamais frotter.</span></div></div>`;
-  h+=`<div class="card"><h2>Routine soir</h2><div class="note">Visage : nettoyant CeraVe → hydratant CeraVe. Cheveux : bonnet/taie satin (à acheter ~10-20 €). Karité sur zones sèches si besoin.</div></div>`;
-  h+=`<div class="card"><h2>Tenues — d'après ta vraie garde-robe</h2>`;
-  OUTFITS.forEach(o=>{h+=`<div class="meal"><span class="k" style="width:auto;min-width:110px">${o.t}</span><span class="v" style="width:100%;display:block;margin-top:2px">${o.x}</span></div>`;});
-  h+=`</div>`;
-  h+=`<div class="card sec-off" style="border-left:4px solid var(--rouge)"><h2>Règles à respecter</h2>
-    <div class="note">• Jamais total écru/écru ni total vert → toujours une couleur qui casse.<br>• Polo rentré · chemise lin dehors (manches retroussées).<br>• Sneakers blanches OK Astridsen, PAS en CODIR formel.<br>• Ta garde-robe est grande : le vrai sujet = organisation + lessive.</div></div>`;
-  h+=`<div class="card"><h2>À acheter / à faire</h2>
-    <div class="row"><div class="lab"><b>Souliers cuir ville</b> (44) — pour le CODIR</div><span class="px">Vinted 25-40 €</span></div>
-    <div class="row"><div class="lab"><b>SPF50</b> visage</div><span class="px">~17 €</span></div>
-    <div class="row"><div class="lab"><b>Bonnet/taie satin</b> (twists)</div><span class="px">~10-20 €</span></div>
-    <div class="row"><div class="lab"><b>Retour Primark</b> : short XXL → reprends en M/L</div><span class="px">sous 28 j + ticket</span></div></div>`;
-  h+=`<div class="card"><h2>Ma penderie en photos <span class="tag">${S.photos.length}</span></h2>
-    <div class="note">Photographie tes pièces ou tes tenues montées : tu les as sous la main partout, même en magasin.</div>
-    <input type="file" accept="image/*" capture="environment" data-photo style="margin-top:8px;font-size:12px;color:var(--anthr)">
-    <div class="pgrid">`;
-  S.photos.forEach(p=>{h+=`<div class="ph"><img src="${p.data}"><button class="del" data-delphoto="${p.id}">✕</button></div>`;});
-  h+=`</div></div>`;
-  c.innerHTML=h;
-  const pi=c.querySelector('[data-photo]');
-  if(pi)pi.addEventListener('change',function(){if(pi.files&&pi.files[0])addPhoto(pi.files[0]);});
-  c.querySelectorAll('[data-delphoto]').forEach(function(b){b.addEventListener('click',function(){S.photos=S.photos.filter(function(p){return p.id!==b.dataset.delphoto;});save();renderStyle();});});
-}
-const PROG=[
- {t:"Échauffement (6-8 min max)",x:"5 min cardio doux (vélo/rameur) + mobilité épaules/hanches + 1-2 séries légères sur le 1er exo. Pas plus de 8 min — on garde le temps pour les abdos."},
- {t:"PUSH — pecs / épaules / triceps (~45 min)",x:"Développé couché haltères — 4×8-10\nDéveloppé militaire assis — 3×8-10\nÉcarté pec-deck — 3×12-15\nSUPERSET (gain de temps) : Élévations latérales 4×15 + Extension triceps poulie 3×15\n→ FINIS PAR LE CIRCUIT ABDOS A"},
- {t:"PULL — dos / biceps (~45 min)",x:"Tirage vertical (lat pulldown) — 4×8-10\nRowing assis machine — 4×10-12\nFace pull — 3×15-20\nSUPERSET : Curl haltères 3×10-12 + Curl marteau 3×12-15\n→ FINIS PAR LE CIRCUIT ABDOS B"},
- {t:"LEGS — sans charge avant-pied (~45 min)",x:"Presse à cuisses — 4×10-12\nHack squat — 3×10-12\nSUPERSET : Leg curl ASSIS 3×12-15 + Leg extension 3×12-15\nHip thrust / pont — 3×12-15\nMollets ASSIS (pas debout) — 3×15-20\n→ FINIS PAR LE CIRCUIT ABDOS C"},
- {t:"🔥 CIRCUIT ABDOS A — jours PUSH · haut des abdos + gainage (~9 min)",x:"En fin de séance, 3 tours, repos 30 s (superset les 2 premiers) :\nCrunch à la poulie haute, à genoux — 3×15-20  (EN CHARGE = la clé pour épaissir)\nRelevé de buste sur banc incliné — 3×15\nPlanche (gainage) — 3×40 s"},
- {t:"🔥 CIRCUIT ABDOS B — jours PULL · bas des abdos + obliques (~9 min)",x:"Enchaîné, repos 30 s :\nRelevé de jambes suspendu à la barre (ou appui coudes) — 3×12-15  (le meilleur pour le bas + le « V »)\nReverse crunch au sol — 3×15\nRussian twist lesté — 3×20 (10/côté)\nPlanche latérale — 2×30 s/côté"},
- {t:"🔥 CIRCUIT ABDOS C — jours LEGS · core profond + anti-rotation (~9 min)",x:"Enchaîné, repos 30 s :\nRoulette abdominale (ab wheel) OU crunch poulie — 3×10-12\nPallof press (anti-rotation à la poulie) — 3×12/côté\nHollow hold (bas du dos collé au sol) — 3×25-30 s\nMountain climbers lents — 3×30 s"},
- {t:"Progression (la clé — abdos compris)",x:"Double progression : monte les reps jusqu'au haut de la fourchette, puis +1-2 kg et repars en bas. +1 rep ou +1-2 kg/semaine, 1-2 reps en réserve. LES ABDOS AUSSI se chargent (poulie, lest) — pas 300 crunchs au poids de corps. Deload toutes les 6-8 sem si stagnation."},
- {t:"Cardio & pied (pour faire RESSORTIR les abdos)",x:"10-15 min de cardio SANS impact (vélo, rameur, marche inclinée) 2-3×/sem, en fin de séance ou les jours OFF. JAMAIS course/saut tant que la gêne avant-pied est là. C'est ce cardio + l'assiette qui révèlent les abdos que tu construis."},
- {t:"Récup",x:"Repos 60-90s en isolation, 2-3 min sur presse/hack, 30 s sur le circuit abdos. 2 ON / 1 OFF, jamais 2 OFF d'affilée. Sommeil 7-8h. Shake whey + gainer dans l'heure après la séance."},
-];
-function renderSport(){
-  const c=document.getElementById("sport");
-  let h=`<div class="card sec-on"><h2>Basic Fit — reprise à 0 <span class="tag">focus abdos</span></h2>
-    <div class="note">Compteur à <b>ZÉRO</b>, on repart proprement. Rythme : 2 ON / 1 OFF, jamais 2 OFF d'affilée. Objectif : <b>≥ 14 séances en août</b>. <b>Nouveau cap : des abdos qui se voient</b> → un circuit abdos EN CHARGE à <b>CHAQUE séance</b> (A les jours PUSH, B les PULL, C les LEGS), sans jamais dépasser 1h15. Gêne avant-pied → LEGS sans charge sur les orteils. Touche un titre pour le détail.</div></div>`;
-  h+=`<div class="card sec-today"><h2>🔥 Abdos visibles — la vérité utile</h2>
-    <div class="note">Un abdo qui se voit = <b>2 conditions</b>.<br><b>1. Le muscle assez épais</b> → c'est ce que font tes 3 circuits, <b>en charge</b> (poulie, lest), pas 300 crunchs au poids de corps.<br><b>2. Un taux de gras assez bas</b> pour qu'il apparaisse → ça se joue à la <b>cuisine</b>, pas à la salle.<br>Ton compromis (tu prends du muscle en même temps) : <b>lean bulk LENT</b> (+0,3-0,5 kg/mois max, cf. onglets Bouffe/Courses) + <b>10-15 min de cardio faible impact 2-3×/sem</b>. Tu construis des abdos épais maintenant ; dès que tu sécheras un peu, ils ressortiront déjà dessinés.</div></div>`;
-  h+=`<div class="card"><h2>⏱️ Séance efficace — 1h15 chrono</h2>
-    <div class="note">Échauffement 6-8 min → <b>les exos du jour ~45 min</b> (superset les isolations, repos 60-75 s) → <b>circuit abdos 8-10 min</b> → fini. Si tu débordes : coupe le dernier exo d'isolation, <b>jamais les abdos</b>. Minuteur de repos plus bas ↓</div></div>`;
-  PROG.forEach(p=>{h+=`<div class="acc" data-acc><div class="h"><span class="nm">${p.t}</span><span class="meta">›</span></div><div class="b">${p.x}</div></div>`;});
-  h+=`<div class="card"><h2>⏱️ Minuteur de repos</h2>
-    <div style="font-size:40px;text-align:center;font-weight:800;color:var(--bleu)" id="restTime">${restS>0?restS+'s':'—'}</div>
-    <div class="pills" style="justify-content:center;gap:8px;margin-top:6px"><span class="pill" data-rest="60">60s</span><span class="pill" data-rest="90">90s</span><span class="pill" data-rest="120">120s</span><span class="pill r" data-rest="0">Stop</span></div>
-    <div class="note" style="margin-top:8px">60-90s en isolation, 2-3 min sur presse/hack.</div></div>`;
-  h+=`<div class="card"><h2>Suivi des charges & poids</h2><div class="note">Note tes charges semaine/semaine dans l'Excel (onglet 📓 Journal) ou en « note du jour ». Ton poids + mensurations se suivent dans l'onglet Semaine. Progresse : +1 rep ou +1-2 kg/sem.</div></div>`;
-  c.innerHTML=h;
-  c.querySelectorAll("[data-acc]").forEach(a=>a.querySelector(".h").addEventListener("click",()=>a.classList.toggle("open")));
-  c.querySelectorAll("[data-rest]").forEach(b=>b.addEventListener("click",()=>{clearInterval(restT);restS=+b.dataset.rest;const el=document.getElementById("restTime");el.textContent=restS>0?restS+'s':'—';if(restS>0){restT=setInterval(()=>{restS--;const e=document.getElementById("restTime");if(!e){clearInterval(restT);return;}if(restS<=0){e.textContent='GO 💪';clearInterval(restT);}else{e.textContent=restS+'s';}},1000);}}));
-}
-function listHTML(arr,key){let h='';arr.forEach(it=>{h+=`<div class="chk ${it.done?'on':''}" data-tg="${key}:${it.id}"><span class="bx">${it.done?'✓':''}</span><span class="nm">${it.text}</span><button class="del" style="margin-left:auto;background:none;border:0;color:var(--anthr);cursor:pointer;font-size:14px" data-del="${key}:${it.id}">✕</button></div>`;});return h;}
-function renderApprendre(){
-  const c=document.getElementById("apprendre");
-  let h=`<div class="hint">Tes lectures et ce que tu veux apprendre. Tape dans le champ + Entrée pour ajouter, touche une ligne pour la cocher. Tout reste sur ton tél.</div>`;
-  h+=`<div class="card"><h2>📖 À lire <span class="tag">${S.read.filter(x=>x.done).length}/${S.read.length}</span></h2>${S.read.length?listHTML(S.read,'read'):'<div class="note">Rien encore.</div>'}
-    <input type="text" data-add="read" placeholder="Ajouter un livre / article…" style="width:100%;margin-top:8px;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit"></div>`;
-  h+=`<div class="card"><h2>🎯 À apprendre <span class="tag">${S.skills.filter(x=>x.done).length}/${S.skills.length}</span></h2>${S.skills.length?listHTML(S.skills,'skills'):'<div class="note">Rien encore.</div>'}
-    <input type="text" data-add="skills" placeholder="Ex : Excel avancé, anglais, cuisine, montage…" style="width:100%;margin-top:8px;border:1px solid var(--ligne);border-radius:8px;padding:8px;font-size:13px;font-family:inherit"></div>`;
-  const SUGG_READ=["Atomic Habits (J. Clear) — bâtir des habitudes","La psychologie de l'argent (M. Housel)","Deep Work (C. Newport) — concentration","Comment se faire des amis (D. Carnegie) — confiance","Les mots sont des fenêtres (CNV, Rosenberg) — couple","Père riche père pauvre (Kiyosaki) — argent"];
-  const SUGG_SKILL=["Excel avancé (TCD, RECHERCHEV, Power Query)","Anglais — 15 min/jour","Cuisine — 5 techniques de base","Prise de parole / gérer les appels","Time-blocking / anti-procrastination","Bases nutrition prise de masse"];
-  h+=`<div class="card"><h2>💡 Suggestions <span class="tag">touche = ajouter</span></h2>
-    <div class="note" style="margin-bottom:8px">Choisies pour ton profil (RAF + M2 Finance + dev perso). Touche une pastille pour l'ajouter à tes listes.</div>
-    <div class="pills" style="flex-wrap:wrap;gap:6px">`;
-  SUGG_READ.forEach(t=>h+=`<span class="pill" data-sugg="read::${t}">📖 ${t.split(' (')[0]}</span>`);
-  SUGG_SKILL.forEach(t=>h+=`<span class="pill" data-sugg="skills::${t}">🎯 ${t.split(' (')[0]}</span>`);
-  h+=`</div></div>`;
-  h+=`<div class="card"><h2>Le réflexe</h2><div class="note">Lecture 20 min/jour (tracker dans « Aujourd'hui »). Commence petit : 10 pages ou 1 chapitre par soir.</div></div>`;
-  c.innerHTML=h;
-  c.querySelectorAll('[data-sugg]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.sugg.split('::'),k=p[0],txt=p[1];if(!S[k].some(x=>x.text===txt)){S[k].push({id:String(Date.now()),text:txt,done:false});save();renderApprendre();}}));
-  c.querySelectorAll('[data-add]').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&inp.value.trim()){const k=inp.dataset.add;S[k].push({id:String(Date.now()),text:inp.value.trim(),done:false});save();renderApprendre();}}));
-  c.querySelectorAll('[data-tg]').forEach(el=>el.addEventListener('click',e=>{if(e.target.dataset.del!==undefined)return;const p=el.dataset.tg.split(':'),k=p[0],id=p[1];const it=S[k].find(x=>x.id===id);if(it){it.done=!it.done;save();renderApprendre();}}));
-  c.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const p=b.dataset.del.split(':'),k=p[0],id=p[1];S[k]=S[k].filter(x=>x.id!==id);save();renderApprendre();}));
-}
-function renderAll(){renderJour();renderSemaine();renderSport();renderBouffe();renderMenu();renderCourses();renderEuro();renderStyle();renderApprendre();renderObj();}
-// nav
-document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("act"));
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("act"));
-  b.classList.add("act");document.getElementById("t-"+b.dataset.tab).classList.add("act");
-  const R={jour:renderJour,semaine:renderSemaine,sport:renderSport,bouffe:renderBouffe,menu:renderMenu,courses:renderCourses,euro:renderEuro,style:renderStyle,apprendre:renderApprendre,obj:renderObj};
-  if(R[b.dataset.tab])R[b.dataset.tab]();
-  window.scrollTo(0,0);
+/* ================= NAVIGATION ================= */
+const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe};
+function renderAll(){ Object.keys(RENDUS).forEach(k => RENDUS[k]()); }
+document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".nav button").forEach(x => x.classList.remove("act"));
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("act"));
+  b.classList.add("act");
+  el("t-" + b.dataset.tab).classList.add("act");
+  if (RENDUS[b.dataset.tab]) RENDUS[b.dataset.tab]();
+  window.scrollTo(0, 0);
 }));
-// date header
-(function(){const j=["dim","lun","mar","mer","jeu","ven","sam"];const m=["jan","fév","mar","avr","mai","juin","juil","aoû","sep","oct","nov","déc"];
-  const t=new Date();document.getElementById("hdate").textContent=j[t.getDay()]+". "+t.getDate()+" "+m[t.getMonth()]+" "+t.getFullYear();})();
-// mode sombre
-function applyDark(){document.body.classList.toggle('dark',!!S.dark);document.getElementById('darkBtn').textContent=S.dark?'☀️':'🌙';}
-document.getElementById('darkBtn').addEventListener('click',function(){S.dark=!S.dark;save();applyDark();});
-applyDark();
-// pomodoro 25/5
+
 (function(){
- let secs=25*60,phase='Travail',running=false,timer=null,count=0;
- const ov=document.getElementById('pomo'),tEl=document.getElementById('pomoTime'),phEl=document.getElementById('pomoPhase'),cEl=document.getElementById('pomoCount'),stB=document.getElementById('pomoStart');
- function fmt(){const m=Math.floor(secs/60),s=secs%60;tEl.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;phEl.textContent=phase;cEl.textContent=count+' pomodoro fait(s)';}
- function tick(){secs--;if(secs<0){if(phase==='Travail'){count++;phase='Pause';secs=5*60;}else{phase='Travail';secs=25*60;}}fmt();}
- stB.addEventListener('click',function(){running=!running;stB.textContent=running?'Pause':'Reprendre';if(running){timer=setInterval(tick,1000);}else{clearInterval(timer);}});
- document.getElementById('pomoReset').addEventListener('click',function(){clearInterval(timer);running=false;stB.textContent='Démarrer';phase='Travail';secs=25*60;fmt();});
- document.getElementById('pomoBtn').addEventListener('click',function(){ov.classList.add('open');fmt();});
- document.getElementById('pomoClose').addEventListener('click',function(){ov.classList.remove('open');});
- fmt();
+  const d = new Date();
+  el("hdate").textContent = JOURS[d.getDay()] + " " + d.getDate() + " " + MOIS[d.getMonth()];
 })();
-// photos garde-robe
-function addPhoto(file){
- const r=new FileReader();
- r.onload=function(){const img=new Image();img.onload=function(){
-   const max=600;let w=img.width,h=img.height;
-   if(w>h&&w>max){h=h*max/w;w=max;}else if(h>=w&&h>max){w=w*max/h;h=max;}
-   const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
-   try{S.photos.push({id:String(Date.now()),data:cv.toDataURL('image/jpeg',0.6)});save();renderStyle();}
-   catch(e){alert('Mémoire pleine — supprime quelques photos.');}
- };img.src=r.result;};
- r.readAsDataURL(file);
-}
+function applyDark(){ document.body.classList.toggle("dark", !!S.dark); el("darkBtn").textContent = S.dark ? "☀️" : "🌙"; }
+el("darkBtn").addEventListener("click", () => { S.dark = !S.dark; save(); applyDark(); });
+applyDark();
 renderAll();
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>
 </body>
 </html>
