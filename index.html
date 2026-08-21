@@ -788,7 +788,7 @@ function construireIcs(seulementRdv){
            "SUMMARY:" + titre);
     if (desc) L.push("DESCRIPTION:" + desc.replace(/,/g, "\\,"));
     (alarmes || []).forEach(a => L.push("BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:" + a[1].replace(/,/g,"\\,"),
-                                        "TRIGGER:" + a[0], "END:VALARM"));
+                                        "TRIGGER;RELATED=START:" + a[0], "END:VALARM"));
     L.push("END:VEVENT");
   }
   /* séances des 60 prochains jours, sautées si on ne veut que les rendez-vous */
