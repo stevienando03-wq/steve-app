@@ -2688,5 +2688,57 @@ END:VALARM
 
 END:VEVENT
 
+BEGIN:VEVENT
+UID:courses-2026-08-26@steve
+DTSTAMP:20260826T080000Z
+DTSTART:20260826T190000
+DTEND:20260826T194500
+SUMMARY:Courses\, environ 23 euros
+DESCRIPTION:6 cuisses de poulet\, lardons fumes 250 g\, 12 oeufs\, 3 L de lait entier\, 1 kg de fromage blanc\, 1\,2 kg de bananes\, pain de mie complet\, 1 L d'huile de tournesol\, tomates concassees\, 1 kg de pommes de terre\, 1 kg d'oignons. Verifier le riz et les carottes avant de partir.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Courses dans une heure\, la liste est dans l'app
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cuisine-2026-08-26@steve
+DTSTAMP:20260826T080000Z
+DTSTART:20260826T200000
+DTEND:20260826T203500
+SUMMARY:Cuisine\, poulet mijote et riz
+DESCRIPTION:6 cuisses\, 2 oignons\, 3 gousses d'ail\, 1 boite de tomates\, concentre\, 1 cube\, herbes\, 360 g de riz. Cuire 240 g de riz en plus\, deuxieme casserole\, il sert jeudi.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Poulet mijote a preparer dans une heure
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cuisine-2026-08-27@steve
+DTSTAMP:20260827T080000Z
+DTSTART:20260827T190000
+DTEND:20260827T191500
+SUMMARY:Cuisine\, riz saute
+DESCRIPTION:240 g de riz de la veille\, 250 g de lardons\, 3 carottes\, 1 oignon\, 2 gousses d'ail\, 4 oeufs. Manger avant la reunion de 20h30.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Riz saute a preparer dans une heure
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cuisine-2026-08-28@steve
+DTSTAMP:20260828T080000Z
+DTSTART:20260828T193000
+DTEND:20260828T200000
+SUMMARY:Cuisine\, tortilla et carottes rapees
+DESCRIPTION:800 g de pommes de terre\, 1 gros oignon\, 6 oeufs\, 4 carottes. Moitie ce soir\, moitie en tupperware pour samedi midi.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Tortilla a preparer dans une heure
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
 END:VCALENDAR
 

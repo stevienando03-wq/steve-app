@@ -119,6 +119,24 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
   color:var(--anthr);line-height:1.55;margin-bottom:12px}
 textarea{width:100%;border:1px solid var(--ligne);border-radius:10px;padding:10px;font-size:13.5px;
   font-family:inherit;color:var(--bleu);min-height:60px;background:#fff}
+.jour-repas{border:1px solid var(--ligne);border-radius:12px;padding:11px 13px;margin-bottom:9px;background:#fff}
+.jour-repas:last-child{margin-bottom:0}
+.jour-repas.auj{border-color:var(--or);border-width:2px;background:#FCF8EC}
+.jour-repas .d{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--or);margin-bottom:6px}
+.jour-repas .l{display:flex;gap:9px;font-size:12.5px;padding:3px 0;line-height:1.45}
+.jour-repas .l .q{color:#A9A293;min-width:64px;flex:none;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding-top:3px}
+.jour-repas .l .v{color:var(--anthr);flex:1}
+.jour-repas .l .v b{color:var(--bleu)}
+.chk .nm .sq{display:block;font-size:11px;color:#A9A293;font-weight:600;margin-top:1px}
+.chk .qt{font-size:11px;color:#A9A293;white-space:nowrap;margin-left:auto;font-weight:700;flex:none}
+.chk.on .qt,.chk.on .sq{text-decoration:line-through}
+.alerte{background:var(--rougebg);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.5;
+  color:var(--rouge);font-weight:600;margin-top:9px}
+.etape{display:flex;gap:9px;padding:4px 0;font-size:12.5px;line-height:1.6;color:var(--anthr)}
+.etape .n{width:19px;height:19px;border-radius:50%;background:var(--bleu);color:#fff;font-size:10.5px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.ing{background:var(--creme);border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.5;color:var(--anthr)}
+.ing b{color:var(--bleu)}
 body.dark{--creme:#161b24;--bleu:#E8EBF1;--anthr:#AEB6C4;--ligne:#2c3543}
 body.dark .card,body.dark .acc,body.dark .skill,body.dark .nav,body.dark input,body.dark select,
 body.dark textarea,body.dark .pill,body.dark .step button{background:#1f2733;color:var(--bleu)}
@@ -126,6 +144,11 @@ body.dark .head{background:#0e1729}
 body.dark .hero{background:#26304a}
 body.dark .kpi .box,body.dark .rdv .j{background:#2a3346}
 body.dark .hint{background:#2a2410}
+body.dark .jour-repas{background:#1f2733}
+body.dark .jour-repas.auj{background:#2a2410}
+body.dark .alerte{background:#3a1c22;color:#F0A0AA}
+body.dark .ing{background:#2a3346}
+body.dark .etape .n{background:#3b4763}
 body.dark .bar{background:#2c3543}
 body.dark .nav button{color:#7e879a}
 body.dark .donut-c{fill:#E8EBF1}
@@ -284,10 +307,107 @@ const RECETTES = [
   {nm:"Wraps poulet", meta:"40 g de protéines", b:"2 tortillas, 150 g de poulet, crudités, sauce au skyr citron ail."}
 ];
 
-const COURSES = [
-  ["Le plein du mois", ["Whey 1 kg", "Avoine 2 kg", "Riz 2 kg", "Pâtes 2 kg", "Lentilles et pois chiches", "Haricots rouges", "Tomates concassées", "Sardines ou maquereau", "Beurre de cacahuète", "Huile", "Lait de coco", "Tortillas", "Épices", "Lait UHT 6 litres"]],
-  ["Le frais de la semaine", ["Poulet 1 kg", "Œufs par 30", "Bœuf 5% 500 g", "Skyr 1 kg", "Pain complet", "Bananes", "Légumes surgelés", "Poisson blanc surgelé", "Patates douces"]]
-];
+const PERIODE = {
+  du:"2026-08-26", au:"2026-08-29",
+  titre:"Prise de masse, de mercredi à samedi",
+  intro:"Trois soirs de cuisine, dont deux vraies sessions. Le petit-déjeuner et la collation ne bougent pas de la semaine, ce sont eux qui portent la prise de masse, pas les dîners.",
+
+  courses:{
+    d:"2026-08-26", h:"19:00", dur:45, quand:"ce soir",
+    attendu:23,
+    verite:"Seuls les lardons sont vérifiés au catalogue Lidl en cours. Le reste est une fourchette.",
+    lignes:[
+      {n:"Cuisses de poulet",    q:"6, environ 1,3 kg", bas:4.40, haut:6.50},
+      {n:"Lardons fumés 250 g",  q:"1 barquette",       bas:1.74, haut:2.20},
+      {n:"Œufs",                 q:"12",                bas:2.60, haut:3.40},
+      {n:"Lait entier",          q:"3 litres",          bas:2.70, haut:3.60},
+      {n:"Fromage blanc",        q:"1 kg",              bas:1.80, haut:2.50},
+      {n:"Bananes",              q:"1,2 kg",            bas:1.50, haut:2.30},
+      {n:"Pain de mie complet",  q:"500 g",             bas:1.00, haut:1.50},
+      {n:"Huile de tournesol",   q:"1 litre",           bas:1.80, haut:2.60},
+      {n:"Tomates concassées",   q:"1 boîte",           bas:0.45, haut:0.75},
+      {n:"Pommes de terre",      q:"1 kg",              bas:0.80, haut:1.20},
+      {n:"Oignons",              q:"1 kg",              bas:1.20, haut:1.90}
+    ],
+    dejaLa:"Flocons d\'avoine, beurre de cacahuète, riz, concentré de tomate, carottes, ail, cubes, herbes, vinaigre.",
+    verifier:[
+      {n:"Riz",      besoin:"600 g sec", si:"1,30 à 2,20 €"},
+      {n:"Carottes", besoin:"700 g",     si:"1,00 à 1,60 €"}
+    ],
+    rayon:[
+      "Cuisses de poulet, si le kilo dépasse 5,00 € prends des pilons.",
+      "Lait, le pack de 6 est souvent moins cher au litre que 3 briques.",
+      "Huile, tournesol 1 litre, ni colza ni olive."
+    ]
+  },
+
+  fixes:[
+    {nm:"Petit-déjeuner", meta:"840 kcal, 32 g de protéines, 1,05 €",
+     quoi:["100 g de flocons d\'avoine", "30 cl de lait entier", "30 g de beurre de cacahuète", "1 banane"],
+     blocs:[
+       ["Chaud", "Avoine et lait dans un bol, 2 min 30 au micro-ondes, remué à mi-parcours pour éviter le débordement. Beurre de cacahuète ajouté à la sortie, il fond seul en 30 secondes. Banane en rondelles."],
+       ["Froid, préparé la veille", "Avoine et lait en tupperware au frigo. Le matin tu ajoutes le beurre de cacahuète et la banane. Même valeur, zéro minute. C\'est la version pour les jours où tu pars tôt."],
+       ["Si le volume passe mal", "Problème classique à 67 kg, 100 g d\'avoine gonflent énormément. Soit 20 cl de lait dans le bol au lieu de 30, et tu bois les 10 cl restants à côté : mêmes calories, moitié moins de volume. Soit 70 g le matin et les 30 g restants versés dans la collation."],
+       ["Ne saute jamais le beurre de cacahuète", "180 kcal pour 20 g de produit. C\'est ce qui rend le repas finissable. Sans lui il faudrait 50 g d\'avoine de plus, soit un bol que tu ne termines pas."]
+     ]},
+    {nm:"Collation", meta:"480 kcal, 24 g de protéines, 1,30 €",
+     quoi:["2 tranches de pain de mie et 30 g de beurre de cacahuète", "250 g de fromage blanc", "1 banane"],
+     blocs:[["Quand", "Après la séance les jours de salle, milieu d\'après-midi sinon."]]}
+  ],
+
+  diners:{
+    "2026-08-26":{
+      nm:"Poulet mijoté et riz", portions:3, temps:"12 min actif, 35 min en tout", h:"20:00", dur:35,
+      ing:"6 cuisses, 2 oignons, 3 gousses d\'ail, 1 boîte de tomates, 1 cuillère à soupe de concentré, 1 cube, 15 cl d\'eau, herbes, 360 g de riz",
+      etapes:[
+        "Cocotte feu vif, 2 cuillères à soupe d\'huile. Cuisses posées peau vers le bas, salées. 7 min sans y toucher, la peau doit être brune, pas dorée. Retourner 2 min. Réserver dans une assiette.",
+        "Feu moyen. Oignons émincés directement dans la graisse rendue, 5 min. Ail écrasé, 1 min.",
+        "Tomates, concentré, cube émietté, 15 cl d\'eau, herbes. Gratter le fond à la cuillère en bois, tout le goût est collé là.",
+        "Remettre les cuisses et le jus de l\'assiette. Couvert, feu doux, 25 min.",
+        "Riz : 360 g dans 72 cl d\'eau salée. Ébullition, puis feu très doux, couvert, 11 min sans soulever le couvercle. 5 min de repos."
+      ],
+      alerte:"Cuis 240 g de riz en plus ce soir, deuxième casserole, nature, au frigo. Il sert jeudi. Le riz de la veille se saute, le riz frais colle et tourne en bouillie.",
+      batch:"2 cuisses ce soir. Les 4 autres en 2 tupperwares montés ce soir, pas demain matin. Riz au fond, poulet et sauce par-dessus, l\'inverse détrempe le riz pendant la nuit."
+    },
+    "2026-08-27":{
+      nm:"Riz sauté lardons, œufs, carottes", portions:2, temps:"15 min", h:"19:00", dur:15,
+      ing:"240 g de riz cuit la veille, 250 g de lardons, 3 carottes, 1 oignon, 2 gousses d\'ail, 4 œufs",
+      etapes:[
+        "Lardons dans la poêle froide, sans huile, feu moyen, 5 min.",
+        "Carottes en petits dés de 5 mm, pas des rondelles, elles doivent cuire vite. Avec l\'oignon, 6 min.",
+        "Ail, 30 secondes. Pousser le tout sur un côté de la poêle.",
+        "Casser les 4 œufs dans l\'espace libre, brouiller grossièrement 1 min, puis mélanger.",
+        "Riz froid émietté à la main avant de le verser. 2 cuillères à soupe d\'huile, sel, poivre. 4 min en remuant peu, laisse-le accrocher au fond entre deux mouvements, c\'est là que le goût se fait."
+      ],
+      alerte:"",
+      batch:"1 portion ce soir, 1 en tupperware, ta réserve du week-end. Jeudi et vendredi midi sont déjà couverts par le poulet."
+    },
+    "2026-08-28":{
+      nm:"Tortilla et carottes râpées", portions:2, temps:"30 min", h:"19:30", dur:30,
+      ing:"800 g de pommes de terre, 1 gros oignon, 6 œufs, 4 carottes",
+      etapes:[
+        "Pommes de terre en rondelles fines et oignon émincé. Poêle avec 4 cuillères d\'huile, généreux, c\'est voulu. Feu moyen-doux, à couvert, 15 min. Fondantes, jamais croustillantes.",
+        "Battre les 6 œufs, saler franchement. Y verser les pommes de terre, mélanger, laisser reposer 5 min.",
+        "Reverser dans la poêle huilée, feu doux 8 min. Retourner à l\'aide d\'une assiette, 4 min.",
+        "Carottes râpées, 3 cuillères à soupe d\'huile, 1 cuillère à soupe de vinaigre, sel, une pincée de sucre. Laisser reposer 15 min avant de manger : râpées crues, elles ont besoin de ce temps pour rendre leur eau et prendre la vinaigrette."
+      ],
+      alerte:"",
+      batch:"Moitié ce soir, moitié en tupperware pour samedi midi. La tortilla se mange froide, c\'est fait pour."
+    }
+  },
+
+  planning:{
+    "2026-08-26":{matin:"", collation:"", midi:"", soir:"Poulet mijoté et riz"},
+    "2026-08-27":{matin:"Avoine", collation:"Pain et fromage blanc", midi:"Poulet et riz", soir:"Riz sauté"},
+    "2026-08-28":{matin:"Avoine", collation:"Pain et fromage blanc", midi:"Poulet et riz", soir:"Tortilla et carottes"},
+    "2026-08-29":{matin:"Avoine", collation:"Pain et fromage blanc", midi:"Tortilla froide", soir:"Nouvelle période, redonne ta liste"}
+  },
+
+  regle:"Les 2 cuillères d\'huile de chaque plat ne sont pas décoratives : 240 kcal par assiette, 480 par jour. C\'est la totalité de ton surplus. Sans elles tu manges à maintenance.",
+  bilan:["2 vraies sessions de cuisine, mercredi et vendredi. Jeudi, 15 minutes.",
+         "Œufs consommés : 10 sur 12. Bananes : 6 sur 7."],
+  reste:"Ce que tu emmènes vers samedi : 1 portion de riz sauté, l\'huile entamée, 2 œufs, le reste des oignons et des pommes de terre, l\'avoine et le beurre de cacahuète."
+};
 
 const CAT_IN  = ["Salaire", "Tickets resto", "Remboursement", "Retrait d'épargne", "Autre"];
 const CAT_OUT = ["Courses", "Restaurant", "Transport", "Logement", "Santé", "Loisirs", "Abonnements", "Sport", "Mise de côté", "Autre"];
@@ -306,6 +426,13 @@ S.budget.mvts = S.budget.mvts || [];
 S.budget.mois = S.budget.mois || moisCourant();
 S.budget.histo = S.budget.histo || [];   // les mois cloturés, pour comparer
 function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
+/* les cases cochees d'une periode passee ne servent plus */
+(function(){
+  const pref = "p" + PERIODE.du + "_";
+  let n = 0;
+  Object.keys(S.shop).forEach(k => { if (k.indexOf(pref) !== 0) { delete S.shop[k]; n++; } });
+  if (n) save();
+})();
 
 /* ================= DATES ================= */
 const JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
@@ -363,6 +490,32 @@ function renderJour(){
        (estTravail(t) ? "<br>Travail de " + TRAVAIL.debut + " à " + TRAVAIL.fin + "." : "") +
        '</div></div>';
 
+  const pr = repasDu(t);
+  if (pr) {
+    const din = dinerDu(t);
+    h += '<div class="card sec-vert"><h2>À manger aujourd\'hui</h2><div class="jour-repas auj">' +
+         '<div class="d">' + libelle(t) + '</div>';
+    [["Matin", pr.matin], ["Collation", pr.collation], ["Midi", pr.midi],
+     ["Soir", din ? "<b>" + din.nm + "</b>" : pr.soir]].forEach(l => {
+      if (l[1]) h += '<div class="l"><span class="q">' + l[0] + '</span><span class="v">' + l[1] + '</span></div>';
+    });
+    h += '</div>';
+    if (din) {
+      h += '<div class="ing" style="margin-top:9px"><b>Ce soir, ' + din.temps + '.</b> Il te faut : ' + din.ing +
+           '. La recette pas à pas est dans l\'onglet Bouffe.</div>';
+      if (din.alerte) h += '<div class="alerte">' + din.alerte + '</div>';
+    }
+    if (t === PERIODE.courses.d) {
+      const nbc = PERIODE.courses.lignes.length;
+      const prisc = PERIODE.courses.lignes.filter((l, i) => S.shop[cleShop(i)]).length;
+      h += '<div class="alerte" style="background:#FCF8EC;color:var(--bleu)"><b>Courses ' + PERIODE.courses.quand +
+           ', vers ' + PERIODE.courses.h.replace(":", "h") + '.</b> ' + nbc + ' articles pour environ ' +
+           PERIODE.courses.attendu + ' \u20ac. ' +
+           (prisc ? prisc + ' sur ' + nbc + ' déjà dans le panier.' : 'La liste cochable est dans l\'onglet Bouffe.') + '</div>';
+    }
+    h += '</div>';
+  }
+
   if (rdvs.length) {
     h += '<div class="card sec-or"><h2>Ton programme du jour</h2>';
     rdvs.forEach(r => {
@@ -412,6 +565,8 @@ function renderSemaine(){
     h += '<div class="row"><div class="lab"><b>' + (i === 0 ? "Aujourd'hui" : libelle(d)) + '</b>' +
          (estTravail(d) ? ' &nbsp;<span style="font-size:11px;color:#A9A293">bureau ' + TRAVAIL.debut + " à " + TRAVAIL.fin + '</span>' : '') +
          (rdvs.length ? '<br><span style="font-size:12px">' + rdvs.map(r => r.h.replace(":", "h") + " " + r.t).join(", ") + '</span>' : '') +
+         (repasDu(d) ? '<br><span style="font-size:12px;color:#5BA86B;font-weight:600">Le soir : ' +
+            (dinerDu(d) ? dinerDu(d).nm : repasDu(d).soir) + '</span>' : '') +
          '</div><span class="pill' + (s === "REPOS" ? '' : ' on') + '">' + tag + '</span></div>';
   }
   h += '</div>';
@@ -724,24 +879,133 @@ function renderEuro(){
   });
 }
 
+function fmtEur(v){ return v.toFixed(2).replace(".", ",") + " \u20ac"; }
+function cleShop(i){ return "p" + PERIODE.du + "_" + i; }
+function joursPeriode(){
+  const L = [];
+  for (let d = PERIODE.du; d <= PERIODE.au; d = plusJours(d, 1)) L.push(d);
+  return L;
+}
+function repasDu(d){ return PERIODE.planning[d] || null; }
+function dinerDu(d){ return PERIODE.diners[d] || null; }
+
+function blocJourRepas(d){
+  const p = repasDu(d); if (!p) return "";
+  const din = dinerDu(d), estAuj = (d === auj());
+  let x = '<div class="jour-repas' + (estAuj ? " auj" : "") + '">' +
+          '<div class="d">' + (estAuj ? "Aujourd\'hui, " : "") + libelle(d) + '</div>';
+  function l(q, v){ return v ? '<div class="l"><span class="q">' + q + '</span><span class="v">' + v + '</span></div>' : ""; }
+  x += l("Matin", p.matin);
+  x += l("Collation", p.collation);
+  x += l("Midi", p.midi);
+  x += l("Soir", din ? "<b>" + din.nm + "</b>, " + din.temps : p.soir);
+  if (d === PERIODE.courses.d) x += l("Courses", "<b>Les courses</b>, vers " + PERIODE.courses.h.replace(":", "h") + ", environ " + PERIODE.courses.attendu + " \u20ac");
+  if (din && din.alerte) x += '<div class="alerte">' + din.alerte + '</div>';
+  return x + '</div>';
+}
+
 function renderBouffe(){
-  let h = '<div class="hint">Le midi c\'est toujours le bowl du batch, sans réfléchir. Le soir tu piques dans la liste. ' +
-          'Un plat nouveau par semaine pour ne pas te lasser.</div>';
-  h += '<div class="card"><h2>Recettes <span class="tag">protéines par plat</span></h2>';
+  const t = auj(), C = PERIODE.courses;
+  let h = "";
+
+  h += '<div class="card hero"><h2>Ta période</h2><div class="big">' + PERIODE.titre + '</div>' +
+       '<div class="sub">Du ' + libelleLong(PERIODE.du) + ' au ' + libelleLong(PERIODE.au) + '.<br>' + PERIODE.intro + '</div></div>';
+
+  if (t > PERIODE.au) {
+    h += '<div class="hint"><b>Cette période est finie.</b> Donne ta prochaine liste de courses et tes repas, ' +
+         'et tout se remet à jour d\'un coup : les cases, le calendrier des repas, l\'onglet Aujourd\'hui et le fichier Google Agenda.</div>';
+  }
+
+  /* ---------- LE CALENDRIER DES REPAS ---------- */
+  h += '<div class="card"><h2>Ton calendrier <span class="tag">jour par jour</span></h2>';
+  joursPeriode().forEach(d => { h += blocJourRepas(d); });
+  h += '</div>';
+
+  /* ---------- LES COURSES ---------- */
+  const nb = C.lignes.length;
+  const pris = C.lignes.filter((l, i) => S.shop[cleShop(i)]).length;
+  const totBas  = C.lignes.reduce((a, l) => a + l.bas, 0);
+  const totHaut = C.lignes.reduce((a, l) => a + l.haut, 0);
+  const resteBas  = C.lignes.reduce((a, l, i) => a + (S.shop[cleShop(i)] ? 0 : l.bas), 0);
+  const resteHaut = C.lignes.reduce((a, l, i) => a + (S.shop[cleShop(i)] ? 0 : l.haut), 0);
+
+  h += '<div class="card sec-or"><h2>Les courses <span class="tag">' + libelle(C.d) + ', ' + C.quand + '</span></h2>';
+  h += '<div class="kpi"><div class="box"><div class="n">' + pris + ' / ' + nb + '</div><div class="t">dans le panier</div></div>' +
+       '<div class="box"><div class="n">' + Math.round(C.attendu) + ' \u20ac</div><div class="t">attendu en caisse</div></div></div>';
+  h += '<div class="bar' + (pris === nb ? " vert" : "") + '" style="margin:10px 0 4px"><i style="width:' + (nb ? pris / nb * 100 : 0) + '%"></i></div>';
+  C.lignes.forEach((l, i) => {
+    const id = cleShop(i), on = !!S.shop[id];
+    h += '<div class="chk' + (on ? " on" : "") + '" data-shop="' + id + '"><span class="bx">' + (on ? "\u2713" : "") + '</span>' +
+         '<span class="nm">' + l.n + '<span class="sq">' + l.q + '</span></span>' +
+         '<span class="qt">' + fmtEur(l.bas) + ' à ' + fmtEur(l.haut) + '</span></div>';
+  });
+  h += '<div class="row" style="border-top:1px solid #F0ECE2;margin-top:4px"><div class="lab"><b>Tout le panier</b></div>' +
+       '<div style="font-weight:700;font-size:13px">' + fmtEur(totBas) + ' à ' + fmtEur(totHaut) + '</div></div>';
+  if (pris > 0 && pris < nb) {
+    h += '<div class="row"><div class="lab"><b>Il te reste à prendre</b></div>' +
+         '<div style="font-weight:700;font-size:13px;color:var(--or)">' + fmtEur(resteBas) + ' à ' + fmtEur(resteHaut) + '</div></div>';
+  }
+  h += '<div class="note" style="margin-top:9px">' + C.verite + '</div></div>';
+
+  /* ---------- AVANT DE PARTIR ---------- */
+  h += '<div class="card"><h2>Avant de partir</h2>' +
+       '<div class="note"><b>Déjà chez toi, ne rachète pas.</b><br>' + C.dejaLa + '</div>';
+  h += '<div style="margin-top:10px">';
+  C.verifier.forEach(v => {
+    h += '<div class="row"><div class="lab"><b>' + v.n + '</b><br><span style="font-size:12px">Il te faut ' + v.besoin + '</span></div>' +
+         '<div style="font-size:12px;color:var(--anthr);text-align:right;white-space:nowrap">si manquant<br><b>' + v.si + '</b></div></div>';
+  });
+  h += '</div></div>';
+
+  h += '<div class="card sec-rouge"><h2>À surveiller en rayon</h2>';
+  C.rayon.forEach(r => { h += '<div class="row"><div class="lab">' + r + '</div></div>'; });
+  h += '</div>';
+
+  /* ---------- LES DINERS EN DETAIL ---------- */
+  h += '<div class="card"><h2>Les dîners <span class="tag">touche pour la recette</span></h2>';
+  joursPeriode().forEach(d => {
+    const r = dinerDu(d); if (!r) return;
+    const estAuj = (d === auj());
+    h += '<div class="acc' + (estAuj ? " open" : "") + '"><div class="h"><span class="nm">' + libelle(d) + ", " + r.nm + '</span>' +
+         '<span class="meta">' + r.portions + ' portions</span></div><div class="b">' +
+         '<div class="ing"><b>Il te faut :</b> ' + r.ing + '</div>' +
+         '<div style="font-size:11.5px;color:var(--or);font-weight:700;margin:9px 0 3px">' + r.temps + '</div>';
+    r.etapes.forEach((e, i) => {
+      h += '<div class="etape"><span class="n">' + (i + 1) + '</span><span>' + e + '</span></div>';
+    });
+    if (r.alerte) h += '<div class="alerte">' + r.alerte + '</div>';
+    if (r.batch)  h += '<div class="note" style="margin-top:9px;padding-top:9px;border-top:1px solid #F0ECE2"><b>Ce qui part en boîte :</b> ' + r.batch + '</div>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+
+  /* ---------- LES REPAS FIXES ---------- */
+  h += '<div class="card"><h2>Les repas fixes <span class="tag">identiques chaque jour</span></h2>';
+  PERIODE.fixes.forEach(f => {
+    h += '<div class="acc"><div class="h"><span class="nm">' + f.nm + '</span><span class="meta">' + f.meta + '</span></div><div class="b">';
+    h += '<div class="ing"><b>Il te faut :</b> ' + f.quoi.join(", ") + '</div>';
+    f.blocs.forEach(b => {
+      h += '<div style="margin-top:9px"><b style="color:var(--bleu);font-size:12.5px">' + b[0] + '</b><br>' + b[1] + '</div>';
+    });
+    h += '</div></div>';
+  });
+  h += '</div>';
+
+  /* ---------- LA REGLE ET LE BILAN ---------- */
+  h += '<div class="hint"><b>La règle qui décide de tout.</b><br>' + PERIODE.regle + '</div>';
+  h += '<div class="card"><h2>Le bilan de la période</h2>';
+  PERIODE.bilan.forEach(b => { h += '<div class="row"><div class="lab">' + b + '</div></div>'; });
+  h += '<div class="note" style="margin-top:9px">' + PERIODE.reste + '</div></div>';
+
+  /* ---------- LA RESERVE DE RECETTES ---------- */
+  h += '<div class="card"><h2>Ta réserve de recettes <span class="tag">hors période</span></h2>' +
+       '<div class="note" style="margin-bottom:9px">Pour les jours qui ne sont pas couverts, ou quand tu veux changer.</div>';
   RECETTES.forEach(r => {
     h += '<div class="acc"><div class="h"><span class="nm">' + r.nm + '</span><span class="meta">' + r.meta + '</span></div>' +
          '<div class="b">' + r.b + '</div></div>';
   });
   h += '</div>';
-  COURSES.forEach((bloc, bi) => {
-    h += '<div class="card"><h2>' + bloc[0] + '</h2>';
-    bloc[1].forEach((it, ii) => {
-      const id = "c" + bi + "_" + ii;
-      h += '<div class="chk' + (S.shop[id] ? " on" : "") + '" data-shop="' + id + '"><span class="bx">' +
-           (S.shop[id] ? "✓" : "") + '</span><span class="nm">' + it + '</span></div>';
-    });
-    h += '</div>';
-  });
+
   el("bouffe").innerHTML = h;
   el("bouffe").querySelectorAll(".acc").forEach(a =>
     a.querySelector(".h").addEventListener("click", () => a.classList.toggle("open")));
@@ -813,6 +1077,22 @@ function construireIcs(seulementRdv){
     ev("rdv" + i + "-" + r.d + "@steve", r.d, r.h, r.dur || 60, r.t, r.note || "",
        [["-P3D", r.t + " dans trois jours"], ["-P1D", r.t + " demain"], ["-PT2H", r.t + " dans deux heures"]]);
   });
+  /* courses et sessions de cuisine de la période en cours */
+  if (!seulementRdv) {
+    const C = PERIODE.courses;
+    if (C.d >= auj()) {
+      ev("courses-" + C.d + "@steve", C.d, C.h, C.dur || 45, "Courses, environ " + C.attendu + " \u20ac",
+         C.lignes.map(l => l.n + " " + l.q).join(", "),
+         [["-PT1H", "Courses dans une heure, la liste est dans l\'app"]]);
+    }
+    joursPeriode().forEach(d => {
+      const r = dinerDu(d);
+      if (!r || d < auj()) return;
+      ev("cuisine-" + d + "@steve", d, r.h, r.dur, "Cuisine : " + r.nm,
+         r.ing + (r.alerte ? " || " + r.alerte : ""),
+         [["-PT1H", r.nm + " à préparer dans une heure"]]);
+    });
+  }
   L.push("END:VCALENDAR");
   return L.join("\r\n");
 }
