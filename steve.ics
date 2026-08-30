@@ -2522,9 +2522,9 @@ BEGIN:VALARM
 
 ACTION:DISPLAY
 
-DESCRIPTION:Rendez-vous santé dans trois jours
+DESCRIPTION:Rendez-vous santé dans deux jours
 
-TRIGGER;RELATED=START:-P3D
+TRIGGER;RELATED=START:-P2D
 
 END:VALARM
 
@@ -2568,9 +2568,9 @@ BEGIN:VALARM
 
 ACTION:DISPLAY
 
-DESCRIPTION:Rendez-vous santé dans trois jours
+DESCRIPTION:Rendez-vous santé dans deux jours
 
-TRIGGER;RELATED=START:-P3D
+TRIGGER;RELATED=START:-P2D
 
 END:VALARM
 
@@ -2614,9 +2614,9 @@ BEGIN:VALARM
 
 ACTION:DISPLAY
 
-DESCRIPTION:Rattrapage Handimanagement dans trois jours
+DESCRIPTION:Rattrapage Handimanagement dans deux jours
 
-TRIGGER;RELATED=START:-P3D
+TRIGGER;RELATED=START:-P2D
 
 END:VALARM
 
@@ -2660,9 +2660,9 @@ BEGIN:VALARM
 
 ACTION:DISPLAY
 
-DESCRIPTION:État des lieux de sortie dans trois jours
+DESCRIPTION:État des lieux de sortie dans deux jours
 
-TRIGGER;RELATED=START:-P3D
+TRIGGER;RELATED=START:-P2D
 
 END:VALARM
 

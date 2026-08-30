@@ -82,7 +82,9 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .gcal{display:inline-block;margin-top:7px;font-size:11.5px;font-weight:700;color:var(--bleu);
   background:var(--creme);border:1px solid var(--ligne);border-radius:16px;padding:5px 12px;text-decoration:none}
 .donut{display:block;margin:4px auto 0}
-.donut-c{font-size:27px;font-weight:800;fill:var(--bleu)}
+#restT.fini{color:var(--vert);animation:flash .5s ease-in-out 3}
+@keyframes flash{0%,100%{opacity:1}50%{opacity:.25}}
+.donut-c{font-size:20px;font-weight:800;fill:var(--bleu)}
 .donut-l{font-size:9px;fill:var(--anthr);text-transform:uppercase;letter-spacing:.6px}
 .mvt{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #F0ECE2;font-size:13px;gap:8px}
 .mvt:last-child{border-bottom:0}
@@ -591,10 +593,12 @@ function renderSemaine(){
   h += '<div class="card sec-or"><h2>Mettre tout ça dans Google Agenda</h2>' +
        '<div class="note"><b>Pour avoir les rappels automatiquement :</b> touche le bouton bleu ci-dessous. ' +
        'Tu récupères un fichier avec tes rendez-vous seulement, chacun avec ses trois rappels déjà réglés, ' +
-       'trois jours avant, la veille et deux heures avant. Ouvre-le et choisis Google Agenda, ou importe-le sur ' +
+       'deux jours avant, la veille et deux heures avant. Ouvre-le et choisis Google Agenda, ou importe-le sur ' +
        'ordinateur par Paramètres puis Importer. Les rappels sont conservés à l\'import, contrairement à l\'abonnement.</div>' +
        '<div class="note" style="margin-top:10px"><b>Pour un rendez-vous en particulier :</b> le bouton gris sous ' +
        'chaque rendez-vous plus haut l\'ouvre dans Google, déjà rempli. Pratique pour ceux que tu ajoutes toi-même.</div>' +
+       '<div class="note" style="margin-top:10px"><b>Sur ce téléphone.</b> Le bouton ci-dessous autorise l\'app à te prévenir. Elle t\'enverra une notification deux jours avant chaque rendez-vous, à l\'ouverture. Pour être prévenu même app fermée, garde le fichier de l\'agenda, lui seul sonne tout seul.</div>' +
+       '<button class="btn light" id="okNotif">' + (('Notification' in window) && Notification.permission === 'granted' ? 'Notifications déjà activées' : 'Activer les notifications') + '</button>' +
        '<button class="btn" id="dlRdv">Mes rendez-vous avec les rappels</button>' +
        '<button class="btn light" id="dlIcs">Tout le calendrier, séances comprises</button>' +
        '<button class="btn light" id="copyIcs">Copier le lien d\'abonnement</button>' +
@@ -609,6 +613,13 @@ function renderSemaine(){
     const t = el("rdvT").value.trim(), d = el("rdvD").value, hh = el("rdvH").value;
     if (!t || !d) { alert("Il manque l'intitulé ou la date."); return; }
     S.rdv.push({d:d, h:hh, dur:60, t:t, note:""}); save(); renderSemaine(); renderJour();
+  });
+  el("okNotif").addEventListener("click", function(){
+    const b = this;
+    demanderNotif(ok => {
+      b.textContent = ok ? "Notifications activées" : "Refusé par le téléphone";
+      if (ok) { notifier("C'est bon", "Je te préviendrai deux jours avant chaque rendez-vous."); rappelsDeuxJours(); }
+    });
   });
   el("dlRdv").addEventListener("click", () => telechargerIcs(true));
   el("dlIcs").addEventListener("click", () => telechargerIcs(false));
@@ -640,11 +651,24 @@ function renderSport(){
   el("sport").querySelectorAll(".acc").forEach(a =>
     a.querySelector(".h").addEventListener("click", () => a.classList.toggle("open")));
   el("sport").querySelectorAll("[data-rest]").forEach(b => b.addEventListener("click", () => {
-    clearInterval(window._rt); let n = +b.dataset.rest; const z = el("restT");
-    z.textContent = n > 0 ? n + " s" : "prêt";
-    if (n > 0) window._rt = setInterval(() => {
-      n--; if (n <= 0) { z.textContent = "C'est reparti"; clearInterval(window._rt); } else z.textContent = n + " s";
-    }, 1000);
+    clearInterval(window._rt);
+    const n = +b.dataset.rest, z = el("restT");
+    z.classList.remove("fini");
+    if (n <= 0) { z.textContent = "prêt"; return; }
+    demanderNotif();
+    /* on vise une heure de fin : si le téléphone met l'app en veille, le compte reste juste */
+    const fin = Date.now() + n * 1000;
+    function tic(){
+      const reste = Math.ceil((fin - Date.now()) / 1000);
+      if (reste > 0) { z.textContent = reste + " s"; return; }
+      clearInterval(window._rt);
+      z.textContent = "C'est reparti";
+      z.classList.add("fini");
+      bip();
+      notifier("C'est reparti", "Repos terminé, enchaîne la série suivante.");
+    }
+    tic();
+    window._rt = setInterval(tic, 250);
   }));
 }
 
@@ -731,19 +755,19 @@ function renderEuro(){
        '<circle cx="85" cy="85" r="' + R + '" fill="none" stroke="' + (pct > .35 ? "#1E6B33" : pct > .15 ? "#C8A24B" : "#9C2330") + '" ' +
        'stroke-width="15" stroke-linecap="round" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '" ' +
        'transform="rotate(-90 85 85)"></circle>' +
-       '<text x="85" y="88" text-anchor="middle" class="donut-c">' + Math.round(solde) + ' €</text>' +
+       '<text x="85" y="88" text-anchor="middle" class="donut-c">' + eur(solde) + '</text>' +
        '<text x="85" y="106" text-anchor="middle" class="donut-l">disponible</text></svg>' +
        '<div class="kpi" style="margin-top:10px">' +
-       '<div class="box v"><div class="n">+' + Math.round(entrees) + ' €</div><div class="t">entrées</div></div>' +
-       '<div class="box r"><div class="n">-' + Math.round(sorties) + ' €</div><div class="t">sorties</div></div>' +
-       '<div class="box"><div class="n">' + Math.round(entrees - sorties) + ' €</div><div class="t">net du mois</div></div>' +
+       '<div class="box v"><div class="n">+' + eur(entrees) + '</div><div class="t">entrées</div></div>' +
+       '<div class="box r"><div class="n">-' + eur(sorties) + '</div><div class="t">sorties</div></div>' +
+       '<div class="box"><div class="n">' + eur(entrees - sorties) + '</div><div class="t">net du mois</div></div>' +
        '</div></div>';
 
   /* épargne */
-  h += '<div class="card sec-or"><h2>Mon épargne <span class="tag">' + Math.round(epTotal) + ' € au total</span></h2>' +
-       '<div class="kpi"><div class="box v"><div class="n">' + Math.round(epMois.mis) + ' €</div><div class="t">mis de côté ce mois</div></div>' +
-       '<div class="box r"><div class="n">' + Math.round(epMois.repris) + ' €</div><div class="t">repris ce mois</div></div>' +
-       '<div class="box"><div class="n">' + Math.round(epTotal) + ' €</div><div class="t">épargne cumulée</div></div></div>' +
+  h += '<div class="card sec-or"><h2>Mon épargne <span class="tag">' + eur(epTotal) + ' au total</span></h2>' +
+       '<div class="kpi"><div class="box v"><div class="n">' + eur(epMois.mis) + '</div><div class="t">mis de côté ce mois</div></div>' +
+       '<div class="box r"><div class="n">' + eur(epMois.repris) + '</div><div class="t">repris ce mois</div></div>' +
+       '<div class="box"><div class="n">' + eur(epTotal) + '</div><div class="t">épargne cumulée</div></div></div>' +
        '<div class="note" style="margin-top:9px">Pour mettre de côté, ajoute une dépense avec la catégorie ' +
        '<b>Mise de côté</b> : elle sort de ton disponible et vient grossir cette ligne. Pour piocher dedans, ' +
        'ajoute une entrée <b>Retrait d\'épargne</b>. Objectif : un mois de salaire d\'avance.</div></div>';
@@ -767,7 +791,7 @@ function renderEuro(){
     const toutes = Object.keys(parCat[type]).concat(Object.keys(catsPrec))
                      .filter((v, i, a) => a.indexOf(v) === i)
                      .sort((a, x) => (parCat[type][x] || 0) - (parCat[type][a] || 0));
-    let t = '<div class="card"><h2>' + titre + ' <span class="tag">' + Math.round(total) + ' €</span></h2>';
+    let t = '<div class="card"><h2>' + titre + ' <span class="tag">' + eur(total) + '</span></h2>';
     if (!toutes.length) return t + '<div class="note">Rien pour l\'instant ce mois-ci.</div></div>';
     t += '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
          '<tr style="border-bottom:1px solid var(--ligne)">' +
@@ -785,15 +809,15 @@ function renderEuro(){
                                         : (ecart > 0 ? "var(--vert)" : "var(--rouge)"));
       t += '<tr style="border-bottom:1px solid #F0ECE2"><td style="padding:8px 0">' + c + '</td>' +
            '<td style="text-align:right;color:var(--anthr)">' + n + '</td>' +
-           '<td style="text-align:right;font-weight:700;color:' + couleur + '">' + Math.round(v) + ' €</td>' +
-           (prec ? '<td style="text-align:right;color:var(--anthr)">' + Math.round(vp) + ' €</td>' +
+           '<td style="text-align:right;font-weight:700;color:' + couleur + '">' + eur(v) + '</td>' +
+           (prec ? '<td style="text-align:right;color:var(--anthr)">' + eur(vp) + '</td>' +
                    '<td style="text-align:right;font-weight:600;color:' + (ecart === 0 ? "var(--anthr)" : coulEcart) + '">' +
-                   (ecart > 0 ? "+" : "") + Math.round(ecart) + ' €</td>' : '') +
-           '<td style="text-align:right;color:var(--anthr)">' + Math.round(p) + ' %</td></tr>';
+                   (ecart > 0 ? "+" : "") + eur(ecart) + '</td>' : '') +
+           '<td style="text-align:right;color:var(--anthr)">' + pourcent(p) + '</td></tr>';
     });
     t += '<tr><td style="padding:9px 0;font-weight:700">Total</td><td></td>' +
-         '<td style="text-align:right;font-weight:800;color:' + couleur + '">' + Math.round(total) + ' €</td>' +
-         (prec ? '<td style="text-align:right;font-weight:700">' + Math.round(type === "out" ? prec.sorties : prec.entrees) + ' €</td><td></td>' : '') +
+         '<td style="text-align:right;font-weight:800;color:' + couleur + '">' + eur(total) + '</td>' +
+         (prec ? '<td style="text-align:right;font-weight:700">' + eur(type === "out" ? prec.sorties : prec.entrees) + '</td><td></td>' : '') +
          '<td style="text-align:right;font-weight:700">100 %</td></tr></table></div>';
     return t;
   }
@@ -805,14 +829,14 @@ function renderEuro(){
     const dS = sorties - prec.sorties, dE = entrees - prec.entrees, dN = (entrees - sorties) - (prec.entrees - prec.sorties);
     h += '<div class="card"><h2>Comparé à ' + prec.libelle + '</h2>' +
          '<div class="kpi"><div class="box"><div class="n" style="color:' + (dE >= 0 ? "var(--vert)" : "var(--rouge)") + '">' +
-         (dE > 0 ? "+" : "") + Math.round(dE) + ' €</div><div class="t">entrées</div></div>' +
+         (dE > 0 ? "+" : "") + eur(dE) + '</div><div class="t">entrées</div></div>' +
          '<div class="box"><div class="n" style="color:' + (dS <= 0 ? "var(--vert)" : "var(--rouge)") + '">' +
-         (dS > 0 ? "+" : "") + Math.round(dS) + ' €</div><div class="t">sorties</div></div>' +
+         (dS > 0 ? "+" : "") + eur(dS) + '</div><div class="t">sorties</div></div>' +
          '<div class="box"><div class="n" style="color:' + (dN >= 0 ? "var(--vert)" : "var(--rouge)") + '">' +
-         (dN > 0 ? "+" : "") + Math.round(dN) + ' €</div><div class="t">net</div></div></div>' +
+         (dN > 0 ? "+" : "") + eur(dN) + '</div><div class="t">net</div></div></div>' +
          '<div class="note" style="margin-top:9px">' +
          (dS <= 0 ? "Tu dépenses moins que le mois dernier. C'est exactement ce qu'on veut voir."
-                  : "Tu as dépensé " + Math.round(dS) + " € de plus. Regarde quelle ligne a bougé dans le tableau au-dessus.") +
+                  : "Tu as dépensé " + eur(dS) + " de plus. Regarde quelle ligne a bougé dans le tableau au-dessus.") +
          '</div></div>';
   }
 
@@ -821,7 +845,7 @@ function renderEuro(){
     b.mvts.slice().reverse().forEach((m, idx) => {
       const vrai = b.mvts.length - 1 - idx;
       h += '<div class="mvt"><div class="g"><div>' + m.cat + '</div><div class="cat">' + libelle(m.d) + '</div></div>' +
-           '<span class="amt ' + m.type + '">' + (m.type === "in" ? "+" : "-") + Math.round(m.montant) + ' €</span>' +
+           '<span class="amt ' + m.type + '">' + (m.type === "in" ? "+" : "-") + eur(m.montant) + '</span>' +
            '<button class="del" data-del="' + vrai + '">✕</button></div>';
     });
   } else { h += '<div class="note">Rien pour l\'instant.</div>'; }
@@ -841,10 +865,10 @@ function renderEuro(){
     b.histo.slice().reverse().forEach(m => {
       const net = m.entrees - m.sorties;
       h += '<tr style="border-bottom:1px solid #F0ECE2"><td style="padding:8px 0">' + m.libelle + '</td>' +
-           '<td style="text-align:right;color:var(--vert)">' + Math.round(m.entrees) + ' €</td>' +
-           '<td style="text-align:right;color:var(--rouge)">' + Math.round(m.sorties) + ' €</td>' +
-           '<td style="text-align:right;font-weight:700">' + (net > 0 ? "+" : "") + Math.round(net) + ' €</td>' +
-           '<td style="text-align:right;color:var(--or);font-weight:600">' + Math.round(m.epargne || 0) + ' €</td></tr>';
+           '<td style="text-align:right;color:var(--vert)">' + eur(m.entrees) + '</td>' +
+           '<td style="text-align:right;color:var(--rouge)">' + eur(m.sorties) + '</td>' +
+           '<td style="text-align:right;font-weight:700">' + (net > 0 ? "+" : "") + eur(net) + '</td>' +
+           '<td style="text-align:right;color:var(--or);font-weight:600">' + eur(m.epargne || 0) + '</td></tr>';
     });
     h += '</table></div>';
   }
@@ -880,6 +904,12 @@ function renderEuro(){
 }
 
 function fmtEur(v){ return v.toFixed(2).replace(".", ",") + " \u20ac"; }
+/* budget : deux decimales, separateur de milliers, jamais d'arrondi */
+function eur(v){
+  const p = Math.abs(v).toFixed(2).split(".");
+  return (v < 0 ? "-" : "") + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ") + "," + p[1] + " \u20ac";
+}
+function pourcent(v){ return v.toFixed(2).replace(".", ",") + " %"; }
 function cleShop(i){ return "p" + PERIODE.du + "_" + i; }
 function joursPeriode(){
   const L = [];
@@ -1014,6 +1044,63 @@ function renderBouffe(){
   }));
 }
 
+
+/* ================= NOTIFICATIONS ================= */
+function notifOk(){ return ("Notification" in window) && Notification.permission === "granted"; }
+function demanderNotif(cb){
+  if (!("Notification" in window)) { if (cb) cb(false); return; }
+  if (Notification.permission === "granted") { if (cb) cb(true); return; }
+  if (Notification.permission === "denied") { if (cb) cb(false); return; }
+  Notification.requestPermission().then(p => { if (cb) cb(p === "granted"); });
+}
+function notifier(titre, corps){
+  if (navigator.vibrate) { try { navigator.vibrate([200, 90, 200]); } catch(e){} }
+  if (!notifOk()) return false;
+  const o = {body: corps, icon: "./icon-192.png", badge: "./icon-192.png", tag: "steve", renotify: true};
+  function simple(){ try { new Notification(titre, o); } catch(e){} }
+  /* ready ne rejette jamais : sans delai, une page sans service worker n'afficherait rien */
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    Promise.race([navigator.serviceWorker.ready,
+                  new Promise((_, rej) => setTimeout(() => rej(new Error("delai")), 800))])
+      .then(r => r.showNotification(titre, o))
+      .catch(simple);
+  } else { simple(); }
+  return true;
+}
+/* trois bips courts, sans fichier son */
+function bip(){
+  try {
+    const A = window.AudioContext || window.webkitAudioContext;
+    if (!A) return;
+    const c = new A();
+    if (c.state === "suspended") c.resume();
+    [0, 0.20, 0.40].forEach(t => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = "sine"; o.frequency.value = 880;
+      g.gain.setValueAtTime(0.0001, c.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.30, c.currentTime + t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + t + 0.16);
+      o.connect(g); g.connect(c.destination);
+      o.start(c.currentTime + t); o.stop(c.currentTime + t + 0.18);
+    });
+    setTimeout(() => { try { c.close(); } catch(e){} }, 1200);
+  } catch(e){}
+}
+/* rappel deux jours avant, quand l'app est ouverte. Une seule fois par rendez-vous. */
+function rappelsDeuxJours(){
+  if (!notifOk()) return;
+  const cible = plusJours(auj(), 2);
+  RDV.concat(S.rdv).filter(r => r.d === cible).forEach((r, i) => {
+    const cle = "steve_n2j_" + cible + "_" + i;
+    if (localStorage.getItem(cle)) return;
+    const j = parse(r.d);
+    notifier("Dans deux jours", r.t + ", le " + j.getDate() + " " +
+             ["janvier","février","mars","avril","mai","juin","juillet","août","septembre",
+              "octobre","novembre","décembre"][j.getMonth()] + " à " + r.h.replace(":", "h"));
+    localStorage.setItem(cle, "1");
+  });
+}
+
 /* ================= CALENDRIER ================= */
 /* lien qui ouvre Google Agenda avec l'evenement deja rempli, dans l'agenda personnel */
 function lienGoogle(r){
@@ -1030,7 +1117,7 @@ function lienGoogle(r){
     text: r.t,
     dates: fmt(debut) + "/" + fmt(fin),
     ctz: "Europe/Paris",
-    details: (r.note || "") + "\n\nPense à régler tes rappels : trois jours avant, la veille, deux heures avant."
+    details: (r.note || "") + "\n\nPense à régler tes rappels : deux jours avant, la veille, deux heures avant."
   });
   return "https://calendar.google.com/calendar/render?" + p.toString();
 }
@@ -1072,10 +1159,10 @@ function construireIcs(seulementRdv){
     ev("hebdo-" + d + "@steve", d, "20:30", 90, "Réunion hebdomadaire", "",
        [["-PT3H", "Réunion ce soir à 20h30"]]);
   }
-  /* rendez-vous, avec rappels à trois jours, un jour et deux heures */
+  /* rendez-vous, avec rappels à deux jours, un jour et deux heures */
   RDV.concat(S.rdv).forEach((r, i) => {
     ev("rdv" + i + "-" + r.d + "@steve", r.d, r.h, r.dur || 60, r.t, r.note || "",
-       [["-P3D", r.t + " dans trois jours"], ["-P1D", r.t + " demain"], ["-PT2H", r.t + " dans deux heures"]]);
+       [["-P2D", r.t + " dans deux jours"], ["-P1D", r.t + " demain"], ["-PT2H", r.t + " dans deux heures"]]);
   });
   /* courses et sessions de cuisine de la période en cours */
   if (!seulementRdv) {
@@ -1124,6 +1211,8 @@ function applyDark(){ document.body.classList.toggle("dark", !!S.dark); el("dark
 el("darkBtn").addEventListener("click", () => { S.dark = !S.dark; save(); applyDark(); });
 applyDark();
 renderAll();
+/* si un rendez-vous tombe dans deux jours, on previent des l'ouverture */
+setTimeout(rappelsDeuxJours, 1200);
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>
 </body>
