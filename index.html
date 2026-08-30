@@ -590,13 +590,24 @@ function renderSemaine(){
        '<input type="time" id="rdvH" value="09:00"></div>' +
        '<button class="btn light" id="addRdv">Ajouter ce rendez-vous</button></div>';
 
-  h += '<div class="card sec-or"><h2>Mettre tout ça dans Google Agenda</h2>' +
-       '<div class="note"><b>Pour avoir les rappels automatiquement :</b> touche le bouton bleu ci-dessous. ' +
-       'Tu récupères un fichier avec tes rendez-vous seulement, chacun avec ses trois rappels déjà réglés, ' +
-       'deux jours avant, la veille et deux heures avant. Ouvre-le et choisis Google Agenda, ou importe-le sur ' +
-       'ordinateur par Paramètres puis Importer. Les rappels sont conservés à l\'import, contrairement à l\'abonnement.</div>' +
-       '<div class="note" style="margin-top:10px"><b>Pour un rendez-vous en particulier :</b> le bouton gris sous ' +
-       'chaque rendez-vous plus haut l\'ouvre dans Google, déjà rempli. Pratique pour ceux que tu ajoutes toi-même.</div>' +
+  h += '<div class="card sec-or"><h2>Régler tes rappels une bonne fois</h2>' +
+       '<div class="note"><b>Le réglage qui change tout.</b> Google applique son propre délai, trente minutes ' +
+       'par défaut, à tout événement qui n\'apporte pas le sien. Change ce délai une seule fois et tous tes ' +
+       'prochains rendez-vous seront à deux jours, sans jamais y revenir.</div>' +
+       '<div class="note" style="margin-top:8px">Sur ordinateur : Google Agenda, la roue dentée en haut à ' +
+       'droite, <b>Paramètres</b>. Dans la colonne de gauche, sous <b>Paramètres de mes agendas</b>, ouvre ton ' +
+       'agenda puis <b>Paramètres de l\'agenda</b>. Sous <b>Notifications relatives à un événement</b>, ' +
+       'remplace 30 minutes par 2 jours. Le réglage se synchronise sur ton téléphone.</div>' +
+       '<div class="note" style="margin-top:8px"><b>Attention :</b> ce délai vaut pour les <b>nouveaux</b> ' +
+       'événements. Ceux qui sont déjà dans ton agenda gardent celui qu\'ils avaient. Reprends-les à la main, ' +
+       'ou réimporte le fichier ci-dessous qui écrase leur réglage.</div>' +
+       '<div class="note" style="margin-top:10px"><b>Le fichier, lui, porte ses propres rappels.</b> Le bouton ' +
+       'bleu te donne tes rendez-vous avec trois rappels déjà réglés, deux jours avant, la veille et deux ' +
+       'heures avant. Importe-le par Paramètres puis Importer et exporter. Google garde ces rappels et laisse ' +
+       'son délai par défaut de côté. C\'est la seule voie qui te donne les trois niveaux d\'un coup.</div>' +
+       '<div class="note" style="margin-top:10px"><b>Le bouton gris sous chaque rendez-vous</b> ouvre Google ' +
+       'avec l\'événement déjà rempli. Il ne peut pas transporter de rappel, le format de lien de Google ne le ' +
+       'prévoit pas. C\'est donc le délai par défaut de ton agenda qui s\'applique, d\'où le réglage du dessus.</div>' +
        '<div class="note" style="margin-top:10px"><b>Sur ce téléphone.</b> Le bouton ci-dessous autorise l\'app à te prévenir. Elle t\'enverra une notification deux jours avant chaque rendez-vous, à l\'ouverture. Pour être prévenu même app fermée, garde le fichier de l\'agenda, lui seul sonne tout seul.</div>' +
        '<button class="btn light" id="okNotif">' + (('Notification' in window) && Notification.permission === 'granted' ? 'Notifications déjà activées' : 'Activer les notifications') + '</button>' +
        '<button class="btn" id="dlRdv">Mes rendez-vous avec les rappels</button>' +
@@ -604,8 +615,8 @@ function renderSemaine(){
        '<button class="btn light" id="copyIcs">Copier le lien d\'abonnement</button>' +
        '<div class="note" style="margin-top:10px"><b>À savoir sur l\'abonnement.</b> Il se met à jour tout seul, ' +
        'mais Google ne relit le fichier que toutes les huit à vingt-quatre heures : rien n\'apparaît dans la minute. ' +
-       'Et sur un calendrier abonné, Google ignore mes rappels et applique les siens. Pour les régler : Google Agenda, ' +
-       'les trois points à côté du calendrier, Paramètres, Notifications.</div></div>';
+       'Et sur un calendrier abonné, Google ignore mes rappels et applique les siens, c\'est-à-dire ceux du ' +
+       'réglage du dessus. Une raison de plus de le faire.</div></div>';
 
   el("semaine").innerHTML = h;
 
@@ -1117,7 +1128,8 @@ function lienGoogle(r){
     text: r.t,
     dates: fmt(debut) + "/" + fmt(fin),
     ctz: "Europe/Paris",
-    details: (r.note || "") + "\n\nPense à régler tes rappels : deux jours avant, la veille, deux heures avant."
+    details: (r.note || "") + "\n\nRappel par défaut de ton agenda. Pour deux jours avant sur tout : " +
+             "Paramètres, Paramètres de mes agendas, ton agenda, Notifications relatives à un événement."
   });
   return "https://calendar.google.com/calendar/render?" + p.toString();
 }
