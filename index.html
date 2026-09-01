@@ -916,26 +916,29 @@ function renderEuro(){
   h += '<button class="btn or" id="resetMois" style="margin-top:14px">Clôturer le mois et repartir de zéro</button>' +
        '<div class="note" style="margin-top:8px">Le mois est archivé pour la comparaison, ton solde devient le point de départ du suivant, et la liste se vide.</div></div>';
 
-  /* historique des mois clôturés */
+  /* historique des mois clôturés : une ligne par mois, le détail en sous-titre.
+     La carte s'affiche même vide, sinon le bouton de remise à zéro serait introuvable. */
+  h += '<div class="card"><h2>Les mois précédents' +
+       (b.histo.length ? ' <span class="tag">' + b.histo.length + ' mois</span>' : '') + '</h2>';
   if (b.histo.length) {
-    h += '<div class="card"><h2>Les mois précédents</h2>' +
-         '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
-         '<tr style="border-bottom:1px solid var(--ligne)">' +
-         '<th style="text-align:left;padding:6px 0;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Mois</th>' +
-         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Entrées</th>' +
-         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Sorties</th>' +
-         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Net</th>' +
-         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Épargne</th></tr>';
-    b.histo.slice().reverse().forEach(m => {
+    b.histo.slice().reverse().forEach((m, idx) => {
+      const vrai = b.histo.length - 1 - idx;
       const net = m.entrees - m.sorties;
-      h += '<tr style="border-bottom:1px solid #F0ECE2"><td style="padding:8px 0">' + m.libelle + '</td>' +
-           '<td style="text-align:right;color:var(--vert)">' + eur(m.entrees) + '</td>' +
-           '<td style="text-align:right;color:var(--rouge)">' + eur(m.sorties) + '</td>' +
-           '<td style="text-align:right;font-weight:700">' + (net > 0 ? "+" : "") + eur(net) + '</td>' +
-           '<td style="text-align:right;color:var(--or);font-weight:600">' + eur(m.epargne || 0) + '</td></tr>';
+      h += '<div class="mvt"><div class="g"><div>' + m.libelle + '</div>' +
+           '<div class="cat">+' + eur(m.entrees) + '  /  -' + eur(m.sorties) +
+           (m.epargne ? '  /  ' + eur(m.epargne) + ' mis de côté' : '') + '</div></div>' +
+           '<span class="amt ' + (net >= 0 ? 'in' : 'out') + '">' +
+           (net > 0 ? '+' : '') + eur(net) + '</span>' +
+           '<button class="del" data-histodel="' + vrai + '">\u2715</button></div>';
     });
-    h += '</table></div>';
+  } else {
+    h += '<div class="note">Aucun mois clôturé pour l\'instant. Le premier apparaîtra ici ' +
+         'après ta première clôture.</div>';
   }
+  h += '<button class="btn or" id="resetTout" style="margin-top:14px">Tout remettre à zéro</button>' +
+       '<div class="note" style="margin-top:8px">Efface l\'historique, les mouvements de ce mois, ' +
+       'le prévisionnel et le solde de départ. À utiliser une fois, pour repartir sur des chiffres ' +
+       'propres. La croix à côté d\'un mois n\'efface que ce mois.</div></div>';
 
   el("euro").innerHTML = h;
 
@@ -962,6 +965,16 @@ function renderEuro(){
   el("euro").querySelectorAll("[data-prevdel]").forEach(x => x.addEventListener("click", () => {
     S.budget.prev.splice(+x.dataset.prevdel, 1); save(); renderEuro();
   }));
+  el("euro").querySelectorAll("[data-histodel]").forEach(x => x.addEventListener("click", () => {
+    S.budget.histo.splice(+x.dataset.histodel, 1); save(); renderEuro();
+  }));
+  el("resetTout").addEventListener("click", () => {
+    if (!confirm("Tout remettre à zéro ?\n\nCela efface l'historique des mois clôturés, les " +
+                 "mouvements de ce mois, le prévisionnel et le solde de départ.\nC'est définitif.")) return;
+    S.budget.histo = []; S.budget.mvts = []; S.budget.prev = [];
+    S.budget.soldeDebut = 0; S.budget.mois = moisCourant();
+    save(); renderEuro();
+  });
   /* une ligne prévue qui arrive vraiment : elle bascule dans les mouvements, sans ressaisie */
   el("euro").querySelectorAll("[data-fait]").forEach(x => x.addEventListener("click", () => {
     const p = S.budget.prev[+x.dataset.fait];
