@@ -427,6 +427,7 @@ if (S.budget.soldeDebut === undefined) S.budget.soldeDebut = null;
 S.budget.mvts = S.budget.mvts || [];
 S.budget.mois = S.budget.mois || moisCourant();
 S.budget.histo = S.budget.histo || [];   // les mois cloturés, pour comparer
+S.budget.prev  = S.budget.prev  || [];   // le prévisionnel : ce qui n'est pas encore arrivé
 function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
 /* les cases cochees d'une periode passee ne servent plus */
 (function(){
@@ -444,6 +445,18 @@ const MOIS_C = ["janv","févr","mars","avr","mai","juin","juil","août","sept","
 function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function auj(){ return iso(new Date()); }
 function moisCourant(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
+/* « 2026-08 » devient « août ». Sert a afficher le mois SUIVI, pas celui du jour. */
+function libelleMois(cle){
+  const p = String(cle || moisCourant()).split("-");
+  return MOIS[parseInt(p[1], 10) - 1] || "";
+}
+/* « 2026-08 » devient « 2026-09 », et « 2026-12 » devient « 2027-01 ». */
+function moisApres(cle){
+  const p = String(cle || moisCourant()).split("-");
+  let an = parseInt(p[0], 10), mo = parseInt(p[1], 10) + 1;
+  if (mo > 12) { mo = 1; an += 1; }
+  return an + "-" + String(mo).padStart(2, "0");
+}
 function parse(s){ const p=s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
 function joursEntre(a,b){ return Math.round((parse(b)-parse(a))/86400000); }
 function plusJours(s,n){ const d=parse(s); d.setDate(d.getDate()+n); return iso(d); }
@@ -760,7 +773,7 @@ function renderEuro(){
   b.histo.forEach(m => { epTotal += (m.epargne || 0); });
 
   const R = 62, C = 2 * Math.PI * R;
-  h += '<div class="card"><h2>Mon solde <span class="tag">' + MOIS[new Date().getMonth()] + '</span></h2>' +
+  h += '<div class="card"><h2>Mon solde <span class="tag">' + libelleMois(b.mois) + '</span></h2>' +
        '<svg class="donut" width="170" height="170" viewBox="0 0 170 170">' +
        '<circle cx="85" cy="85" r="' + R + '" fill="none" stroke="#EEE9DD" stroke-width="15"></circle>' +
        '<circle cx="85" cy="85" r="' + R + '" fill="none" stroke="' + (pct > .35 ? "#1E6B33" : pct > .15 ? "#C8A24B" : "#9C2330") + '" ' +
@@ -773,6 +786,40 @@ function renderEuro(){
        '<div class="box r"><div class="n">-' + eur(sorties) + '</div><div class="t">sorties</div></div>' +
        '<div class="box"><div class="n">' + eur(entrees - sorties) + '</div><div class="t">net du mois</div></div>' +
        '</div></div>';
+
+  /* prévisionnel : ce qui est prévu mais pas encore passé */
+  const prevIn  = b.prev.filter(x => x.type === "in").reduce((a, x) => a + x.montant, 0);
+  const prevOut = b.prev.filter(x => x.type === "out").reduce((a, x) => a + x.montant, 0);
+  const finMois = solde + prevIn - prevOut;
+  h += '<div class="card"><h2>Où je finis le mois <span class="tag">' + eur(finMois) + '</span></h2>' +
+       '<div class="kpi">' +
+       '<div class="box"><div class="n">' + eur(solde) + '</div><div class="t">aujourd\'hui</div></div>' +
+       '<div class="box v"><div class="n">+' + eur(prevIn) + '</div><div class="t">encore à recevoir</div></div>' +
+       '<div class="box r"><div class="n">-' + eur(prevOut) + '</div><div class="t">encore à payer</div></div>' +
+       '</div>' +
+       '<div class="kpi" style="margin-top:8px"><div class="box' + (finMois < 0 ? ' r' : finMois < 200 ? '' : ' v') +
+       '"><div class="n">' + eur(finMois) + '</div><div class="t">solde estimé en fin de mois</div></div></div>' +
+       '<div class="form" style="margin-top:12px"><input type="number" inputmode="decimal" id="prevM" placeholder="Montant">' +
+       '<select id="prevC">' +
+       '<optgroup label="À recevoir">' + CAT_IN.map(c => '<option>' + c + '</option>').join("") + '</optgroup>' +
+       '<optgroup label="À payer">' + CAT_OUT.map(c => '<option>' + c + '</option>').join("") + '</optgroup>' +
+       '</select></div>' +
+       '<button class="btn light" id="addPrev">Ajouter au prévisionnel</button>';
+  if (b.prev.length) {
+    h += '<div style="margin-top:12px">';
+    b.prev.forEach((x, i) => {
+      h += '<div class="mvt"><div class="g"><div>' + x.cat + '</div>' +
+           '<div class="cat">' + (x.type === "in" ? "à recevoir" : "à payer") + '</div></div>' +
+           '<span class="amt ' + x.type + '">' + (x.type === "in" ? "+" : "-") + eur(x.montant) + '</span>' +
+           '<button class="btn light" data-fait="' + i + '" style="padding:5px 10px;font-size:11px;width:auto;margin:0 6px">C\'est fait</button>' +
+           '<button class="del" data-prevdel="' + i + '">\u2715</button></div>';
+    });
+    h += '</div>';
+  }
+  h += '<div class="note" style="margin-top:9px">Mets ici ce que tu sais déjà : le loyer qui va tomber, ' +
+       'une facture, une rentrée d\'argent attendue. Quand ça arrive vraiment, clique sur ' +
+       '<b>C\'est fait</b> et la ligne passe dans tes mouvements réels. Le prévisionnel survit à la ' +
+       'clôture, tes lignes qui reviennent chaque mois restent en place.</div></div>';
 
   /* épargne */
   h += '<div class="card sec-or"><h2>Mon épargne <span class="tag">' + eur(epTotal) + ' au total</span></h2>' +
@@ -799,43 +846,51 @@ function renderEuro(){
 
   function tableauCat(type, titre, total, couleur) {
     const catsPrec = prec ? (prec.cats && prec.cats[type] ? prec.cats[type] : {}) : {};
-    const toutes = Object.keys(parCat[type]).concat(Object.keys(catsPrec))
-                     .filter((v, i, a) => a.indexOf(v) === i)
+    /* deux colonnes seulement : sur un telephone, six colonnes ne se lisent pas.
+       L'ecart avec le mois precedent devient une mention a cote du montant. */
+    const toutes = Object.keys(parCat[type])
+                     .filter(c => (parCat[type][c] || 0) > 0)
                      .sort((a, x) => (parCat[type][x] || 0) - (parCat[type][a] || 0));
     let t = '<div class="card"><h2>' + titre + ' <span class="tag">' + eur(total) + '</span></h2>';
     if (!toutes.length) return t + '<div class="note">Rien pour l\'instant ce mois-ci.</div></div>';
-    t += '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
-         '<tr style="border-bottom:1px solid var(--ligne)">' +
-         '<th style="text-align:left;padding:6px 0;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Catégorie</th>' +
-         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Nb</th>' +
-         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Ce mois</th>' +
-         (prec ? '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">' + prec.libelle + '</th>' +
-                 '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Écart</th>' : '') +
-         '<th style="text-align:right;font-size:10.5px;color:var(--anthr);text-transform:uppercase">Part</th></tr>';
+    t += '<table style="width:100%;border-collapse:collapse;font-size:13px">';
     toutes.forEach(c => {
       const v = parCat[type][c] || 0, vp = catsPrec[c] || 0, ecart = v - vp;
       const n = b.mvts.filter(m => m.type === type && m.cat === c).length;
       const p = total > 0 ? v / total * 100 : 0;
       const coulEcart = (type === "out" ? (ecart > 0 ? "var(--rouge)" : "var(--vert)")
                                         : (ecart > 0 ? "var(--vert)" : "var(--rouge)"));
-      t += '<tr style="border-bottom:1px solid #F0ECE2"><td style="padding:8px 0">' + c + '</td>' +
-           '<td style="text-align:right;color:var(--anthr)">' + n + '</td>' +
-           '<td style="text-align:right;font-weight:700;color:' + couleur + '">' + eur(v) + '</td>' +
-           (prec ? '<td style="text-align:right;color:var(--anthr)">' + eur(vp) + '</td>' +
-                   '<td style="text-align:right;font-weight:600;color:' + (ecart === 0 ? "var(--anthr)" : coulEcart) + '">' +
-                   (ecart > 0 ? "+" : "") + eur(ecart) + '</td>' : '') +
-           '<td style="text-align:right;color:var(--anthr)">' + pourcent(p) + '</td></tr>';
+      const mention = (prec && Math.abs(ecart) >= 1)
+        ? '<div style="font-size:11px;font-weight:600;color:' + coulEcart + '">' +
+          (ecart > 0 ? "+" : "") + eur(ecart) + ' vs ' + prec.libelle.split(" ")[0] + '</div>'
+        : '';
+      t += '<tr style="border-bottom:1px solid #F0ECE2">' +
+           '<td style="padding:8px 0">' + c +
+           '<div class="cat">' + n + (n > 1 ? ' mouvements' : ' mouvement') + ', ' + pourcent(p) + ' du total</div></td>' +
+           '<td style="text-align:right;white-space:nowrap">' +
+           '<div style="font-weight:700;color:' + couleur + '">' + eur(v) + '</div>' + mention + '</td></tr>';
     });
-    t += '<tr><td style="padding:9px 0;font-weight:700">Total</td><td></td>' +
-         '<td style="text-align:right;font-weight:800;color:' + couleur + '">' + eur(total) + '</td>' +
-         (prec ? '<td style="text-align:right;font-weight:700">' + eur(type === "out" ? prec.sorties : prec.entrees) + '</td><td></td>' : '') +
-         '<td style="text-align:right;font-weight:700">100 %</td></tr></table></div>';
+    t += '<tr><td style="padding:9px 0;font-weight:700">Total</td>' +
+         '<td style="text-align:right;font-weight:800;color:' + couleur + '">' + eur(total) + '</td></tr></table></div>';
     return t;
   }
   h += tableauCat("out", "Où part l'argent", sorties, "var(--rouge)");
   h += tableauCat("in", "Ce qui rentre", entrees, "var(--vert)");
 
   /* comparaison globale avec le mois précédent */
+  function phraseBouge(dS) {
+    const pc = (prec && prec.cats && prec.cats.out) ? prec.cats.out : {};
+    const noms = Object.keys(parCat.out).concat(Object.keys(pc))
+                   .filter((v, i, a) => a.indexOf(v) === i);
+    const bouges = noms.map(c => ({c: c, d: (parCat.out[c] || 0) - (pc[c] || 0)}))
+                       .filter(x => Math.abs(x.d) >= 1)
+                       .sort((a, x) => Math.abs(x.d) - Math.abs(a.d))
+                       .slice(0, 2);
+    if (!bouges.length) return "Tes dépenses sont au même niveau que le mois dernier.";
+    const dire = bouges.map(x => x.c + " " + (x.d > 0 ? "+" : "") + eur(x.d)).join(", ");
+    return (dS <= 0 ? "Tu dépenses moins que le mois dernier. " : "Tu as dépensé " + eur(dS) + " de plus. ") +
+           "Ce qui a le plus bougé : " + dire + ".";
+  }
   if (prec) {
     const dS = sorties - prec.sorties, dE = entrees - prec.entrees, dN = (entrees - sorties) - (prec.entrees - prec.sorties);
     h += '<div class="card"><h2>Comparé à ' + prec.libelle + '</h2>' +
@@ -846,9 +901,7 @@ function renderEuro(){
          '<div class="box"><div class="n" style="color:' + (dN >= 0 ? "var(--vert)" : "var(--rouge)") + '">' +
          (dN > 0 ? "+" : "") + eur(dN) + '</div><div class="t">net</div></div></div>' +
          '<div class="note" style="margin-top:9px">' +
-         (dS <= 0 ? "Tu dépenses moins que le mois dernier. C'est exactement ce qu'on veut voir."
-                  : "Tu as dépensé " + eur(dS) + " de plus. Regarde quelle ligne a bougé dans le tableau au-dessus.") +
-         '</div></div>';
+         phraseBouge(dS) + '</div></div>';
   }
 
   h += '<div class="card"><h2>Le détail <span class="tag">' + b.mvts.length + ' mouvements</span></h2>';
@@ -899,9 +952,29 @@ function renderEuro(){
   el("euro").querySelectorAll("[data-del]").forEach(x => x.addEventListener("click", () => {
     S.budget.mvts.splice(+x.dataset.del, 1); save(); renderEuro();
   }));
+  el("addPrev").addEventListener("click", () => {
+    const v = parseFloat((el("prevM").value || "").replace(",", "."));
+    if (isNaN(v) || v <= 0) return;
+    const sel = el("prevC"), opt = sel.options[sel.selectedIndex];
+    const type = (opt.parentNode && opt.parentNode.label === "À recevoir") ? "in" : "out";
+    S.budget.prev.push({type:type, montant:v, cat:sel.value}); save(); renderEuro();
+  });
+  el("euro").querySelectorAll("[data-prevdel]").forEach(x => x.addEventListener("click", () => {
+    S.budget.prev.splice(+x.dataset.prevdel, 1); save(); renderEuro();
+  }));
+  /* une ligne prévue qui arrive vraiment : elle bascule dans les mouvements, sans ressaisie */
+  el("euro").querySelectorAll("[data-fait]").forEach(x => x.addEventListener("click", () => {
+    const p = S.budget.prev[+x.dataset.fait];
+    if (!p) return;
+    S.budget.mvts.push({d:auj(), type:p.type, montant:p.montant, cat:p.cat});
+    S.budget.prev.splice(+x.dataset.fait, 1); save(); renderEuro();
+  }));
   el("resetMois").addEventListener("click", () => {
     if (!confirm("Clôturer le mois ? Il sera archivé pour que tu puisses comparer, et la liste repart à zéro.")) return;
-    const d = new Date(), moisFini = MOIS[d.getMonth()] + " " + d.getFullYear();
+    /* le mois archivé est celui qu'on suivait, pas celui du jour où on clique.
+       Sans ça, clôturer août le 1er septembre archivait « septembre ». */
+    const mc = (S.budget.mois || moisCourant()).split("-");
+    const moisFini = MOIS[parseInt(mc[1], 10) - 1] + " " + mc[0];
     S.budget.histo.push({
       mois: S.budget.mois, libelle: moisFini,
       soldeDebut: S.budget.soldeDebut, soldeFin: solde,
@@ -909,7 +982,11 @@ function renderEuro(){
       cats: {in: Object.assign({}, parCat.in), out: Object.assign({}, parCat.out)}
     });
     if (S.budget.histo.length > 12) S.budget.histo.shift();
-    S.budget.soldeDebut = solde; S.budget.mvts = []; S.budget.mois = moisCourant();
+    S.budget.soldeDebut = solde; S.budget.mvts = [];
+    /* on repart sur le mois SUIVANT celui qu'on vient de clôturer, sauf si la date
+       du jour est déjà plus loin. Sans ça, clôturer le 20 laissait le même mois et
+       l'historique se retrouvait avec deux « août 2026 ». */
+    S.budget.mois = moisApres(S.budget.mois) > moisCourant() ? moisApres(S.budget.mois) : moisCourant();
     save(); renderEuro();
   });
 }
