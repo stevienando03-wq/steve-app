@@ -817,9 +817,12 @@ function renderEuro(){
     h += '</div>';
   }
   h += '<div class="note" style="margin-top:9px">Mets ici ce que tu sais déjà : le loyer qui va tomber, ' +
-       'une facture, une rentrée d\'argent attendue. Quand ça arrive vraiment, clique sur ' +
-       '<b>C\'est fait</b> et la ligne passe dans tes mouvements réels. Le prévisionnel survit à la ' +
-       'clôture, tes lignes qui reviennent chaque mois restent en place.</div></div>';
+       'une facture, une rentrée d\'argent attendue. Prévois large, ce n\'est pas grave. ' +
+       'Quand ça arrive, clique sur <b>C\'est fait</b> et indique le montant réel : si tu avais ' +
+       'prévu 100 et qu\'il n\'en sort que 60, les 60 passent en mouvement réel et 40 restent ' +
+       'en prévision. Quand tu sais que ces 40 ne viendront plus, la croix les efface. ' +
+       'Le prévisionnel survit à la clôture, tes lignes qui reviennent chaque mois restent en place.' +
+       '</div></div>';
 
   /* épargne */
   h += '<div class="card sec-or"><h2>Mon épargne <span class="tag">' + eur(epTotal) + ' au total</span></h2>' +
@@ -975,12 +978,23 @@ function renderEuro(){
     S.budget.soldeDebut = 0; S.budget.mois = moisCourant();
     save(); renderEuro();
   });
-  /* une ligne prévue qui arrive vraiment : elle bascule dans les mouvements, sans ressaisie */
+  /* une ligne prévue qui arrive : on saisit le montant RÉEL, qui n'est pas toujours celui
+     qu'on avait prévu. En dessous, le reste demeure en prévision. Au-dessus ou égal, la
+     ligne disparaît. */
   el("euro").querySelectorAll("[data-fait]").forEach(x => x.addEventListener("click", () => {
-    const p = S.budget.prev[+x.dataset.fait];
+    const i = +x.dataset.fait, p = S.budget.prev[i];
     if (!p) return;
-    S.budget.mvts.push({d:auj(), type:p.type, montant:p.montant, cat:p.cat});
-    S.budget.prev.splice(+x.dataset.fait, 1); save(); renderEuro();
+    const saisi = prompt("Montant réellement " + (p.type === "in" ? "reçu" : "payé") +
+                         " pour " + p.cat + " ?\n\nPrévu : " + eur(p.montant) +
+                         "\nSi tu mets moins, le reste demeure en prévision.",
+                         String(p.montant).replace(".", ","));
+    if (saisi === null) return;
+    const v = parseFloat(String(saisi).replace(",", "."));
+    if (isNaN(v) || v <= 0) return;
+    S.budget.mvts.push({d:auj(), type:p.type, montant:v, cat:p.cat});
+    const reste = Math.round((p.montant - v) * 100) / 100;
+    if (reste > 0) { p.montant = reste; } else { S.budget.prev.splice(i, 1); }
+    save(); renderEuro();
   }));
   el("resetMois").addEventListener("click", () => {
     if (!confirm("Clôturer le mois ? Il sera archivé pour que tu puisses comparer, et la liste repart à zéro.")) return;
