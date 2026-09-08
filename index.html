@@ -428,6 +428,7 @@ S.budget.mvts = S.budget.mvts || [];
 S.budget.mois = S.budget.mois || moisCourant();
 S.budget.histo = S.budget.histo || [];   // les mois cloturés, pour comparer
 S.budget.prev  = S.budget.prev  || [];   // le prévisionnel : ce qui n'est pas encore arrivé
+S.budget.recur = S.budget.recur || [];   // les abonnements et charges qui reviennent chaque mois
 function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
 /* les cases cochees d'une periode passee ne servent plus */
 (function(){
@@ -736,6 +737,18 @@ function renderSkills(){
   }));
 }
 
+/* Les abonnements alimentent le prévisionnel. Une ligne prévue issue d'un abonnement porte
+   son rid, ce qui permet de la retrouver plus tard. On n'injecte que ce qui manque, donc
+   appeler cette fonction deux fois ne crée pas de doublon. */
+function injecteRecurrents(){
+  const presents = {};
+  S.budget.prev.forEach(p => { if (p.rid) presents[p.rid] = true; });
+  S.budget.recur.forEach(r => {
+    if (presents[r.rid]) return;
+    S.budget.prev.push({type:r.type, montant:r.montant, cat:r.cat, lib:r.lib, rid:r.rid});
+  });
+}
+
 function renderEuro(){
   const b = S.budget;
   const entrees = b.mvts.filter(m => m.type === "in").reduce((a, m) => a + m.montant, 0);
@@ -803,13 +816,17 @@ function renderEuro(){
        '<select id="prevC">' +
        '<optgroup label="À recevoir">' + CAT_IN.map(c => '<option>' + c + '</option>').join("") + '</optgroup>' +
        '<optgroup label="À payer">' + CAT_OUT.map(c => '<option>' + c + '</option>').join("") + '</optgroup>' +
-       '</select></div>' +
+       '</select>' +
+       '<input type="text" id="prevL" placeholder="Quoi exactement ? (facultatif)" style="flex:2 1 150px">' +
+       '</div>' +
        '<button class="btn light" id="addPrev">Ajouter au prévisionnel</button>';
   if (b.prev.length) {
     h += '<div style="margin-top:12px">';
     b.prev.forEach((x, i) => {
-      h += '<div class="mvt"><div class="g"><div>' + x.cat + '</div>' +
-           '<div class="cat">' + (x.type === "in" ? "à recevoir" : "à payer") + '</div></div>' +
+      h += '<div class="mvt"><div class="g"><div>' + (x.lib || x.cat) + '</div>' +
+           '<div class="cat">' + (x.lib ? x.cat + '  /  ' : '') +
+           (x.type === "in" ? "à recevoir" : "à payer") +
+           (x.rid ? " chaque mois" : "") + '</div></div>' +
            '<span class="amt ' + x.type + '">' + (x.type === "in" ? "+" : "-") + eur(x.montant) + '</span>' +
            '<button class="btn light" data-fait="' + i + '" style="padding:5px 10px;font-size:11px;width:auto;margin:0 6px">C\'est fait</button>' +
            '<button class="del" data-prevdel="' + i + '">\u2715</button></div>';
@@ -821,8 +838,43 @@ function renderEuro(){
        'Quand ça arrive, clique sur <b>C\'est fait</b> et indique le montant réel : si tu avais ' +
        'prévu 100 et qu\'il n\'en sort que 60, les 60 passent en mouvement réel et 40 restent ' +
        'en prévision. Quand tu sais que ces 40 ne viendront plus, la croix les efface. ' +
-       'Le prévisionnel survit à la clôture, tes lignes qui reviennent chaque mois restent en place.' +
+       'Le libellé est facultatif : il sert à te rappeler de quoi il s\'agit. ' +
+       'Le prévisionnel survit à la clôture, et les lignes marquées <b>chaque mois</b> ' +
+       'viennent de tes charges fixes : elles se remettent toutes seules à chaque clôture.' +
        '</div></div>';
+
+  /* les abonnements et charges qui reviennent tous les mois */
+  const recOut = b.recur.filter(r => r.type === "out").reduce((a, r) => a + r.montant, 0);
+  const recIn  = b.recur.filter(r => r.type === "in").reduce((a, r) => a + r.montant, 0);
+  h += '<div class="card"><h2>Ce qui revient chaque mois' +
+       (b.recur.length ? ' <span class="tag">-' + eur(recOut) +
+        (recIn ? '  /  +' + eur(recIn) : '') + '</span>' : '') + '</h2>';
+  if (b.recur.length) {
+    h += '<div style="margin-bottom:4px">';
+    b.recur.forEach((r, i) => {
+      h += '<div class="mvt"><div class="g"><div>' + (r.lib || r.cat) + '</div>' +
+           '<div class="cat">' + (r.lib ? r.cat + '  /  ' : '') +
+           (r.type === "in" ? "revient chaque mois" : "à payer chaque mois") + '</div></div>' +
+           '<span class="amt ' + r.type + '">' + (r.type === "in" ? "+" : "-") + eur(r.montant) + '</span>' +
+           '<button class="del" data-recdel="' + i + '">\u2715</button></div>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div class="note">Rien pour l\'instant. Mets ici ton loyer, ton forfait, Netflix, ' +
+         'la salle de sport, ton salaire. Tu ne les ressaisiras plus jamais.</div>';
+  }
+  h += '<div class="form"><input type="number" inputmode="decimal" id="recM" placeholder="Montant">' +
+       '<select id="recC">' +
+       '<optgroup label="Je reçois">' + CAT_IN.map(c => '<option>' + c + '</option>').join("") + '</optgroup>' +
+       '<optgroup label="Je paie">' + CAT_OUT.map(c => '<option>' + c + '</option>').join("") + '</optgroup>' +
+       '</select>' +
+       '<input type="text" id="recL" placeholder="Nom, par exemple Netflix" style="flex:2 1 150px">' +
+       '</div>' +
+       '<button class="btn light" id="addRec">Ajouter à mes charges fixes</button>' +
+       '<div class="note" style="margin-top:9px">Ces lignes partent directement dans ton ' +
+       'prévisionnel, et y reviennent seules à chaque clôture : plus besoin de les ressaisir. ' +
+       'Quand tu paies, tu cliques sur <b>C\'est fait</b> dans le prévisionnel comme d\'habitude. ' +
+       'La croix ici supprime l\'abonnement pour de bon.</div></div>';
 
   /* épargne */
   h += '<div class="card sec-or"><h2>Mon épargne <span class="tag">' + eur(epTotal) + ' au total</span></h2>' +
@@ -835,12 +887,16 @@ function renderEuro(){
 
   h += '<div class="card sec-vert"><h2>J\'ai reçu de l\'argent</h2>' +
        '<div class="form"><input type="number" inputmode="decimal" id="inM" placeholder="Montant">' +
-       '<select id="inC">' + CAT_IN.map(c => '<option>' + c + '</option>').join("") + '</select></div>' +
+       '<select id="inC">' + CAT_IN.map(c => '<option>' + c + '</option>').join("") + '</select>' +
+       '<input type="text" id="inL" placeholder="Quoi exactement ? (facultatif)" style="flex:2 1 150px">' +
+       '</div>' +
        '<button class="btn light" id="addIn">Ajouter cette entrée</button></div>';
 
   h += '<div class="card sec-rouge"><h2>J\'ai dépensé</h2>' +
        '<div class="form"><input type="number" inputmode="decimal" id="outM" placeholder="Montant">' +
-       '<select id="outC">' + CAT_OUT.map(c => '<option>' + c + '</option>').join("") + '</select></div>' +
+       '<select id="outC">' + CAT_OUT.map(c => '<option>' + c + '</option>').join("") + '</select>' +
+       '<input type="text" id="outL" placeholder="Quoi exactement ? (facultatif)" style="flex:2 1 150px">' +
+       '</div>' +
        '<button class="btn light" id="addOut">Ajouter cette dépense</button></div>';
 
   /* tableaux par catégorie, avec la colonne du mois précédent si elle existe */
@@ -911,7 +967,8 @@ function renderEuro(){
   if (b.mvts.length) {
     b.mvts.slice().reverse().forEach((m, idx) => {
       const vrai = b.mvts.length - 1 - idx;
-      h += '<div class="mvt"><div class="g"><div>' + m.cat + '</div><div class="cat">' + libelle(m.d) + '</div></div>' +
+      h += '<div class="mvt"><div class="g"><div>' + (m.lib || m.cat) + '</div>' +
+           '<div class="cat">' + (m.lib ? m.cat + '  /  ' : '') + libelle(m.d) + '</div></div>' +
            '<span class="amt ' + m.type + '">' + (m.type === "in" ? "+" : "-") + eur(m.montant) + '</span>' +
            '<button class="del" data-del="' + vrai + '">✕</button></div>';
     });
@@ -940,7 +997,8 @@ function renderEuro(){
   }
   h += '<button class="btn or" id="resetTout" style="margin-top:14px">Tout remettre à zéro</button>' +
        '<div class="note" style="margin-top:8px">Efface l\'historique, les mouvements de ce mois, ' +
-       'le prévisionnel et le solde de départ. À utiliser une fois, pour repartir sur des chiffres ' +
+       'le prévisionnel et le solde de départ. <b>Tes charges fixes sont conservées.</b> ' +
+       'À utiliser une fois, pour repartir sur des chiffres ' +
        'propres. La croix à côté d\'un mois n\'efface que ce mois.</div></div>';
 
   el("euro").innerHTML = h;
@@ -948,12 +1006,14 @@ function renderEuro(){
   el("addIn").addEventListener("click", () => {
     const v = parseFloat((el("inM").value || "").replace(",", "."));
     if (isNaN(v) || v <= 0) return;
-    S.budget.mvts.push({d:auj(), type:"in", montant:v, cat:el("inC").value}); save(); renderEuro();
+    S.budget.mvts.push({d:auj(), type:"in", montant:v, cat:el("inC").value,
+                        lib:(el("inL").value || "").trim()}); save(); renderEuro();
   });
   el("addOut").addEventListener("click", () => {
     const v = parseFloat((el("outM").value || "").replace(",", "."));
     if (isNaN(v) || v <= 0) return;
-    S.budget.mvts.push({d:auj(), type:"out", montant:v, cat:el("outC").value}); save(); renderEuro();
+    S.budget.mvts.push({d:auj(), type:"out", montant:v, cat:el("outC").value,
+                        lib:(el("outL").value || "").trim()}); save(); renderEuro();
   });
   el("euro").querySelectorAll("[data-del]").forEach(x => x.addEventListener("click", () => {
     S.budget.mvts.splice(+x.dataset.del, 1); save(); renderEuro();
@@ -963,10 +1023,31 @@ function renderEuro(){
     if (isNaN(v) || v <= 0) return;
     const sel = el("prevC"), opt = sel.options[sel.selectedIndex];
     const type = (opt.parentNode && opt.parentNode.label === "À recevoir") ? "in" : "out";
-    S.budget.prev.push({type:type, montant:v, cat:sel.value}); save(); renderEuro();
+    S.budget.prev.push({type:type, montant:v, cat:sel.value,
+                        lib:(el("prevL").value || "").trim()}); save(); renderEuro();
   });
   el("euro").querySelectorAll("[data-prevdel]").forEach(x => x.addEventListener("click", () => {
     S.budget.prev.splice(+x.dataset.prevdel, 1); save(); renderEuro();
+  }));
+  el("addRec").addEventListener("click", () => {
+    const v = parseFloat((el("recM").value || "").replace(",", "."));
+    if (isNaN(v) || v <= 0) return;
+    const sel = el("recC"), opt = sel.options[sel.selectedIndex];
+    const type = (opt.parentNode && opt.parentNode.label === "Je reçois") ? "in" : "out";
+    S.budget.recur.push({rid:"r" + Date.now(), type:type, montant:v, cat:sel.value,
+                         lib:(el("recL").value || "").trim()});
+    injecteRecurrents();   /* il compte dès ce mois-ci, sans attendre la clôture */
+    save(); renderEuro();
+  });
+  el("euro").querySelectorAll("[data-recdel]").forEach(x => x.addEventListener("click", () => {
+    const r = S.budget.recur[+x.dataset.recdel];
+    if (!r) return;
+    if (!confirm("Supprimer " + (r.lib || r.cat) + " de tes charges fixes ?\n\n" +
+                 "Cette ligne ne reviendra plus dans le prévisionnel.")) return;
+    /* on retire aussi sa ligne du prévisionnel, si elle n'est pas encore passée */
+    S.budget.prev = S.budget.prev.filter(p => p.rid !== r.rid);
+    S.budget.recur.splice(+x.dataset.recdel, 1);
+    save(); renderEuro();
   }));
   el("euro").querySelectorAll("[data-histodel]").forEach(x => x.addEventListener("click", () => {
     S.budget.histo.splice(+x.dataset.histodel, 1); save(); renderEuro();
@@ -976,6 +1057,7 @@ function renderEuro(){
                  "mouvements de ce mois, le prévisionnel et le solde de départ.\nC'est définitif.")) return;
     S.budget.histo = []; S.budget.mvts = []; S.budget.prev = [];
     S.budget.soldeDebut = 0; S.budget.mois = moisCourant();
+    injecteRecurrents();   /* les charges fixes restent : c'est une configuration, pas un chiffre */
     save(); renderEuro();
   });
   /* une ligne prévue qui arrive : on saisit le montant RÉEL, qui n'est pas toujours celui
@@ -985,13 +1067,13 @@ function renderEuro(){
     const i = +x.dataset.fait, p = S.budget.prev[i];
     if (!p) return;
     const saisi = prompt("Montant réellement " + (p.type === "in" ? "reçu" : "payé") +
-                         " pour " + p.cat + " ?\n\nPrévu : " + eur(p.montant) +
+                         " pour " + (p.lib || p.cat) + " ?\n\nPrévu : " + eur(p.montant) +
                          "\nSi tu mets moins, le reste demeure en prévision.",
                          String(p.montant).replace(".", ","));
     if (saisi === null) return;
     const v = parseFloat(String(saisi).replace(",", "."));
     if (isNaN(v) || v <= 0) return;
-    S.budget.mvts.push({d:auj(), type:p.type, montant:v, cat:p.cat});
+    S.budget.mvts.push({d:auj(), type:p.type, montant:v, cat:p.cat, lib:p.lib || ""});
     const reste = Math.round((p.montant - v) * 100) / 100;
     if (reste > 0) { p.montant = reste; } else { S.budget.prev.splice(i, 1); }
     save(); renderEuro();
@@ -1014,6 +1096,10 @@ function renderEuro(){
        du jour est déjà plus loin. Sans ça, clôturer le 20 laissait le même mois et
        l'historique se retrouvait avec deux « août 2026 ». */
     S.budget.mois = moisApres(S.budget.mois) > moisCourant() ? moisApres(S.budget.mois) : moisCourant();
+    /* les abonnements repartent à neuf : on efface leurs lignes, payées ou non, puis on les
+       réinjecte au montant plein. Les lignes ponctuelles, elles, survivent. */
+    S.budget.prev = S.budget.prev.filter(p => !p.rid);
+    injecteRecurrents();
     save(); renderEuro();
   });
 }
