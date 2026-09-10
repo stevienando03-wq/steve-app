@@ -68,7 +68,26 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .nav button{flex:1;border:0;background:none;padding:9px 2px 8px;cursor:pointer;color:#A9A293;font-size:10px;font-weight:600}
 .nav button .ic{font-size:19px;display:block;margin-bottom:2px}
 .nav button.act{color:var(--bleu)}
-.tab{display:none}.tab.act{display:block}
+.tab{display:none}
+/* --- onglet Finance : calcul mental et fiches --- */
+.fq{font-size:20px;font-weight:800;color:var(--bleu);line-height:1.35;margin:2px 0 12px}
+.fin-in{width:100%;padding:13px;font-size:19px;font-weight:700;text-align:center;
+  border:2px solid var(--ligne);border-radius:11px;background:#fff;color:var(--bleu)}
+.fin-in:focus{outline:0;border-color:var(--bleu)}
+.fbon{background:var(--vertbg);border-color:var(--vert)}
+.fmal{background:var(--rougebg);border-color:var(--rouge)}
+.ftip{background:#FCF8EC;border-left:3px solid var(--or);border-radius:0 9px 9px 0;
+  padding:10px 12px;font-size:12.5px;line-height:1.55;color:var(--anthr);margin-top:10px}
+.frep{font-size:15px;font-weight:700;margin-top:10px}
+.fprog{height:5px;background:var(--ligne);border-radius:3px;overflow:hidden;margin-bottom:12px}
+.fprog i{display:block;height:100%;background:var(--bleu)}
+.fmeta{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--or);margin-bottom:6px}
+.fduo{display:flex;gap:9px;margin-top:10px}
+.fduo .btn{margin-top:0}
+.bsec{background:#fff;color:var(--bleu);border:1px solid var(--ligne)}
+body.dark .fin-in,body.dark .fq{color:#e8eaf0}
+body.dark .ftip{background:#2a2f3a}.tab.act{display:block}
 .rdv{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #F0ECE2;align-items:flex-start}
 .rdv:last-child{border-bottom:0}
 .rdv .j{background:var(--creme);border-radius:10px;padding:6px 9px;text-align:center;min-width:52px;flex:none}
@@ -170,6 +189,7 @@ body.dark .donut-c{fill:#E8EBF1}
 <div class="tab" id="t-skills"><div class="wrap" id="skills"></div></div>
 <div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
+<div class="tab" id="t-fin"><div class="wrap" id="fin"></div></div>
 
 <div class="nav">
   <button class="act" data-tab="jour"><span class="ic">📌</span>Aujourd'hui</button>
@@ -178,8 +198,10 @@ body.dark .donut-c{fill:#E8EBF1}
   <button data-tab="skills"><span class="ic">🚀</span>Skills</button>
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
+  <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
+<script src="fiches.js"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1393,8 +1415,279 @@ function telechargerIcs(seulementRdv){
   a.click();
 }
 
+/* ================= FINANCE : calcul mental et fiches ================= */
+/* La banque de fiches vit dans fiches.js, regeneree chaque semaine par build_quiz.py.
+   L'app ne connait que sa forme : {maj, themes, fiches:[{t,q,r,x}]}. Si le fichier
+   manque, l'onglet le dit au lieu de planter. */
+S.fin = S.fin || {vus:{}, revoir:{}, serie:0, dernier:"", record:0};
+
+const FI = (typeof FICHES !== "undefined" && FICHES.fiches) ? FICHES.fiches : [];
+const FT = (typeof FICHES !== "undefined" && FICHES.themes) ? FICHES.themes : {};
+let fVue = "accueil", fTheme = "", fLot = [], fPos = 0, fBon = 0, fRep = false;
+
+/* semaine calendaire depuis le lundi 5 janvier 2026, pour faire tourner la selection */
+function finSemaine(){ return Math.floor((Date.now() - Date.UTC(2026, 0, 5)) / 604800000); }
+
+function finLotSemaine(){
+  if (!FI.length) return [];
+  const n = 10, d = (finSemaine() * n) % FI.length, out = [];
+  for (let i = 0; i < n; i++) out.push(FI[(d + i) % FI.length]);
+  return out;
+}
+function finCle(f){ return f.q.slice(0, 60); }
+
+/* la serie ne compte qu'un jour par jour, et se casse si un jour est saute */
+function finPointe(){
+  const a = auj();
+  if (S.fin.dernier === a) return;
+  const h = new Date(); h.setDate(h.getDate() - 1);
+  const hier = h.toISOString().slice(0, 10);
+  S.fin.serie = (S.fin.dernier === hier) ? (S.fin.serie + 1) : 1;
+  S.fin.dernier = a;
+  if (S.fin.serie > (S.fin.record || 0)) S.fin.record = S.fin.serie;
+  save();
+}
+
+/* ---------- generateurs de calcul mental ----------
+   Chaque generateur rend {q, r, u, x} : enonce, reponse exacte, unite, astuce.
+   Les nombres sont choisis pour que la reponse tombe juste, sinon on entraine
+   la calculette et pas la tete. */
+function fRi(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function fPick(t){ return t[Math.floor(Math.random() * t.length)]; }
+function fNum(n){
+  const s = Math.round(n * 100) / 100;
+  return String(s).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+const CALCULS = [
+function(){ const p = fPick([5,10,15,20,25,30,40,50,60,75,80]), n = fRi(2,60) * 50;
+  return {q:"Combien font " + fNum(n) + " x " + p + " % ?", r:n * p / 100, u:"",
+    x:"10 % c'est diviser par 10, on compose ensuite. 30 % = 3 fois 10 %. 15 % = 10 % plus la moitié de 10 %. 75 % = trois quarts."}; },
+
+function(){ const a = fRi(2,40) * 25, p = fPick([4,5,8,10,12,20,25]), b = Math.round(a * (1 + p / 100));
+  return {q:"Le chiffre d'affaires passe de " + fNum(a) + " à " + fNum(b) + ". Quelle variation en pourcentage ?", r:p, u:"%",
+    x:"Variation = (arrivée moins départ) divisé par le DÉPART, fois 100. L'erreur classique est de diviser par l'arrivée."}; },
+
+function(){ const n = fRi(2,50) * 100, p = fPick([3,5,8,10,12,15,20,25]);
+  return {q:fNum(n) + " augmente de " + p + " %. Combien apres ?", r:n * (1 + p / 100), u:"",
+    x:"On multiplie par 1 plus le taux. Plus 15 % c'est fois 1,15. Ne jamais ajouter deux hausses : plus 10 % puis plus 10 % font plus 21 %."}; },
+
+function(){ const p = fPick([10,20,25,50]), av = fRi(2,40) * 100, ap = av * (1 + p / 100);
+  return {q:"Apres une hausse de " + p + " %, on est a " + fNum(ap) + ". Combien avant ?", r:av, u:"",
+    x:"On DIVISE par 1 plus le taux, on ne retranche pas le taux. Après plus 25 %, on divise par 1,25, pas moins 25 %."}; },
+
+function(){ const m = fPick([20,25,30,40,50,60,100]);
+  return {q:"Un taux de marge de " + m + " % sur le coût d'achat, cela fait quel taux de marque ?", r:100 * m / (100 + m), u:"%",
+    x:"Marque = marge divisée par (100 plus marge). 50 % de marge donne 33 % de marque. Toujours demander le dénominateur avant de répondre."}; },
+
+function(){ const ht = fRi(2,60) * 50;
+  return {q:fNum(ht) + " euros hors taxes, combien toutes taxes à 20 % ?", r:ht * 1.2, u:"euros",
+    x:"Fois 1,2, ou le montant plus son cinquième. 850 plus 170 égale 1 020."}; },
+
+function(){ const ht = fRi(2,60) * 50, ttc = ht * 1.2;
+  return {q:fNum(ttc) + " euros toutes taxes à 20 %, combien hors taxes ?", r:ht, u:"euros",
+    x:"On divise par 1,2, ce qui revient à retirer un sixième. Retirer 20 % est FAUX : cela donnerait 0,96 fois le montant."}; },
+
+function(){ const u = fRi(3,25), q1 = fRi(4,40), pu = u * fRi(2,9);
+  return {q:"Si " + q1 + " unités coûtent " + fNum(q1 * pu) + " euros, combien coûtent " + (q1 * 3) + " unités ?", r:q1 * 3 * pu, u:"euros",
+    x:"Règle de trois : on passe par le prix unitaire. Ici trois fois plus d'unités, donc trois fois le prix."}; },
+
+function(){ const b = fPick([200,400,500,800,1000,1250,2000]), p = fPick([5,10,12,20,25,40]);
+  return {q:"Une part de " + fNum(b * p / 100) + " sur un total de " + fNum(b) + ", cela fait quel pourcentage ?", r:p, u:"%",
+    x:"Part divisée par total, fois 100. Vérifier l'ordre de grandeur avant de répondre : la moitié fait 50, le quart fait 25."}; },
+
+function(){ const n = fRi(12,98), m = fPick([5,9,11,25]);
+  const astuces = {5:"Fois 5 = fois 10 puis divisé par 2.", 9:"Fois 9 = fois 10 moins une fois le nombre.",
+    11:"Fois 11 = fois 10 plus une fois le nombre.", 25:"Fois 25 = fois 100 divisé par 4."};
+  return {q:"Combien font " + n + " x " + m + " ?", r:n * m, u:"", x:astuces[m] + " Ces raccourcis valent pour tous les nombres."}; },
+
+function(){ const t = fPick([2,3,4,6,8,9,12]);
+  return {q:"À " + t + " % par an, en combien d'années un capital double environ ?", r:72 / t, u:"ans",
+    x:"Règle de 72 : on divise 72 par le taux. À 6 %, douze ans. Approximation excellente entre 2 et 15 %."}; },
+
+function(){ const m = fRi(3,90) * 10;
+  return {q:fNum(m) + " milliers d'euros, cela fait combien de millions ?", r:m / 1000, u:"M",
+    x:"Trois zéros séparent chaque étage : euro, millier, million, milliard. Un doute sur un facteur mille est l'erreur qui coûte le plus cher."}; },
+
+function(){ const ca = fRi(3,60) * 100000;
+  return {q:"Un chiffre d'affaires annuel de " + fNum(ca / 1000) + " k euros, cela fait combien par mois en moyenne ?", r:ca / 12000, u:"k",
+    x:"Diviser par 12. Pour aller vite : diviser par 10 puis retirer un sixième du résultat."}; },
+
+function(){ const a = fRi(2,9) * 10, b = fRi(2,9) * 10, pa = fPick([25,50,75]);
+  const moy = (a * pa + b * (100 - pa)) / 100;
+  return {q:"Deux agences : " + a + " % de marge sur " + pa + " % du chiffre d'affaires, " + b + " % sur le reste. Quelle marge moyenne ?", r:moy, u:"%",
+    x:"Moyenne PONDÉRÉE, jamais la moyenne simple. On multiplie chaque valeur par son poids, on additionne, on divise par 100."}; },
+
+function(){ const cf = fRi(2,30) * 1000, tm = fPick([20,25,40,50]);
+  return {q:fNum(cf) + " euros de charges fixes, taux de marge sur coût variable de " + tm + " %. Quel seuil de rentabilité ?", r:cf / (tm / 100), u:"euros",
+    x:"Charges fixes divisées par le taux de marge sur coût variable. À 25 %, il faut vendre quatre fois les charges fixes."}; },
+
+function(){ const n = fRi(11,49), d = fPick([5,25,50]);
+  const astuces = {5:"Diviser par 5 = fois 2 puis divisé par 10.", 25:"Diviser par 25 = fois 4 puis divisé par 100.",
+    50:"Diviser par 50 = fois 2 puis divisé par 100."};
+  return {q:"Combien font " + (n * d) + " divisé par " + d + " ?", r:n, u:"", x:astuces[d]}; },
+];
+
+function finTire(){
+  const g = CALCULS[Math.floor(Math.random() * CALCULS.length)];
+  return g();
+}
+
+/* ---------- rendu ---------- */
+function renderFin(){
+  const w = el("fin");
+  if (!FI.length){
+    w.innerHTML = '<div class="card"><h2>Finance</h2><p class="note">La banque de fiches n\'est pas chargée. Recharge la page une fois en ligne.</p></div>';
+    return;
+  }
+  if (fVue === "calcul") return finEcranCalcul();
+  if (fVue === "fiches") return finEcranFiches();
+  finAccueil();
+}
+
+function finAccueil(){
+  const vus = Object.keys(S.fin.vus).length, rev = Object.keys(S.fin.revoir).length;
+  const lot = finLotSemaine();
+  let h = '<div class="card hero"><h2>Muscler la finance</h2>' +
+    '<p class="note">Deux exercices courts. Le calcul mental pour les tests de recrutement, les fiches pour l\'intelligence financière.</p>' +
+    '<div class="kpi" style="margin-top:12px">' +
+    finKpi(S.fin.serie || 0, "jours de suite") +
+    finKpi(vus, "fiches vues") +
+    finKpi(FI.length, "au total") + '</div>';
+  if (rev) h += '<p class="note" style="margin-top:10px">' + rev + ' fiche(s) mises de côté à revoir.</p>';
+  h += '</div>';
+
+  h += '<div class="card"><h2>Aujourd\'hui</h2>' +
+    '<button class="btn" onclick="finGo(\'calcul\')">Calcul mental, 10 questions</button>' +
+    '<button class="btn bsec" onclick="finGo(\'fiches\')">Fiches finance, 10 cartes</button>';
+  if (rev) h += '<button class="btn bsec" onclick="finGo(\'fiches\',\'@revoir\')">Revoir mes ' + rev + ' fiches de côté</button>';
+  h += '</div>';
+
+  h += '<div class="card"><h2>Les 10 de la semaine</h2>' +
+    '<p class="note">Elles changent tous les lundis. Banque mise à jour le ' +
+    (typeof FICHES !== "undefined" ? FICHES.maj : "") + '.</p>';
+  lot.forEach((f, i) => {
+    h += '<div class="acc"><div class="head" onclick="this.nextElementSibling.style.display=' +
+      'this.nextElementSibling.style.display===\'block\'?\'none\':\'block\'">' +
+      '<b>' + esc(f.q) + '</b><span class="note" style="display:block;margin-top:3px">' +
+      esc(FT[f.t] || "") + '</span></div>' +
+      '<div style="display:none;padding:0 13px 13px">' +
+      '<p>' + esc(f.r) + '</p><div class="ftip">' + esc(f.x) + '</div></div></div>';
+  });
+  h += '</div>';
+
+  h += '<div class="card"><h2>Réviser un thème</h2><div class="pills">';
+  Object.keys(FT).forEach(k => {
+    const n = FI.filter(f => f.t === k).length;
+    h += '<span class="pill" onclick="finGo(\'fiches\',\'' + k + '\')">' + esc(FT[k]) + ' (' + n + ')</span>';
+  });
+  h += '</div></div>';
+  el("fin").innerHTML = h;
+}
+function finKpi(v, l){
+  return '<div class="card" style="flex:1;text-align:center;margin:0;padding:11px 6px">' +
+    '<div style="font-size:22px;font-weight:800;color:var(--bleu)">' + v + '</div>' +
+    '<div class="note" style="font-size:10.5px">' + l + '</div></div>';
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function finGo(v, theme){
+  fVue = v; fTheme = theme || ""; fPos = 0; fBon = 0; fRep = false;
+  if (v === "calcul"){
+    fLot = []; for (let i = 0; i < 10; i++) fLot.push(finTire());
+  } else if (v === "fiches"){
+    let src = FI;
+    if (theme === "@revoir") src = FI.filter(f => S.fin.revoir[finCle(f)]);
+    else if (theme) src = FI.filter(f => f.t === theme);
+    src = src.slice();
+    for (let i = src.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = src[i]; src[i] = src[j]; src[j] = t; }
+    fLot = src.slice(0, 10);
+  }
+  renderFin(); window.scrollTo(0, 0);
+}
+function finQuitter(){ fVue = "accueil"; renderFin(); window.scrollTo(0, 0); }
+
+function finBarre(){
+  return '<div class="fprog"><i style="width:' + Math.round(fPos / fLot.length * 100) + '%"></i></div>' +
+    '<div class="fmeta">Question ' + Math.min(fPos + 1, fLot.length) + ' sur ' + fLot.length + '</div>';
+}
+
+/* ---------- calcul mental ---------- */
+function finEcranCalcul(){
+  if (fPos >= fLot.length) return finBilan("Calcul mental");
+  const q = fLot[fPos];
+  let h = '<div class="card">' + finBarre() + '<div class="fq">' + esc(q.q) + '</div>' +
+    '<input class="fin-in" id="finRep" inputmode="decimal" placeholder="ta réponse" autocomplete="off">' +
+    '<button class="btn" id="finBtnV" onclick="finValide()">Valider</button>' +
+    '<button class="btn bsec" onclick="finQuitter()">Arrêter</button></div>';
+  el("fin").innerHTML = h;
+  const i = el("finRep");
+  i.addEventListener("keydown", e => { if (e.key === "Enter") finValide(); });
+  i.focus();
+}
+function finValide(){
+  if (fRep) return;
+  const q = fLot[fPos], br = el("finRep").value.trim().replace(/\s/g, "").replace(",", ".");
+  if (br === "") return;
+  const v = parseFloat(br);
+  const ok = isFinite(v) && Math.abs(v - q.r) <= Math.max(0.05, Math.abs(q.r) * 0.005);
+  if (ok) fBon++;
+  fRep = true;
+  const inp = el("finRep");
+  inp.classList.add(ok ? "fbon" : "fmal"); inp.disabled = true;
+  const bv = el("finBtnV"); if (bv) bv.style.display = "none";
+  const d = document.createElement("div");
+  d.innerHTML = '<div class="frep" style="color:var(--' + (ok ? "vert" : "rouge") + ')">' +
+    (ok ? "Juste." : "Non. La réponse est " + fNum(q.r) + (q.u ? " " + q.u : "") + ".") + '</div>' +
+    '<div class="ftip"><b>L\'astuce.</b> ' + esc(q.x) + '</div>' +
+    '<button class="btn" onclick="finSuivant()">Suivant</button>';
+  inp.parentNode.insertBefore(d, inp.nextSibling.nextSibling);
+}
+function finSuivant(){ fPos++; fRep = false; renderFin(); window.scrollTo(0, 0); }
+
+/* ---------- fiches ---------- */
+function finEcranFiches(){
+  if (!fLot.length){ finQuitter(); return; }
+  if (fPos >= fLot.length) return finBilan("Fiches");
+  const f = fLot[fPos];
+  let h = '<div class="card">' + finBarre() +
+    '<div class="fmeta">' + esc(FT[f.t] || "") + '</div>' +
+    '<div class="fq">' + esc(f.q) + '</div>';
+  if (!fRep){
+    h += '<button class="btn" onclick="finMontre()">Voir la réponse</button>' +
+      '<button class="btn bsec" onclick="finQuitter()">Arrêter</button>';
+  } else {
+    h += '<p>' + esc(f.r) + '</p><div class="ftip"><b>À retenir.</b> ' + esc(f.x) + '</div>' +
+      '<div class="fduo"><button class="btn bsec" onclick="finJuge(0)">À revoir</button>' +
+      '<button class="btn" onclick="finJuge(1)">Je savais</button></div>';
+  }
+  h += '</div>';
+  el("fin").innerHTML = h;
+}
+function finMontre(){ fRep = true; renderFin(); }
+function finJuge(su){
+  const f = fLot[fPos], c = finCle(f);
+  S.fin.vus[c] = 1;
+  if (su){ fBon++; delete S.fin.revoir[c]; } else { S.fin.revoir[c] = 1; }
+  save(); fPos++; fRep = false; renderFin(); window.scrollTo(0, 0);
+}
+
+/* ---------- bilan ---------- */
+function finBilan(titre){
+  finPointe();
+  const pct = Math.round(fBon / fLot.length * 100);
+  let mot = "À retravailler.";
+  if (pct >= 90) mot = "Excellent."; else if (pct >= 70) mot = "Bon niveau."; else if (pct >= 50) mot = "Ça vient.";
+  const h = '<div class="card hero"><h2>' + titre + ', c\'est fini</h2>' +
+    '<div style="font-size:40px;font-weight:800;color:var(--bleu);margin:8px 0">' + fBon + ' / ' + fLot.length + '</div>' +
+    '<p class="note">' + mot + ' Série en cours : ' + S.fin.serie + ' jour(s), record ' + (S.fin.record || 0) + '.</p>' +
+    '<button class="btn" onclick="finGo(\'' + (titre === "Fiches" ? "fiches" : "calcul") + '\',\'' + fTheme + '\')">Une autre série</button>' +
+    '<button class="btn bsec" onclick="finQuitter()">Retour</button></div>';
+  el("fin").innerHTML = h;
+}
+
 /* ================= NAVIGATION ================= */
-const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe};
+const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin};
 function renderAll(){ Object.keys(RENDUS).forEach(k => RENDUS[k]()); }
 document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".nav button").forEach(x => x.classList.remove("act"));

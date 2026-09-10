@@ -1,5 +1,5 @@
-const CACHE = "steve-v21";
-const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
+const CACHE = "steve-v22";
+const ASSETS = ["./", "./index.html", "./fiches.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
@@ -11,7 +11,7 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   // Pages HTML : réseau d'abord (pour avoir les mises à jour), cache en secours hors-ligne
   if (req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html")) {
-    e.respondWith(fetch(req).then(r => { caches.open(CACHE).then(c => c.put("./index.html", r.clone())); return r; }).catch(() => caches.match("./index.html")));
+    e.respondWith(fetch(req).then(r => { caches.open(CACHE).then(c => c.put("./index.html", "./fiches.js", r.clone())); return r; }).catch(() => caches.match("./index.html")));
     return;
   }
   // reste : cache d'abord
