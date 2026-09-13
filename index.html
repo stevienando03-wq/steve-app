@@ -201,17 +201,20 @@ body.dark .donut-c{fill:#E8EBF1}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=24"></script>
-<script src="entrainement.js?v=24"></script>
-<script src="actu.js?v=24"></script>
+<script src="fiches.js?v=25"></script>
+<script src="entrainement.js?v=25"></script>
+<script src="actu.js?v=25"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
 
-/* Cycle 2 jours ON / 1 jour OFF, calé sur le vendredi 21 août 2026 :
-   ce jour-là LEGS, le lendemain PUSH, le surlendemain repos. Tout se calcule tout seul ensuite. */
-const CYCLE_DEBUT = "2026-08-21";
-const CYCLE = ["LEGS","PUSH","REPOS","PULL","LEGS","REPOS","PUSH","PULL","REPOS"];
+/* Cycle 2 jours ON / 1 jour OFF, recalé par Steve le dimanche 13 septembre 2026 :
+   ce jour-là PULL, le lendemain LEGS, le surlendemain repos. Tout se calcule tout seul
+   ensuite. Sur neuf jours, PUSH, PULL et LEGS reviennent chacun trois fois.
+   Pour recaler après une coupure, il suffit de changer CYCLE_DEBUT et de faire tourner le
+   tableau pour que l'indice 0 soit la séance de ce jour-là. */
+const CYCLE_DEBUT = "2026-09-13";
+const CYCLE = ["PULL","LEGS","REPOS","PUSH","PULL","REPOS","LEGS","PUSH","REPOS"];
 
 const RECURRENT = [
   {jour:4, h:"20:30", dur:90, t:"Réunion hebdomadaire", note:"Tous les jeudis soir. Séance de sport le matin ce jour-là si c'est un jour ON."}
@@ -221,7 +224,9 @@ const RDV = [
   {d:"2026-09-02", h:"16:00", dur:45,  t:"Rendez-vous santé",           note:"Mercredi, en pleine journée de travail. Pose deux heures maintenant, pas la veille."},
   {d:"2026-09-05", h:"11:00", dur:60,  t:"Rendez-vous santé",           note:"Samedi matin, rien à poser."},
   {d:"2026-09-07", h:"13:00", dur:150, t:"Rattrapage Handimanagement",  note:"Lundi début d'après-midi. Pose ta demi-journée et révise le week-end du 5."},
-  {d:"2026-09-08", h:"17:30", dur:75,  t:"État des lieux de sortie",    note:"Mardi. Tu finis à 18h30 : préviens ton manager et pars plus tôt. Appartement vide et propre, compteurs relevés."}
+  {d:"2026-09-08", h:"17:30", dur:75,  t:"État des lieux de sortie",    note:"Mardi. Tu finis à 18h30 : préviens ton manager et pars plus tôt. Appartement vide et propre, compteurs relevés."},
+  {d:"2026-09-15", h:"11:00", dur:90,  t:"Mémoire",                     note:"Mardi en fin de matinée, déplacé depuis le lundi. Tu es au bureau ce jour-là : pose ta matinée ou décale ton créneau."},
+  {d:"2026-09-22", h:"11:30", dur:90,  t:"Examen AMF",                  note:"Mardi. Pose ta matinée. Révise avec l'app AMF le week-end du 19, et refais la veille au soir les séries sur lesquelles tu bloques."}
 ];
 
 const SKILLS = [
@@ -501,16 +506,36 @@ function creneauSport(dateIso){
   if (estTravail(dateIso)) return "après le travail, vers 19h00";
   return "quand tu veux dans la journée";
 }
+/* Les rendez-vous viennent de deux endroits : RDV, ecrit dans le code, et S.rdv, ce que
+   Steve ajoute lui-meme. Depuis le 13/09/2026 il peut aussi en RETIRER. Un rendez-vous a
+   lui est supprime de S.rdv. Un rendez-vous fixe ne peut pas l'etre, il est dans le code :
+   sa cle part alors dans S.rdvMasques et il n'est plus affiche nulle part. */
+S.rdvMasques = Array.isArray(S.rdvMasques) ? S.rdvMasques : [];
+function cleRdv(r){ return r.d + "|" + r.h + "|" + r.t; }
+function tousRdv(){
+  return RDV.concat(S.rdv).filter(r => S.rdvMasques.indexOf(cleRdv(r)) < 0);
+}
+let RDV_VUS = [];
+function oublieRdv(i){
+  const r = RDV_VUS[i];
+  if (!r) return;
+  if (!confirm("Retirer " + r.t + ", " + libelleLong(r.d) + " ?")) return;
+  const k = S.rdv.findIndex(x => cleRdv(x) === cleRdv(r));
+  if (k >= 0) S.rdv.splice(k, 1);
+  else if (S.rdvMasques.indexOf(cleRdv(r)) < 0) S.rdvMasques.push(cleRdv(r));
+  save(); renderSemaine(); renderJour();
+}
+
 /* rendez-vous d'un jour donné, fixes plus les tiens */
 function rdvDu(dateIso){
-  let out = RDV.concat(S.rdv).filter(r => r.d === dateIso);
+  let out = tousRdv().filter(r => r.d === dateIso);
   const jour = parse(dateIso).getDay();
   RECURRENT.forEach(r => { if (r.jour === jour) out.push({d:dateIso, h:r.h, dur:r.dur, t:r.t, note:r.note, rec:true}); });
   return out.sort((a,b) => a.h.localeCompare(b.h));
 }
 function prochainsRdv(n){
   const t = auj();
-  let out = RDV.concat(S.rdv).filter(r => r.d >= t).sort((a,b) => (a.d+a.h).localeCompare(b.d+b.h));
+  let out = tousRdv().filter(r => r.d >= t).sort((a,b) => (a.d+a.h).localeCompare(b.d+b.h));
   return out.slice(0, n);
 }
 
@@ -613,14 +638,16 @@ function renderSemaine(){
 
   const prochains = prochainsRdv(8);
   h += '<div class="card sec-or"><h2>Rendez-vous à venir</h2>';
+  RDV_VUS = prochains;
   if (prochains.length) {
-    prochains.forEach(r => {
+    prochains.forEach((r, i) => {
       const j = joursEntre(auj(), r.d), d = parse(r.d);
       h += '<div class="rdv' + (j <= 3 ? ' urgent' : '') + '"><div class="j"><div class="n">' + d.getDate() + '</div>' +
            '<div class="m">' + MOIS_C[d.getMonth()] + '</div></div><div class="c"><div class="t">' + r.t + '</div>' +
            '<div class="h">' + libelleLong(r.d) + ", " + r.h.replace(":", "h") + '</div>' +
            (r.note ? '<div class="w">' + r.note + '</div>' : '') +
            '<a class="gcal" href="' + lienGoogle(r) + '" target="_blank" rel="noopener">Ajouter à Google Agenda</a>' +
+           ' <button type="button" class="gcal" data-oublie="' + i + '" style="cursor:pointer">Retirer</button>' +
            '</div></div>';
     });
   } else { h += '<div class="note">Rien de prévu pour le moment.</div>'; }
@@ -657,6 +684,10 @@ function renderSemaine(){
        'réglage du dessus. Une raison de plus de le faire.</div></div>';
 
   el("semaine").innerHTML = h;
+
+  el("semaine").querySelectorAll("[data-oublie]").forEach(b => {
+    b.addEventListener("click", () => oublieRdv(+b.getAttribute("data-oublie")));
+  });
 
   el("addRdv").addEventListener("click", () => {
     const t = el("rdvT").value.trim(), d = el("rdvD").value, hh = el("rdvH").value;
@@ -1315,7 +1346,7 @@ function bip(){
 function rappelsDeuxJours(){
   if (!notifOk()) return;
   const cible = plusJours(auj(), 2);
-  RDV.concat(S.rdv).filter(r => r.d === cible).forEach((r, i) => {
+  tousRdv().filter(r => r.d === cible).forEach((r, i) => {
     const cle = "steve_n2j_" + cible + "_" + i;
     if (localStorage.getItem(cle)) return;
     const j = parse(r.d);
@@ -1362,7 +1393,10 @@ function construireIcs(seulementRdv){
     L.push("BEGIN:VEVENT", "UID:" + uid, "DTSTAMP:" + icsDate(auj(), "08:00") + "Z",
            "DTSTART:" + icsDate(d, h),
            "DTEND:" + icsDate(iso(fin), String(fin.getHours()).padStart(2,"0") + ":" + String(fin.getMinutes()).padStart(2,"0")),
-           "SUMMARY:" + titre);
+           /* la virgule s'échappe aussi dans SUMMARY, pas seulement dans DESCRIPTION :
+              sans ça « Salle, PULL » est une liste de deux valeurs pour la norme, et un
+              agenda a le droit d'en couper la moitié. Corrigé le 13/09/2026. */
+           "SUMMARY:" + titre.replace(/,/g, "\\,"));
     if (desc) L.push("DESCRIPTION:" + desc.replace(/,/g, "\\,"));
     (alarmes || []).forEach(a => L.push("BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:" + a[1].replace(/,/g,"\\,"),
                                         "TRIGGER;RELATED=START:" + a[0], "END:VALARM"));
@@ -1386,7 +1420,7 @@ function construireIcs(seulementRdv){
        [["-PT3H", "Réunion ce soir à 20h30"]]);
   }
   /* rendez-vous, avec rappels à deux jours, un jour et deux heures */
-  RDV.concat(S.rdv).forEach((r, i) => {
+  tousRdv().forEach((r, i) => {
     ev("rdv" + i + "-" + r.d + "@steve", r.d, r.h, r.dur || 60, r.t, r.note || "",
        [["-P2D", r.t + " dans deux jours"], ["-P1D", r.t + " demain"], ["-PT2H", r.t + " dans deux heures"]]);
   });
@@ -1424,7 +1458,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v24";
+const FINV = "v25";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
