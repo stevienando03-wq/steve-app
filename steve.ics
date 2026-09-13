@@ -807,4 +807,69 @@ DESCRIPTION:Train Marseille Paris dans deux heures
 TRIGGER;RELATED=START:-PT2H
 END:VALARM
 END:VEVENT
+BEGIN:VEVENT
+UID:courses-2026-09-13@steve
+DTSTAMP:20260913T080000Z
+DTSTART:20260913T150000
+DTEND:20260913T154000
+SUMMARY:Courses\, environ 33 €
+DESCRIPTION:Galettes de wrap 1 paquet de 8\, Filets de poulet 800 g\, Viande hachée 500 g\, Crème de coco 1 brique de 20 cl\, Poivrons 3\, Oignons 1 kg\, Pommes de terre 1\,5 kg\, Œufs 12\, Skyr ou fromage blanc 1 kg\, Bananes 1 kg\, Brocoli 1\, Épinards frais 300 g\, Lait 2 litres
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Courses dans une heure\, la liste est dans l'app
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cuisine-2026-09-13@steve
+DTSTAMP:20260913T080000Z
+DTSTART:20260913T193000
+DTEND:20260913T201000
+SUMMARY:Cuisine : Wrap poulet\, courgette\, riz et crème coco
+DESCRIPTION:400 g de poulet\, 1 courgette\, 150 g de riz cru\, 10 cl de crème de coco\, 80 g d'emmental râpé\, 4 galettes\, 1 oignon\, 1 gousse d'ail\, une poignée d'épinards\, paprika\, sel\, poivre\, 2 cuillères à soupe d'huile || La crème de coco tranche si elle bout fort. Feu moyen\, jamais plus. Si elle tranche quand même\, une cuillère d'eau froide et on remue hors du feu.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Wrap poulet\, courgette\, riz et crème coco à préparer dans une heure
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cuisine-2026-09-14@steve
+DTSTAMP:20260913T080000Z
+DTSTART:20260914T193000
+DTEND:20260914T200000
+SUMMARY:Cuisine : Wrap haricots rouges\, maïs\, poivrons et viande hachée
+DESCRIPTION:500 g de viande hachée\, 1 boîte de haricots rouges\, 1 boîte de maïs\, 2 poivrons\, 1 oignon\, 2 gousses d'ail\, 4 cuillères à soupe de tomates pelées écrasées\, paprika\, 4 galettes\, emmental\, sel\, poivre || Rince les haricots rouges sous l'eau. Le jus de la boîte est épais\, salé et amer\, et il colore tout en marron.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Wrap haricots rouges\, maïs\, poivrons et viande hachée à préparer dans une heure
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cuisine-2026-09-15@steve
+DTSTAMP:20260913T080000Z
+DTSTART:20260915T200000
+DTEND:20260915T203500
+SUMMARY:Cuisine : Curry japonais poulet\, carottes et pommes de terre
+DESCRIPTION:400 g de poulet\, 3 carottes\, 500 g de pommes de terre\, 2 oignons\, la moitié d'une plaquette de Golden Curry\, 70 cl d'eau\, 300 g de riz\, 1 cuillère à soupe d'huile || Le roux jeté dans un liquide bouillant fait des grumeaux et brûle au fond. On coupe le feu avant de l'ajouter\, toujours. C'est la seule erreur qui rate ce plat.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Curry japonais poulet\, carottes et pommes de terre à préparer dans une heure
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cuisine-2026-09-16@steve
+DTSTAMP:20260913T080000Z
+DTSTART:20260916T193000
+DTEND:20260916T200000
+SUMMARY:Cuisine : Pâtes crevettes\, courgette et aubergine
+DESCRIPTION:250 g de fusilli\, 370 g de crevettes\, 1 courgette\, 1 aubergine\, la moitié de la boîte de tomates pelées\, 2 gousses d'ail\, huile d'olive\, herbes\, paprika || L'eau de cuisson est ce qui lie la sauce aux pâtes. Ne la jette jamais entièrement\, c'est la différence entre des pâtes en sauce et des pâtes sèches avec de la sauce à côté.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Pâtes crevettes\, courgette et aubergine à préparer dans une heure
+TRIGGER;RELATED=START:-PT1H
+END:VALARM
+END:VEVENT
 END:VCALENDAR

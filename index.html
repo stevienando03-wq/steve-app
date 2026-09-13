@@ -201,9 +201,9 @@ body.dark .donut-c{fill:#E8EBF1}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=26"></script>
-<script src="entrainement.js?v=26"></script>
-<script src="actu.js?v=26"></script>
+<script src="fiches.js?v=27"></script>
+<script src="entrainement.js?v=27"></script>
+<script src="actu.js?v=27"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -340,106 +340,288 @@ const RECETTES = [
   {nm:"Wraps poulet", meta:"40 g de protéines", b:"2 tortillas, 150 g de poulet, crudités, sauce au skyr citron ail."}
 ];
 
+/* La periode Bouffe. Steve la redonne quand elle est finie, tout le reste de
+   l'app se recalcule seul dessus : le calendrier des repas, la carte du jour,
+   la ligne du soir des sept prochains jours, les evenements ICS et la liste de
+   courses. Ecrite en JSON, qui est du JavaScript valide, pour ne pas avoir a
+   echapper a la main les apostrophes du francais. */
 const PERIODE = {
-  du:"2026-08-26", au:"2026-08-29",
-  titre:"Prise de masse, de mercredi à samedi",
-  intro:"Trois soirs de cuisine, dont deux vraies sessions. Le petit-déjeuner et la collation ne bougent pas de la semaine, ce sont eux qui portent la prise de masse, pas les dîners.",
-
-  courses:{
-    d:"2026-08-26", h:"19:00", dur:45, quand:"ce soir",
-    attendu:23,
-    verite:"Seuls les lardons sont vérifiés au catalogue Lidl en cours. Le reste est une fourchette.",
-    lignes:[
-      {n:"Cuisses de poulet",    q:"6, environ 1,3 kg", bas:4.40, haut:6.50},
-      {n:"Lardons fumés 250 g",  q:"1 barquette",       bas:1.74, haut:2.20},
-      {n:"Œufs",                 q:"12",                bas:2.60, haut:3.40},
-      {n:"Lait entier",          q:"3 litres",          bas:2.70, haut:3.60},
-      {n:"Fromage blanc",        q:"1 kg",              bas:1.80, haut:2.50},
-      {n:"Bananes",              q:"1,2 kg",            bas:1.50, haut:2.30},
-      {n:"Pain de mie complet",  q:"500 g",             bas:1.00, haut:1.50},
-      {n:"Huile de tournesol",   q:"1 litre",           bas:1.80, haut:2.60},
-      {n:"Tomates concassées",   q:"1 boîte",           bas:0.45, haut:0.75},
-      {n:"Pommes de terre",      q:"1 kg",              bas:0.80, haut:1.20},
-      {n:"Oignons",              q:"1 kg",              bas:1.20, haut:1.90}
-    ],
-    dejaLa:"Flocons d\'avoine, beurre de cacahuète, riz, concentré de tomate, carottes, ail, cubes, herbes, vinaigre.",
-    verifier:[
-      {n:"Riz",      besoin:"600 g sec", si:"1,30 à 2,20 €"},
-      {n:"Carottes", besoin:"700 g",     si:"1,00 à 1,60 €"}
-    ],
-    rayon:[
-      "Cuisses de poulet, si le kilo dépasse 5,00 € prends des pilons.",
-      "Lait, le pack de 6 est souvent moins cher au litre que 3 briques.",
-      "Huile, tournesol 1 litre, ni colza ni olive."
-    ]
-  },
-
-  fixes:[
-    {nm:"Petit-déjeuner", meta:"840 kcal, 32 g de protéines, 1,05 €",
-     quoi:["100 g de flocons d\'avoine", "30 cl de lait entier", "30 g de beurre de cacahuète", "1 banane"],
-     blocs:[
-       ["Chaud", "Avoine et lait dans un bol, 2 min 30 au micro-ondes, remué à mi-parcours pour éviter le débordement. Beurre de cacahuète ajouté à la sortie, il fond seul en 30 secondes. Banane en rondelles."],
-       ["Froid, préparé la veille", "Avoine et lait en tupperware au frigo. Le matin tu ajoutes le beurre de cacahuète et la banane. Même valeur, zéro minute. C\'est la version pour les jours où tu pars tôt."],
-       ["Si le volume passe mal", "Problème classique à 67 kg, 100 g d\'avoine gonflent énormément. Soit 20 cl de lait dans le bol au lieu de 30, et tu bois les 10 cl restants à côté : mêmes calories, moitié moins de volume. Soit 70 g le matin et les 30 g restants versés dans la collation."],
-       ["Ne saute jamais le beurre de cacahuète", "180 kcal pour 20 g de produit. C\'est ce qui rend le repas finissable. Sans lui il faudrait 50 g d\'avoine de plus, soit un bol que tu ne termines pas."]
-     ]},
-    {nm:"Collation", meta:"480 kcal, 24 g de protéines, 1,30 €",
-     quoi:["2 tranches de pain de mie et 30 g de beurre de cacahuète", "250 g de fromage blanc", "1 banane"],
-     blocs:[["Quand", "Après la séance les jours de salle, milieu d\'après-midi sinon."]]}
+ "du": "2026-09-13",
+ "au": "2026-09-16",
+ "titre": "À deux, du dimanche 13 au mercredi 16",
+ "intro": "Quatre jours, trois vraies sessions de cuisine. Aucun four dans cette cuisine, donc tout se fait à la poêle ou à la casserole. Chaque dîner est doublé : la moitié le soir, la moitié en tupperware pour le lendemain midi au travail. Tu pars jeudi matin, donc on finit le frais mercredi soir et on n'achète rien qui traînerait.",
+ "courses": {
+  "d": "2026-09-13",
+  "h": "15:00",
+  "dur": 40,
+  "quand": "cet après-midi",
+  "attendu": 33,
+  "verite": "Aucun prix n'est vérifié au catalogue. Ce sont des fourchettes Lidl, à corriger en rayon. Le total réel tombera entre 26 et 41 €, soit 3,30 à 5,10 € par personne et par jour.",
+  "lignes": [
+   {
+    "n": "Galettes de wrap",
+    "q": "1 paquet de 8",
+    "bas": 1.2,
+    "haut": 1.8
+   },
+   {
+    "n": "Filets de poulet",
+    "q": "800 g",
+    "bas": 5.5,
+    "haut": 8.0
+   },
+   {
+    "n": "Viande hachée",
+    "q": "500 g",
+    "bas": 3.5,
+    "haut": 5.5
+   },
+   {
+    "n": "Crème de coco",
+    "q": "1 brique de 20 cl",
+    "bas": 0.9,
+    "haut": 1.5
+   },
+   {
+    "n": "Poivrons",
+    "q": "3",
+    "bas": 1.8,
+    "haut": 3.0
+   },
+   {
+    "n": "Oignons",
+    "q": "1 kg",
+    "bas": 1.2,
+    "haut": 1.9
+   },
+   {
+    "n": "Pommes de terre",
+    "q": "1,5 kg",
+    "bas": 1.5,
+    "haut": 2.5
+   },
+   {
+    "n": "Œufs",
+    "q": "12",
+    "bas": 2.6,
+    "haut": 3.8
+   },
+   {
+    "n": "Skyr ou fromage blanc",
+    "q": "1 kg",
+    "bas": 2.2,
+    "haut": 3.5
+   },
+   {
+    "n": "Bananes",
+    "q": "1 kg",
+    "bas": 1.3,
+    "haut": 2.0
+   },
+   {
+    "n": "Brocoli",
+    "q": "1",
+    "bas": 1.3,
+    "haut": 2.2
+   },
+   {
+    "n": "Épinards frais",
+    "q": "300 g",
+    "bas": 1.5,
+    "haut": 2.5
+   },
+   {
+    "n": "Lait",
+    "q": "2 litres",
+    "bas": 1.8,
+    "haut": 2.6
+   }
   ],
-
-  diners:{
-    "2026-08-26":{
-      nm:"Poulet mijoté et riz", portions:3, temps:"12 min actif, 35 min en tout", h:"20:00", dur:35,
-      ing:"6 cuisses, 2 oignons, 3 gousses d\'ail, 1 boîte de tomates, 1 cuillère à soupe de concentré, 1 cube, 15 cl d\'eau, herbes, 360 g de riz",
-      etapes:[
-        "Cocotte feu vif, 2 cuillères à soupe d\'huile. Cuisses posées peau vers le bas, salées. 7 min sans y toucher, la peau doit être brune, pas dorée. Retourner 2 min. Réserver dans une assiette.",
-        "Feu moyen. Oignons émincés directement dans la graisse rendue, 5 min. Ail écrasé, 1 min.",
-        "Tomates, concentré, cube émietté, 15 cl d\'eau, herbes. Gratter le fond à la cuillère en bois, tout le goût est collé là.",
-        "Remettre les cuisses et le jus de l\'assiette. Couvert, feu doux, 25 min.",
-        "Riz : 360 g dans 72 cl d\'eau salée. Ébullition, puis feu très doux, couvert, 11 min sans soulever le couvercle. 5 min de repos."
-      ],
-      alerte:"Cuis 240 g de riz en plus ce soir, deuxième casserole, nature, au frigo. Il sert jeudi. Le riz de la veille se saute, le riz frais colle et tourne en bouillie.",
-      batch:"2 cuisses ce soir. Les 4 autres en 2 tupperwares montés ce soir, pas demain matin. Riz au fond, poulet et sauce par-dessus, l\'inverse détrempe le riz pendant la nuit."
-    },
-    "2026-08-27":{
-      nm:"Riz sauté lardons, œufs, carottes", portions:2, temps:"15 min", h:"19:00", dur:15,
-      ing:"240 g de riz cuit la veille, 250 g de lardons, 3 carottes, 1 oignon, 2 gousses d\'ail, 4 œufs",
-      etapes:[
-        "Lardons dans la poêle froide, sans huile, feu moyen, 5 min.",
-        "Carottes en petits dés de 5 mm, pas des rondelles, elles doivent cuire vite. Avec l\'oignon, 6 min.",
-        "Ail, 30 secondes. Pousser le tout sur un côté de la poêle.",
-        "Casser les 4 œufs dans l\'espace libre, brouiller grossièrement 1 min, puis mélanger.",
-        "Riz froid émietté à la main avant de le verser. 2 cuillères à soupe d\'huile, sel, poivre. 4 min en remuant peu, laisse-le accrocher au fond entre deux mouvements, c\'est là que le goût se fait."
-      ],
-      alerte:"",
-      batch:"1 portion ce soir, 1 en tupperware, ta réserve du week-end. Jeudi et vendredi midi sont déjà couverts par le poulet."
-    },
-    "2026-08-28":{
-      nm:"Tortilla et carottes râpées", portions:2, temps:"30 min", h:"19:30", dur:30,
-      ing:"800 g de pommes de terre, 1 gros oignon, 6 œufs, 4 carottes",
-      etapes:[
-        "Pommes de terre en rondelles fines et oignon émincé. Poêle avec 4 cuillères d\'huile, généreux, c\'est voulu. Feu moyen-doux, à couvert, 15 min. Fondantes, jamais croustillantes.",
-        "Battre les 6 œufs, saler franchement. Y verser les pommes de terre, mélanger, laisser reposer 5 min.",
-        "Reverser dans la poêle huilée, feu doux 8 min. Retourner à l\'aide d\'une assiette, 4 min.",
-        "Carottes râpées, 3 cuillères à soupe d\'huile, 1 cuillère à soupe de vinaigre, sel, une pincée de sucre. Laisser reposer 15 min avant de manger : râpées crues, elles ont besoin de ce temps pour rendre leur eau et prendre la vinaigrette."
-      ],
-      alerte:"",
-      batch:"Moitié ce soir, moitié en tupperware pour samedi midi. La tortilla se mange froide, c\'est fait pour."
-    }
+  "dejaLa": "Riz, fusilli, farfalle, couscous, purée en flocons, flocons d'avoine, quinoa, haricots rouges, tomates pelées, Golden Curry, pâte miso, wakame, beurre de cacahuète, graines de chia, courgette, aubergine, tomate, carottes, salade, pommes de terre déjà cuites, emmental râpé, fromage frais aux herbes, crevettes, limande du Nord, yaourts, pommes, huiles, paprika, poivre, herbes, ail, thé, matcha.",
+  "verifier": [
+   {
+    "n": "Maïs",
+    "besoin": "1 boîte pour le wrap de lundi",
+    "si": "0,60 à 1,00 €. La grande conserve jaune ouverte dans ton frigo y ressemble beaucoup, mais l'étiquette n'est pas lisible sur la photo. Regarde avant de partir."
+   },
+   {
+    "n": "Riz",
+    "besoin": "450 g en tout sur la période",
+    "si": "1,30 à 2,20 €. Ton sachet est au repère 625 g, ça passe, mais de justesse."
+   },
+   {
+    "n": "Carottes",
+    "besoin": "3 pour le curry de mardi",
+    "si": "1,00 à 1,60 €"
+   }
+  ],
+  "rayon": [
+   "Viande hachée, prends la 15 % et pas la 5 %. Elle coûte moins cher, elle a plus de goût, et la graisse rendue sert à cuire les poivrons derrière.",
+   "Poulet, si le kilo de filets dépasse 9 €, prends des hauts de cuisse désossés. Ils sont meilleurs en curry et deux fois moins chers.",
+   "Crème de coco et pas lait de coco. Le lait est trop liquide, il ne nappera jamais.",
+   "Skyr plutôt que fromage blanc si l'écart de prix est faible : deux fois plus de protéines pour les mêmes calories, c'est ce que tu cherches en prise de masse.",
+   "Épinards frais en sachet, pas en boîte. Ils fondent dans les wraps sans rendre d'eau."
+  ]
+ },
+ "fixes": [
+  {
+   "nm": "Petit-déjeuner",
+   "meta": "environ 850 kcal, 35 g de protéines, 1,10 €",
+   "quoi": [
+    "100 g de flocons d'avoine",
+    "30 cl de lait",
+    "30 g de beurre de cacahuète",
+    "1 banane",
+    "1 cuillère à café de graines de chia"
+   ],
+   "blocs": [
+    [
+     "Chaud, à la casserole",
+     "Pas de micro-ondes indispensable. Avoine et lait dans une petite casserole, feu doux, 4 min en remuant. Hors du feu, beurre de cacahuète et chia, banane en rondelles. Le chia gonfle en 2 minutes et épaissit tout."
+    ],
+    [
+     "Froid, préparé la veille",
+     "Avoine, lait et chia en tupperware au frigo le soir. Le matin tu ajoutes le beurre de cacahuète et la banane. Zéro minute, mêmes calories. C'est la version des jours de bureau."
+    ],
+    [
+     "Au blender, les jours pressés",
+     "Banane, 30 cl de lait, 60 g d'avoine, 30 g de beurre de cacahuète. Quarante secondes. Ça se boit en marchant, et le Kenwood est déjà sur le plan de travail."
+    ],
+    [
+     "Ne saute jamais le beurre de cacahuète",
+     "180 kcal pour 20 g. C'est lui qui rend le bol finissable. Sans lui il faudrait 50 g d'avoine de plus, et tu ne finirais pas."
+    ]
+   ]
   },
-
-  planning:{
-    "2026-08-26":{matin:"", collation:"", midi:"", soir:"Poulet mijoté et riz"},
-    "2026-08-27":{matin:"Avoine", collation:"Pain et fromage blanc", midi:"Poulet et riz", soir:"Riz sauté"},
-    "2026-08-28":{matin:"Avoine", collation:"Pain et fromage blanc", midi:"Poulet et riz", soir:"Tortilla et carottes"},
-    "2026-08-29":{matin:"Avoine", collation:"Pain et fromage blanc", midi:"Tortilla froide", soir:"Nouvelle période, redonne ta liste"}
+  {
+   "nm": "Collation",
+   "meta": "environ 420 kcal, 28 g de protéines, 1,05 €",
+   "quoi": [
+    "250 g de skyr ou de fromage blanc",
+    "1 pomme",
+    "30 g de beurre de cacahuète"
+   ],
+   "blocs": [
+    [
+     "Quand",
+     "Après la séance les jours de salle, milieu d'après-midi sinon."
+    ],
+    [
+     "La version qui passe partout",
+     "Pomme coupée en quartiers, beurre de cacahuète dans un petit pot à part. Ça se transporte au bureau sans rien salir."
+    ],
+    [
+     "Si tu as faim le soir",
+     "Deux œufs durs. Tu en as douze, ils tiennent une semaine cuits au frigo, et c'est la protéine la moins chère de ta liste."
+    ]
+   ]
+  }
+ ],
+ "diners": {
+  "2026-09-13": {
+   "nm": "Wrap poulet, courgette, riz et crème coco",
+   "portions": 4,
+   "temps": "30 min",
+   "h": "19:30",
+   "dur": 40,
+   "ing": "400 g de poulet, 1 courgette, 150 g de riz cru, 10 cl de crème de coco, 80 g d'emmental râpé, 4 galettes, 1 oignon, 1 gousse d'ail, une poignée d'épinards, paprika, sel, poivre, 2 cuillères à soupe d'huile",
+   "etapes": [
+    "Riz d'abord, il tient au chaud tout seul. 150 g dans 30 cl d'eau salée. Ébullition, puis feu très doux, couvert, 11 min sans soulever le couvercle. 5 min de repos hors du feu.",
+    "Poulet en lanières de 1 cm. Poêle bien chaude, 1 cuillère à soupe d'huile. Les lanières en une seule couche, sans les entasser. 3 min sans y toucher, puis 2 min en remuant. Sel, poivre, paprika. Réserver dans une assiette.",
+    "Même poêle, 1 cuillère d'huile. Oignon émincé 3 min. Courgette en demi-rondelles fines, feu vif, 6 min. Elle doit dorer, pas rendre son eau : feu vif et on ne couvre pas. Ail écrasé, 30 secondes.",
+    "Remettre le poulet et son jus. Crème de coco, feu moyen, 2 min. Elle doit napper la garniture, pas l'inonder. Épinards jetés dedans à la fin, ils fondent en 40 secondes.",
+    "Riz mélangé dans la poêle, hors du feu. Goûter et resaler : une garniture de wrap doit être plus salée qu'un plat en assiette, la galette dilue tout.",
+    "Galettes 20 secondes par face dans une poêle sèche, une par une. Garnir au tiers bas, emmental par-dessus la garniture encore chaude pour qu'il fonde, replier les deux côtés puis rouler serré."
+   ],
+   "alerte": "La crème de coco tranche si elle bout fort. Feu moyen, jamais plus. Si elle tranche quand même, une cuillère d'eau froide et on remue hors du feu.",
+   "batch": "2 wraps ce soir. Pour les 2 autres, garniture en tupperware et galettes à part : un wrap roulé la veille rend son eau et la galette devient molle. Tu le roules en trente secondes au bureau."
   },
-
-  regle:"Les 2 cuillères d\'huile de chaque plat ne sont pas décoratives : 240 kcal par assiette, 480 par jour. C\'est la totalité de ton surplus. Sans elles tu manges à maintenance.",
-  bilan:["2 vraies sessions de cuisine, mercredi et vendredi. Jeudi, 15 minutes.",
-         "Œufs consommés : 10 sur 12. Bananes : 6 sur 7."],
-  reste:"Ce que tu emmènes vers samedi : 1 portion de riz sauté, l\'huile entamée, 2 œufs, le reste des oignons et des pommes de terre, l\'avoine et le beurre de cacahuète."
+  "2026-09-14": {
+   "nm": "Wrap haricots rouges, maïs, poivrons et viande hachée",
+   "portions": 4,
+   "temps": "25 min",
+   "h": "19:30",
+   "dur": 30,
+   "ing": "500 g de viande hachée, 1 boîte de haricots rouges, 1 boîte de maïs, 2 poivrons, 1 oignon, 2 gousses d'ail, 4 cuillères à soupe de tomates pelées écrasées, paprika, 4 galettes, emmental, sel, poivre",
+   "etapes": [
+    "Poêle très chaude, SANS huile si ta hachée est à 15 %. Viande étalée en une couche, 3 min sans la toucher pour qu'elle attrape une croûte brune. C'est cette croûte qui fait tout le goût. Ensuite seulement, écraser à la cuillère en bois, 3 min de plus. Réserver.",
+    "Dans la graisse rendue, oignon et poivrons en dés de 1 cm, feu moyen-vif, 7 min. Ail écrasé, 30 secondes.",
+    "Haricots rouges rincés à l'eau claire et bien égouttés, maïs égoutté, viande remise, tomates pelées écrasées, paprika, sel, poivre. 6 min à feu moyen et à découvert, pour que ça réduise et que ça ne détrempe pas la galette.",
+    "Goûter, resaler franchement.",
+    "Galettes 20 secondes par face à sec. Garnir, emmental par-dessus, rouler serré."
+   ],
+   "alerte": "Rince les haricots rouges sous l'eau. Le jus de la boîte est épais, salé et amer, et il colore tout en marron.",
+   "batch": "2 wraps ce soir, garniture des 2 autres en tupperware pour mardi midi. Prévois-le : mardi tu soutiens ton mémoire à 11h, tu ne cuisineras pas."
+  },
+  "2026-09-15": {
+   "nm": "Curry japonais poulet, carottes et pommes de terre",
+   "portions": 4,
+   "temps": "10 min actif, 30 min en tout",
+   "h": "20:00",
+   "dur": 35,
+   "ing": "400 g de poulet, 3 carottes, 500 g de pommes de terre, 2 oignons, la moitié d'une plaquette de Golden Curry, 70 cl d'eau, 300 g de riz, 1 cuillère à soupe d'huile",
+   "etapes": [
+    "Riz : 300 g dans 60 cl d'eau salée, même méthode que dimanche.",
+    "Poulet en morceaux de 3 cm. Casserole, huile, feu vif, 4 min pour colorer. Réserver.",
+    "Oignons en lamelles épaisses, 5 min. Carottes en rondelles de 1 cm et pommes de terre en cubes de 3 cm, 3 min en remuant.",
+    "Poulet remis, 70 cl d'eau pour couvrir. Ébullition, puis feu doux, couvert, 15 min. Une pomme de terre doit s'écraser sous une fourchette.",
+    "COUPER LE FEU. Casser les carrés de roux dans la casserole et les faire fondre en remuant. Remettre 3 min à feu doux, ça épaissit d'un coup."
+   ],
+   "alerte": "Le roux jeté dans un liquide bouillant fait des grumeaux et brûle au fond. On coupe le feu avant de l'ajouter, toujours. C'est la seule erreur qui rate ce plat.",
+   "batch": "2 assiettes ce soir avec le riz. 2 tupperwares montés ce soir et pas demain matin, riz au fond, curry par-dessus. Le plat de soutenance : aucune décision à prendre en rentrant."
+  },
+  "2026-09-16": {
+   "nm": "Pâtes crevettes, courgette et aubergine",
+   "portions": 2,
+   "temps": "25 min",
+   "h": "19:30",
+   "dur": 30,
+   "ing": "250 g de fusilli, 370 g de crevettes, 1 courgette, 1 aubergine, la moitié de la boîte de tomates pelées, 2 gousses d'ail, huile d'olive, herbes, paprika",
+   "etapes": [
+    "Aubergine en cubes de 2 cm. Poêle, 3 cuillères à soupe d'huile d'olive, feu moyen-vif, 8 min. Elle boit toute l'huile dans la première minute puis la rend : n'en rajoute pas, attends.",
+    "Courgette en demi-rondelles, 5 min.",
+    "Ail 30 secondes. Tomates pelées écrasées à la cuillère, herbes, paprika, sel. 6 min à découvert.",
+    "Pâtes dans l'eau bouillante salée, 1 minute de MOINS que le paquet. Garde une louche d'eau de cuisson avant d'égoutter.",
+    "Crevettes dans la sauce 2 min, pas une de plus, elles deviennent caoutchouteuses. Pâtes égouttées versées dans la poêle avec la louche d'eau de cuisson, 1 min en remuant hors du feu."
+   ],
+   "alerte": "L'eau de cuisson est ce qui lie la sauce aux pâtes. Ne la jette jamais entièrement, c'est la différence entre des pâtes en sauce et des pâtes sèches avec de la sauce à côté.",
+   "batch": "Deux assiettes, rien en tupperware. Tu pars jeudi matin à 9h38, ce dîner est là pour vider le frigo avant de fermer la porte."
+  }
+ },
+ "planning": {
+  "2026-09-13": {
+   "matin": "",
+   "collation": "",
+   "midi": "Restes : limande, pommes de terre, salade",
+   "soir": "Wrap poulet et crème coco"
+  },
+  "2026-09-14": {
+   "matin": "Avoine et banane",
+   "collation": "Skyr et pomme",
+   "midi": "Wrap poulet, en tupperware",
+   "soir": "Wrap haricots rouges"
+  },
+  "2026-09-15": {
+   "matin": "Avoine et banane",
+   "collation": "Skyr et pomme",
+   "midi": "Wrap haricots rouges, en tupperware",
+   "soir": "Curry japonais"
+  },
+  "2026-09-16": {
+   "matin": "Avoine et banane",
+   "collation": "Skyr et pomme",
+   "midi": "Curry, en tupperware",
+   "soir": "Pâtes crevettes, on vide le frigo"
+  }
+ },
+ "regle": "Les cuillères d'huile ne sont pas décoratives, elles portent ton surplus. Mais vous êtes deux maintenant, et Inès ne cherche pas de surplus : sers-toi l'huile dans TON assiette, pas dans la poêle commune, sauf quand la recette la demande pour cuire. Et c'est toi qui prends le rab de féculents, pas elle.",
+ "bilan": [
+  "Trois vraies sessions de cuisine : dimanche, lundi, mardi. Mercredi, 25 minutes.",
+  "Chaque dîner est doublé, donc trois midis au bureau sont déjà couverts.",
+  "Légumes servis sur les quatre jours : courgette, poivrons, maïs, carottes, épinards, brocoli, aubergine, salade, tomate. C'est sa part du contrat.",
+  "Œufs prévus : ils ne sont dans aucun plat, ils sont la réserve. Douze achetés, zéro programmé, et c'est voulu."
+ ],
+ "reste": "Ce que tu laisses en partant jeudi : les pâtes entamées, le couscous, le quinoa, la purée en flocons, le riz restant, les conserves, les œufs, le skyr et les fruits. Rien de périssable ne traîne. Au retour du 20, redonne-moi une liste."
 };
 
 const CAT_IN  = ["Salaire", "Tickets resto", "Remboursement", "Retrait d'épargne", "Autre"];
@@ -1460,7 +1642,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v26";
+const FINV = "v27";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
