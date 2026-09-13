@@ -761,4 +761,50 @@ DESCRIPTION:Examen AMF dans deux heures
 TRIGGER;RELATED=START:-PT2H
 END:VALARM
 END:VEVENT
+BEGIN:VEVENT
+UID:rdv6-2026-09-17@steve
+DTSTAMP:20260913T080000Z
+DTSTART:20260917T093800
+DTEND:20260917T125300
+SUMMARY:Train Paris Marseille
+DESCRIPTION:Jeudi\, départ Gare de Lyon à 09h38\, arrivée Saint-Charles. Journée de bureau\, pose-la. Durée bloquée sur le TGV direct standard\, 3h15 : corrige si ton billet dit autre chose. Ta réunion du jeudi soir tombe pendant le séjour.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Train Paris Marseille dans deux jours
+TRIGGER;RELATED=START:-P2D
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Train Paris Marseille demain
+TRIGGER;RELATED=START:-P1D
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Train Paris Marseille dans deux heures
+TRIGGER;RELATED=START:-PT2H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rdv7-2026-09-20@steve
+DTSTAMP:20260913T080000Z
+DTSTART:20260920T170400
+DTEND:20260920T201900
+SUMMARY:Train Marseille Paris
+DESCRIPTION:Dimanche\, départ Saint-Charles à 17h04\, arrivée Gare de Lyon. Même réserve sur la durée. Tu rentres deux jours avant l'examen AMF.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Train Marseille Paris dans deux jours
+TRIGGER;RELATED=START:-P2D
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Train Marseille Paris demain
+TRIGGER;RELATED=START:-P1D
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Train Marseille Paris dans deux heures
+TRIGGER;RELATED=START:-PT2H
+END:VALARM
+END:VEVENT
 END:VCALENDAR

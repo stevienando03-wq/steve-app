@@ -201,9 +201,9 @@ body.dark .donut-c{fill:#E8EBF1}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=25"></script>
-<script src="entrainement.js?v=25"></script>
-<script src="actu.js?v=25"></script>
+<script src="fiches.js?v=26"></script>
+<script src="entrainement.js?v=26"></script>
+<script src="actu.js?v=26"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -226,7 +226,9 @@ const RDV = [
   {d:"2026-09-07", h:"13:00", dur:150, t:"Rattrapage Handimanagement",  note:"Lundi début d'après-midi. Pose ta demi-journée et révise le week-end du 5."},
   {d:"2026-09-08", h:"17:30", dur:75,  t:"État des lieux de sortie",    note:"Mardi. Tu finis à 18h30 : préviens ton manager et pars plus tôt. Appartement vide et propre, compteurs relevés."},
   {d:"2026-09-15", h:"11:00", dur:90,  t:"Mémoire",                     note:"Mardi en fin de matinée, déplacé depuis le lundi. Tu es au bureau ce jour-là : pose ta matinée ou décale ton créneau."},
-  {d:"2026-09-22", h:"11:30", dur:90,  t:"Examen AMF",                  note:"Mardi. Pose ta matinée. Révise avec l'app AMF le week-end du 19, et refais la veille au soir les séries sur lesquelles tu bloques."}
+  {d:"2026-09-22", h:"11:30", dur:90,  t:"Examen AMF",                  note:"Mardi. Pose ta matinée. Révise avec l'app AMF le week-end du 19, et refais la veille au soir les séries sur lesquelles tu bloques."},
+  {d:"2026-09-17", h:"09:38", dur:195, t:"Train Paris Marseille",       note:"Jeudi, départ Gare de Lyon à 09h38, arrivée Saint-Charles. Journée de bureau, pose-la. Durée bloquée sur le TGV direct standard, 3h15 : corrige si ton billet dit autre chose. Ta réunion du jeudi soir tombe pendant le séjour."},
+  {d:"2026-09-20", h:"17:04", dur:195, t:"Train Marseille Paris",       note:"Dimanche, départ Saint-Charles à 17h04, arrivée Gare de Lyon. Même réserve sur la durée. Tu rentres deux jours avant l'examen AMF."}
 ];
 
 const SKILLS = [
@@ -1458,7 +1460,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v25";
+const FINV = "v26";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
