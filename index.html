@@ -328,9 +328,9 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=40"></script>
-<script src="entrainement.js?v=40"></script>
-<script src="actu.js?v=40"></script>
+<script src="fiches.js?v=42"></script>
+<script src="entrainement.js?v=42"></script>
+<script src="actu.js?v=42"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -358,9 +358,89 @@ const RDV = [
   {d:"2026-09-20", h:"17:04", dur:195, t:"Train Marseille Paris",       note:"Dimanche, départ Saint-Charles à 17h04, arrivée Gare de Lyon. Même réserve sur la durée. Tu rentres deux jours avant l'examen AMF."}
 ];
 
+/* ---------- Ce que SES offres demandent, comptage du 13/09/2026 ---------- */
+/* Lecture des 468 fichiers L'offre.txt de son dossier de candidatures, un million de
+   signes. On compte les mentions, on ne devine pas. Ce tableau est la base de tout le
+   reste de l'onglet : l'ordre des certifications en decoule. */
+const MARCHE = {
+  base: "468 offres auxquelles tu as postulé, lues le 13 septembre 2026",
+  lignes: [
+    ["Consolidation", 152, "le mot le plus demandé, et de loin"],
+    ["Anglais", 148, "tu as déjà la réponse, on y revient plus bas"],
+    ["Excel", 118, "toujours là, personne ne l'a remplacé"],
+    ["SQL", 45, "plus demandé que Power BI, et tu ne l'as pas"],
+    ["Power BI", 38, "l'écart entre un profil comptable et un profil analyste"],
+    ["SAP", 14, "surtout les grands groupes"],
+    ["VBA", 6, "en recul, ne commence pas par là"],
+    ["IFRS", 5, "peu cité seul, mais toujours derrière consolidation"],
+    ["DSCG", 4, "quatre offres sur 468"],
+    ["Cegid", 3, ""],
+    ["DCG", 2, ""]
+  ],
+  lecon: "Tes offres ne demandent presque PAS de certification. Elles demandent de la " +
+         "consolidation, de l'anglais et Excel. Une certification ne vaut donc ici que si " +
+         "elle PROUVE une de ces trois choses. C'est ce qui décide de l'ordre ci-dessous."
+};
+
+/* ---------- Les certifications, dans l'ordre de ce qu'elles t'apportent ---------- */
+/* Chiffres verifies a la source le 13/09/2026. Aucun repris de memoire. */
+const CERTIFS = [
+{nm:"TOEIC", etat:"tu l'as déjà", coul:"vert",
+ score:"955 sur 990, à confirmer sur ton attestation",
+ pourquoi:"L'anglais est cité dans 148 de tes 468 offres, deuxième mot le plus demandé. Tu as un score élevé et il n'est écrit nulle part sur ton CV. C'est le seul point de cette page qui te rapporte quelque chose aujourd'hui, sans rien payer ni réviser.",
+ cout:"zéro, c'est déjà fait", duree:"zéro",
+ ouvre:"Toutes les offres qui demandent un anglais professionnel, et elles sont nombreuses. Un score chiffré vaut mieux que « anglais courant », que tout le monde écrit.",
+ reserve:"Vérifie le chiffre exact sur ton attestation avant d'envoyer quoi que ce soit. Un recruteur peut demander le justificatif, et un score faux sur un CV ne se rattrape pas. Le TOEIC est valable deux ans pour certains employeurs, regarde la date de passage.",
+ lien:["Retrouver son score TOEIC", "https://www.etsglobal.org/fr/fr"]},
+
+{nm:"Certification AMF", etat:"tu la passes le 22 septembre", coul:"or",
+ score:"examen le mardi 22 à 11h30",
+ pourquoi:"Aucune de tes 468 offres ne la demande. Elle ne sert donc pas à décrocher les postes que tu vises aujourd'hui : elle ÉLARGIT ton périmètre vers la banque, l'assurance et la gestion d'actifs, où elle est obligatoire pour certaines fonctions.",
+ cout:"déjà engagé", duree:"l'examen du 22",
+ ouvre:"Les postes réglementés en banque et en société de gestion. Et sur un CV de contrôle de gestion, elle montre que tu te formes de toi-même.",
+ reserve:"Ne la présente pas comme ton atout principal face à une direction financière. Elle parle marchés, eux parlent clôture et reporting.",
+ lien:["AMF, l'examen certifié", "https://www.amf-france.org/"]},
+
+{nm:"DipIFR, le diplôme IFRS de l'ACCA", etat:"celle qui vaut le coup pour toi", coul:"bleu",
+ score:"un seul examen, en anglais",
+ pourquoi:"Consolidation, 152 mentions sur 468. C'est le mot le plus demandé de toutes tes offres, et c'est exactement ce que couvre ce diplôme : consolidation, instruments financiers, locations, produits, impôts différés. Aucune autre certification de cette liste ne vise aussi directement ta demande numéro un.",
+ cout:"236 livres au total, 89 d'inscription et 147 d'examen",
+ duree:"un seul examen, 3 à 6 mois de préparation, 100 à 200 heures",
+ ouvre:"Les postes de consolidation et les groupes internationaux, c'est-à-dire précisément ceux qui paient le mieux dans ton périmètre. Et ça répond à la question que ton mémoire pose : ce qui se paie, c'est ce qu'on sait faire de l'information.",
+ reserve:"L'examen est en anglais. Avec ton TOEIC ça passe, mais le vocabulaire comptable anglais s'apprend. C'est un vrai effort, pas une case à cocher, et c'est justement pour ça qu'il compte.",
+ lien:["DipIFR, page officielle ACCA", "https://www.accaglobal.com/gb/en/qualifications/glance/dipifr.html"]},
+
+{nm:"PL-300, Power BI", etat:"la plus rentable en temps", coul:"bleu",
+ score:"100 minutes, 700 sur 1000 minimum",
+ pourquoi:"Power BI 38 mentions, SQL 45. Et c'est ton axe de progression numéro un depuis le début. Une certification Microsoft rend vérifiable ce que tu écris sur ton CV, au lieu d'un « notions » que personne ne croit.",
+ cout:"126 à 165 euros l'examen, éligible CPF sous le code RS5445",
+ duree:"100 minutes d'examen, comptez six à huit semaines de préparation",
+ ouvre:"Le passage de comptable à analyste. C'est l'écart que tu cherches à combler, et celui que ton mémoire chiffre à 22 % de salaire.",
+ reserve:"Elle expire au bout de 12 mois et se renouvelle par une évaluation en ligne gratuite. C'est simple mais il faut y penser, sinon elle tombe. Et elle ne remplace pas de savoir faire : commence par refaire ton reporting Astridsen dans Power BI.",
+ lien:["PL-300, page officielle Microsoft", "https://learn.microsoft.com/fr-fr/credentials/certifications/data-analyst-associate/"]},
+
+{nm:"TOSA Excel, niveau expert", etat:"la moins chère", coul:"bleu",
+ score:"35 questions adaptatives en 60 minutes, expert au-delà de 875 sur 1000",
+ pourquoi:"Excel, 118 mentions, troisième mot le plus demandé. C'est la certification Excel la plus connue des recruteurs français, et elle est inscrite au Répertoire Spécifique de France Compétences, donc vérifiable.",
+ cout:"60 à 120 euros l'examen seul, éligible CPF avec un reste à charge légal de 150 euros depuis avril 2026",
+ duree:"60 minutes, révisable en deux ou trois week-ends",
+ ouvre:"Rien en soi, et c'est honnête de le dire. Mais elle transforme une ligne invérifiable de ton CV en un score chiffré, pour le prix d'un dîner.",
+ reserve:"Un score TOSA ne prouve pas que tu sais construire un modèle. Vise l'expert, au-dessous de 875 ce n'est pas la peine de l'écrire.",
+ lien:["TOSA, le site officiel", "https://www.tosa.org/"]},
+
+{nm:"DSCG", etat:"à écarter pour l'instant", coul:"gris",
+ score:"diplôme d'État, grade master, sept épreuves",
+ pourquoi:"Quatre mentions sur 468 offres. Quatre. C'est un diplôme d'État solide, mais ce n'est PAS ce que ton marché te demande, et il coûte des années.",
+ cout:"de gratuit en candidat libre à plusieurs milliers d'euros en école",
+ duree:"deux à trois ans en général",
+ ouvre:"Le cabinet d'expertise comptable, et derrière lui le DEC. C'est une autre carrière que celle que tu vises.",
+ reserve:"Ne l'engage QUE si tu décides de basculer vers le cabinet. Si tu restes en entreprise, les 200 heures du DipIFR t'apportent plus que la première année de DSCG.",
+ lien:["Le DSCG expliqué", "https://www.compta-online.com/programme-du-dscg-diplome-superieur-de-comptabilite-et-de-gestion-ao3258"]}
+];
+
 const SKILLS = [
   {cat:"Ce qui fait la différence sur un CV finance", nm:"Power BI", cible:"Un tableau de bord qui se met à jour tout seul",
-   why:"Tu fais tout sous Excel. Power BI est ce que les entreprises demandent aujourd'hui, et c'est le plus gros écart entre un profil comptable et un profil analyste.",
+   why:"38 de tes 468 offres le citent, et SQL 45. C'est le plus gros écart entre un profil comptable et un profil analyste, et celui que ton mémoire chiffre à 22 % de salaire.",
    faire:"Reprends ton reporting mensuel Astridsen et refais-le dans Power BI, en te connectant directement à l'export Pennylane. Deux heures le dimanche pendant six semaines.",
    liens:[["Parcours Power BI, gratuit","https://learn.microsoft.com/fr-fr/training/browse/?products=power-bi"],
           ["Kenji Explains, chaîne YouTube finance et data","https://www.youtube.com/@KenjiExplains"]],
@@ -1065,8 +1145,45 @@ function renderSport(){
 }
 
 function renderSkills(){
-  let h = '<div class="hint">Ce que tu veux savoir faire dans un an. Pour chacune : pourquoi ça compte, ' +
-          'quoi faire concrètement, et où aller. Touche les barres pour marquer où tu en es.</div>';
+  /* La donnee d'abord : l'ordre des certifications decoule de ce tableau, pas d'un avis. */
+  let h = '<div class="card hero"><h2>Ce que tes offres demandent</h2>' +
+    '<div class="sub">Compté sur ' + MARCHE.base + '. Les mentions, pas les impressions.</div></div>';
+
+  h += '<div class="card">';
+  const max = MARCHE.lignes[0][1];
+  MARCHE.lignes.forEach(l => {
+    h += '<div class="row"><div class="lab"><b>' + l[0] + '</b>' +
+      (l[2] ? '<br><span style="font-size:12px">' + l[2] + '</span>' : '') + '</div>' +
+      '<div style="text-align:right;min-width:78px"><b style="font-size:15px">' + l[1] + '</b>' +
+      '<div style="height:4px;background:var(--ligne);border-radius:3px;margin-top:4px">' +
+      '<i style="display:block;height:4px;border-radius:3px;background:var(--bleu);width:' +
+      Math.round(l[1] / max * 100) + '%"></i></div></div></div>';
+  });
+  h += '<div class="note" style="margin-top:11px"><b>Ce que ça dit.</b> ' + MARCHE.lecon + '</div></div>';
+
+  h += '<div class="card"><h2>Les certifications <span class="tag">dans l\'ordre qui te sert</span></h2>';
+  CERTIFS.forEach((c, i) => {
+    const coul = c.coul === "vert" ? "var(--vert)" : c.coul === "or" ? "var(--or)" :
+                 c.coul === "gris" ? "var(--anthr)" : "var(--bleu)";
+    h += '<div class="acc"><div class="h"><span class="nm">' + (i + 1) + '. ' + esc(c.nm) + '</span>' +
+      '<span class="meta" style="color:' + coul + '">' + esc(c.etat) + '</span></div><div class="b">' +
+      '<div class="ing">' + esc(c.score) + '</div>' +
+      '<div style="margin-top:9px">' + esc(c.pourquoi) + '</div>' +
+      '<div class="row" style="margin-top:9px"><div class="lab"><b>Ce que ça coûte</b></div>' +
+      '<div style="font-size:12.5px;text-align:right;max-width:56%">' + esc(c.cout) + '</div></div>' +
+      '<div class="row"><div class="lab"><b>Le temps</b></div>' +
+      '<div style="font-size:12.5px;text-align:right;max-width:56%">' + esc(c.duree) + '</div></div>' +
+      '<div style="margin-top:9px"><b style="color:var(--bleu);font-size:12.5px">Ce que ça ouvre</b><br>' + esc(c.ouvre) + '</div>' +
+      '<div class="alerte" style="margin-top:9px"><b>La réserve.</b> ' + esc(c.reserve) + '</div>' +
+      '<a class="gcal" href="' + c.lien[1] + '" target="_blank" rel="noopener" style="margin-top:10px">' + esc(c.lien[0]) + '</a>' +
+      '</div></div>';
+  });
+  h += '<div class="note" style="margin-top:9px">Tous ces chiffres ont été vérifiés à la source le ' +
+    '13 septembre 2026. Les tarifs bougent, revérifie avant de payer.</div></div>';
+
+  h += '<div class="hint">Les compétences ci-dessous sont le travail de fond. Une certification ' +
+    'prouve, elle n\'apprend pas. Touche les barres pour marquer où tu en es.</div>';
+
   let catCourante = "";
   SKILLS.forEach((sk, i) => {
     if (sk.cat !== catCourante) {
@@ -2799,7 +2916,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v40";
+const FINV = "v42";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
@@ -2845,73 +2962,149 @@ function fNum(n){
   return String(s).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
+/* Chaque generateur rend {q, r, u, x, d} :
+   q l'enonce, r la reponse exacte, u l'unite, x l'astuce qui se transporte ailleurs,
+   et d LE CALCUL avec les chiffres tires. Le d est la demande de Steve du 13/09 : une
+   astuce generique oblige a la reappliquer soi-meme a la question qu'on vient de rater. */
+
+/* Decompose un pourcentage en gestes faisables de tete. */
+function fPourcent(n, p){
+  const dix = n / 10, e = [];
+  e.push("10 % de " + fNum(n) + ", c'est " + fNum(dix) + ". On décale la virgule d'un rang.");
+  if (p === 5) e.push("5 %, c'est la moitié de 10 % : " + fNum(dix) + " divisé par 2.");
+  else if (p === 15) e.push("15 % = 10 % plus 5 %, donc " + fNum(dix) + " plus " + fNum(dix / 2) + ".");
+  else if (p === 25) e.push("25 %, c'est le quart : " + fNum(n) + " divisé par 4.");
+  else if (p === 75) e.push("75 %, c'est trois quarts : " + fNum(n) + " divisé par 4, fois 3.");
+  else if (p === 50) e.push("50 %, c'est la moitié : " + fNum(n) + " divisé par 2.");
+  else e.push(p + " % = " + (p / 10) + " fois 10 %, donc " + (p / 10) + " fois " + fNum(dix) + ".");
+  e.push("Résultat : " + fNum(n * p / 100) + ".");
+  return e;
+}
+
 const CALCULS = [
 function(){ const p = fPick([5,10,15,20,25,30,40,50,60,75,80]), n = fRi(2,60) * 50;
   return {q:"Combien font " + fNum(n) + " x " + p + " % ?", r:n * p / 100, u:"",
+    d:fPourcent(n, p),
     x:"10 % c'est diviser par 10, on compose ensuite. 30 % = 3 fois 10 %. 15 % = 10 % plus la moitié de 10 %. 75 % = trois quarts."}; },
 
 function(){ const a = fRi(2,40) * 25, p = fPick([4,5,8,10,12,20,25]), b = Math.round(a * (1 + p / 100));
   return {q:"Le chiffre d'affaires passe de " + fNum(a) + " à " + fNum(b) + ". Quelle variation en pourcentage ?", r:p, u:"%",
+    d:["L'écart : " + fNum(b) + " moins " + fNum(a) + " = " + fNum(b - a) + ".",
+       "On divise par le DÉPART, donc par " + fNum(a) + " : " + fNum(b - a) + " / " + fNum(a) + " = " + ((b - a) / a).toFixed(2).replace(".", ",") + ".",
+       "Fois 100 : " + p + " %."],
     x:"Variation = (arrivée moins départ) divisé par le DÉPART, fois 100. L'erreur classique est de diviser par l'arrivée."}; },
 
 function(){ const n = fRi(2,50) * 100, p = fPick([3,5,8,10,12,15,20,25]);
   return {q:fNum(n) + " augmente de " + p + " %. Combien apres ?", r:n * (1 + p / 100), u:"",
+    d:["Le coefficient : 1 plus " + p + " %, donc 1," + String(p).padStart(2, "0") + ".",
+       p + " % de " + fNum(n) + " = " + fNum(n * p / 100) + ".",
+       fNum(n) + " plus " + fNum(n * p / 100) + " = " + fNum(n * (1 + p / 100)) + "."],
     x:"On multiplie par 1 plus le taux. Plus 15 % c'est fois 1,15. Ne jamais ajouter deux hausses : plus 10 % puis plus 10 % font plus 21 %."}; },
 
 function(){ const p = fPick([10,20,25,50]), av = fRi(2,40) * 100, ap = av * (1 + p / 100);
   return {q:"Apres une hausse de " + p + " %, on est a " + fNum(ap) + ". Combien avant ?", r:av, u:"",
+    d:["On DIVISE par 1 plus le taux, soit par 1," + String(p).padStart(2, "0") + ".",
+       fNum(ap) + " / 1," + String(p).padStart(2, "0") + " = " + fNum(av) + ".",
+       "Contrôle : " + fNum(av) + " plus " + p + " % = " + fNum(av) + " plus " + fNum(av * p / 100) + " = " + fNum(ap) + ". Juste."],
     x:"On DIVISE par 1 plus le taux, on ne retranche pas le taux. Après plus 25 %, on divise par 1,25, pas moins 25 %."}; },
 
 function(){ const m = fPick([20,25,30,40,50,60,100]);
+  const pv = 100 + m;
   return {q:"Un taux de marge de " + m + " % sur le coût d'achat, cela fait quel taux de marque ?", r:100 * m / (100 + m), u:"%",
+    d:["On part d'un coût d'achat de 100, c'est le plus simple.",
+       "Marge de " + m + " % du coût : " + m + ". Donc prix de vente = 100 plus " + m + " = " + pv + ".",
+       "La marque se calcule sur le PRIX DE VENTE : " + m + " / " + pv + " = " + (100 * m / pv).toFixed(1).replace(".", ",") + " %."],
     x:"Marque = marge divisée par (100 plus marge). 50 % de marge donne 33 % de marque. Toujours demander le dénominateur avant de répondre."}; },
 
 function(){ const ht = fRi(2,60) * 50;
   return {q:fNum(ht) + " euros hors taxes, combien toutes taxes à 20 % ?", r:ht * 1.2, u:"euros",
+    d:["20 %, c'est le cinquième.",
+       "Le cinquième de " + fNum(ht) + " : " + fNum(ht) + " / 5 = " + fNum(ht / 5) + ".",
+       fNum(ht) + " plus " + fNum(ht / 5) + " = " + fNum(ht * 1.2) + " euros."],
     x:"Fois 1,2, ou le montant plus son cinquième. 850 plus 170 égale 1 020."}; },
 
 function(){ const ht = fRi(2,60) * 50, ttc = ht * 1.2;
   return {q:fNum(ttc) + " euros toutes taxes à 20 %, combien hors taxes ?", r:ht, u:"euros",
+    d:["Diviser par 1,2 revient à retirer un SIXIÈME, pas un cinquième.",
+       "Le sixième de " + fNum(ttc) + " : " + fNum(ttc) + " / 6 = " + fNum(ttc / 6) + ". C'est la TVA.",
+       fNum(ttc) + " moins " + fNum(ttc / 6) + " = " + fNum(ht) + " euros."],
     x:"On divise par 1,2, ce qui revient à retirer un sixième. Retirer 20 % est FAUX : cela donnerait 0,96 fois le montant."}; },
 
 function(){ const u = fRi(3,25), q1 = fRi(4,40), pu = u * fRi(2,9);
   return {q:"Si " + q1 + " unités coûtent " + fNum(q1 * pu) + " euros, combien coûtent " + (q1 * 3) + " unités ?", r:q1 * 3 * pu, u:"euros",
+    d:["Prix unitaire : " + fNum(q1 * pu) + " / " + q1 + " = " + fNum(pu) + " euros.",
+       (q1 * 3) + " unités : " + (q1 * 3) + " x " + fNum(pu) + " = " + fNum(q1 * 3 * pu) + " euros.",
+       "Plus court : " + (q1 * 3) + " c'est 3 fois " + q1 + ", donc 3 fois " + fNum(q1 * pu) + "."],
     x:"Règle de trois : on passe par le prix unitaire. Ici trois fois plus d'unités, donc trois fois le prix."}; },
 
 function(){ const b = fPick([200,400,500,800,1000,1250,2000]), p = fPick([5,10,12,20,25,40]);
-  return {q:"Une part de " + fNum(b * p / 100) + " sur un total de " + fNum(b) + ", cela fait quel pourcentage ?", r:p, u:"%",
+  const part = b * p / 100;
+  return {q:"Une part de " + fNum(part) + " sur un total de " + fNum(b) + ", cela fait quel pourcentage ?", r:p, u:"%",
+    d:["Part divisée par total : " + fNum(part) + " / " + fNum(b) + " = " + (part / b).toFixed(2).replace(".", ",") + ".",
+       "Fois 100 : " + p + " %.",
+       "Contrôle d'ordre de grandeur : " + fNum(part) + " est " + (p >= 45 ? "près de la moitié" : p >= 20 ? "environ le quart" : "une petite part") + " de " + fNum(b) + "."],
     x:"Part divisée par total, fois 100. Vérifier l'ordre de grandeur avant de répondre : la moitié fait 50, le quart fait 25."}; },
 
 function(){ const n = fRi(12,98), m = fPick([5,9,11,25]);
   const astuces = {5:"Fois 5 = fois 10 puis divisé par 2.", 9:"Fois 9 = fois 10 moins une fois le nombre.",
     11:"Fois 11 = fois 10 plus une fois le nombre.", 25:"Fois 25 = fois 100 divisé par 4."};
-  return {q:"Combien font " + n + " x " + m + " ?", r:n * m, u:"", x:astuces[m] + " Ces raccourcis valent pour tous les nombres."}; },
+  const det = {
+    5: [n + " x 10 = " + fNum(n * 10) + ".", "On divise par 2 : " + fNum(n * 5) + "."],
+    9: [n + " x 10 = " + fNum(n * 10) + ".", "On retire une fois " + n + " : " + fNum(n * 10) + " moins " + n + ".", "= " + fNum(n * 9) + "."],
+    11:[n + " x 10 = " + fNum(n * 10) + ".", "On ajoute une fois " + n + " : " + fNum(n * 10) + " plus " + n + ".", "= " + fNum(n * 11) + "."],
+    25:[n + " x 100 = " + fNum(n * 100) + ".", "On divise par 4 : " + fNum(n * 25) + "."]
+  };
+  return {q:"Combien font " + n + " x " + m + " ?", r:n * m, u:"", d:det[m], x:astuces[m] + " Ces raccourcis valent pour tous les nombres."}; },
 
 function(){ const t = fPick([2,3,4,6,8,9,12]);
   return {q:"À " + t + " % par an, en combien d'années un capital double environ ?", r:72 / t, u:"ans",
+    d:["Règle de 72 : on divise 72 par le taux.",
+       "72 / " + t + " = " + fNum(72 / t) + ".",
+       "Donc environ " + fNum(72 / t) + " ans. À " + t + " % par an, 1 000 euros font à peu près 2 000."],
     x:"Règle de 72 : on divise 72 par le taux. À 6 %, douze ans. Approximation excellente entre 2 et 15 %."}; },
 
 function(){ const m = fRi(3,90) * 10;
   return {q:fNum(m) + " milliers d'euros, cela fait combien de millions ?", r:m / 1000, u:"M",
+    d:["Trois zéros séparent le millier du million.",
+       fNum(m) + " / 1 000 = " + fNum(m / 1000) + ".",
+       "Soit " + fNum(m / 1000) + " M euros."],
     x:"Trois zéros séparent chaque étage : euro, millier, million, milliard. Un doute sur un facteur mille est l'erreur qui coûte le plus cher."}; },
 
 function(){ const ca = fRi(3,60) * 100000;
-  return {q:"Un chiffre d'affaires annuel de " + fNum(ca / 1000) + " k euros, cela fait combien par mois en moyenne ?", r:ca / 12000, u:"k",
+  const k = ca / 1000;
+  return {q:"Un chiffre d'affaires annuel de " + fNum(k) + " k euros, cela fait combien par mois en moyenne ?", r:ca / 12000, u:"k",
+    d:["On divise par 12.",
+       "Raccourci : diviser par 10 puis retirer un sixième du résultat.",
+       fNum(k) + " / 10 = " + fNum(k / 10) + ". Un sixième de " + fNum(k / 10) + " = " + fNum(k / 60) + ".",
+       fNum(k / 10) + " moins " + fNum(k / 60) + " = " + fNum(k / 12) + " k euros par mois."],
     x:"Diviser par 12. Pour aller vite : diviser par 10 puis retirer un sixième du résultat."}; },
 
 function(){ const a = fRi(2,9) * 10, b = fRi(2,9) * 10, pa = fPick([25,50,75]);
   const moy = (a * pa + b * (100 - pa)) / 100;
   return {q:"Deux agences : " + a + " % de marge sur " + pa + " % du chiffre d'affaires, " + b + " % sur le reste. Quelle marge moyenne ?", r:moy, u:"%",
+    d:["Première agence : " + a + " x " + pa + " = " + fNum(a * pa) + ".",
+       "Seconde agence : " + b + " x " + (100 - pa) + " = " + fNum(b * (100 - pa)) + ".",
+       "Somme : " + fNum(a * pa) + " plus " + fNum(b * (100 - pa)) + " = " + fNum(a * pa + b * (100 - pa)) + ".",
+       "Divisé par 100 : " + fNum(moy) + " %. La moyenne simple aurait donné " + fNum((a + b) / 2) + " %, c'est faux."],
     x:"Moyenne PONDÉRÉE, jamais la moyenne simple. On multiplie chaque valeur par son poids, on additionne, on divise par 100."}; },
 
 function(){ const cf = fRi(2,30) * 1000, tm = fPick([20,25,40,50]);
+  const coef = {20:5, 25:4, 40:2.5, 50:2};
   return {q:fNum(cf) + " euros de charges fixes, taux de marge sur coût variable de " + tm + " %. Quel seuil de rentabilité ?", r:cf / (tm / 100), u:"euros",
+    d:["Seuil = charges fixes divisées par le TAUX, jamais par la marge en euros.",
+       "Diviser par " + tm + " % revient à multiplier par " + fNum(coef[tm]) + ".",
+       fNum(cf) + " x " + fNum(coef[tm]) + " = " + fNum(cf / (tm / 100)) + " euros de chiffre d'affaires."],
     x:"Charges fixes divisées par le taux de marge sur coût variable. À 25 %, il faut vendre quatre fois les charges fixes."}; },
 
 function(){ const n = fRi(11,49), d = fPick([5,25,50]);
   const astuces = {5:"Diviser par 5 = fois 2 puis divisé par 10.", 25:"Diviser par 25 = fois 4 puis divisé par 100.",
     50:"Diviser par 50 = fois 2 puis divisé par 100."};
-  return {q:"Combien font " + (n * d) + " divisé par " + d + " ?", r:n, u:"", x:astuces[d]}; },
+  const det = {
+    5: [fNum(n * 5) + " x 2 = " + fNum(n * 10) + ".", "On divise par 10 : " + n + "."],
+    25:[fNum(n * 25) + " x 4 = " + fNum(n * 100) + ".", "On divise par 100 : " + n + "."],
+    50:[fNum(n * 50) + " x 2 = " + fNum(n * 100) + ".", "On divise par 100 : " + n + "."]
+  };
+  return {q:"Combien font " + (n * d) + " divisé par " + d + " ?", r:n, u:"", d:det[d], x:astuces[d]}; },
 ];
 
 function finTire(){
@@ -3054,7 +3247,12 @@ function finValide(){
   const d = document.createElement("div");
   d.innerHTML = '<div class="frep" style="color:var(--' + (ok ? "vert" : "rouge") + ')">' +
     (ok ? "Juste." : "Non. La réponse est " + fNum(q.r) + (q.u ? " " + q.u : "") + ".") + '</div>' +
-    '<div class="ftip"><b>L\'astuce.</b> ' + esc(q.x) + '</div>' +
+    (q.d && q.d.length ?
+      '<div style="background:#F7F5EF;border-radius:11px;padding:12px 13px;margin-top:10px">' +
+      '<div class="fmeta" style="margin-bottom:6px">Le calcul, pas à pas</div>' +
+      q.d.map((e, k) => '<div class="etape"><span class="n">' + (k + 1) + '</span><span>' + esc(e) + '</span></div>').join("") +
+      '</div>' : '') +
+    '<div class="ftip"><b>L\'astuce, pour la prochaine fois.</b> ' + esc(q.x) + '</div>' +
     '<button class="btn" onclick="finSuivant()">Suivant</button>';
   inp.parentNode.insertBefore(d, inp.nextSibling.nextSibling);
 }
