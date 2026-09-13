@@ -1421,7 +1421,16 @@ function telechargerIcs(seulementRdv){
 /* La banque de fiches vit dans fiches.js, regeneree chaque semaine par build_quiz.py.
    L'app ne connait que sa forme : {maj, themes, fiches:[{t,q,r,x}]}. Si le fichier
    manque, l'onglet le dit au lieu de planter. */
-S.fin = S.fin || {vus:{}, revoir:{}, serie:0, dernier:"", record:0};
+/* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
+   pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
+   TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
+const FINV = "v24";
+S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
+if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
+if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
+if (typeof S.fin.serie !== "number") S.fin.serie = 0;
+if (typeof S.fin.record !== "number") S.fin.record = 0;
+if (typeof S.fin.dernier !== "string") S.fin.dernier = "";
 
 const FI = (typeof FICHES !== "undefined" && FICHES.fiches) ? FICHES.fiches : [];
 const FT = (typeof FICHES !== "undefined" && FICHES.themes) ? FICHES.themes : {};
@@ -1536,7 +1545,26 @@ function finTire(){
 }
 
 /* ---------- rendu ---------- */
+/* Sous filet : si quoi que ce soit leve, on AFFICHE l'erreur au lieu de laisser un ecran
+   blanc. Un onglet vide n'apprend rien, une ligne qui nomme l'erreur se corrige. */
 function renderFin(){
+  try { renderFinInterne(); }
+  catch (err){
+    el("fin").innerHTML = '<div class="card"><h2>L\'onglet a bute</h2>' +
+      '<p class="note">Envoie-moi cette ligne, elle dit exactement ou.</p>' +
+      '<p style="font-family:monospace;font-size:12px;background:#F7F5EF;padding:11px;' +
+      'border-radius:9px;word-break:break-word">' + esc(err.name + " : " + err.message) + '</p>' +
+      '<button class="btn bsec" onclick="finRemiseAZero()">Repartir de zero sur cet onglet</button>' +
+      '</div>';
+  }
+}
+/* Ne touche QUE l'onglet finance. Le sport, le budget et le reste ne bougent pas. */
+function finRemiseAZero(){
+  S.fin = {vus:{}, revoir:{}, serie:0, dernier:"", record:0};
+  save(); fVue = "accueil"; fTheme = ""; fLot = []; fPos = 0; fBon = 0; fRep = false;
+  renderFin(); window.scrollTo(0, 0);
+}
+function renderFinInterne(){
   const w = el("fin");
   if (!FI.length){
     w.innerHTML = '<div class="card"><h2>Finance</h2><p class="note">La banque de fiches n\'est pas chargée. Recharge la page une fois en ligne.</p></div>';
@@ -1590,6 +1618,9 @@ function finAccueil(){
     h += '<span class="pill" onclick="finGo(\'fiches\',\'' + k + '\')">' + esc(FT[k]) + ' (' + n + ')</span>';
   });
   h += '</div></div>';
+  h += '<p class="note" style="text-align:center;margin:14px 0 4px">Version ' + FINV +
+    ', actualité du ' + (typeof ACTU !== "undefined" ? ACTU.maj : "?") + ', ' +
+    EXO.length + ' exercices et ' + FI.length + ' fiches.</p>';
   el("fin").innerHTML = h;
 }
 function finKpi(v, l){
@@ -1702,21 +1733,43 @@ const ET = (typeof ENTRAINEMENT !== "undefined" && ENTRAINEMENT.themes) ? ENTRAI
 const AJ = (typeof ACTU !== "undefined" && ACTU.jours) ? ACTU.jours : [];
 let eLot = [], ePos = 0, eBon = 0, eRep = false;
 
+/* Quatre zones depuis le 13/09 : il voulait « pas que la France, un peu le monde et
+   l'Afrique ». Les points d'avant n'avaient pas de champ z, ils comptent comme France. */
+const ZONES = {fr: "France", eu: "Europe", mo: "Monde", af: "Afrique"};
+let aZone = "";
+
 function finActu(){
   let h = '<div class="card hero"><h2>Le point du jour</h2>' +
-    '<p class="note">Mis à jour chaque jour. Pour chaque sujet : ce qui s\'est passé, ' +
-    'pourquoi ça compte, et ce que tu peux en dire en entretien.</p></div>';
+    '<p class="note">France, Europe, monde et Afrique. Pour chaque sujet : ce qui s\'est ' +
+    'passé, pourquoi ça compte, et ce que tu peux en dire en entretien.</p></div>';
   if (!AJ.length){
     h += '<div class="card"><p class="note">Pas encore d\'actualité chargée.</p></div>';
     el("fin").innerHTML = h; return;
   }
+  h += '<div class="card"><div class="pills">' +
+    '<span class="pill" style="' + (aZone ? '' : 'font-weight:800') +
+    '" onclick="finZone(\'\')">Tout</span>';
+  Object.keys(ZONES).forEach(z => {
+    const n = AJ.reduce((s, j) => s + j.items.filter(i => (i.z || "fr") === z).length, 0);
+    if (!n) return;
+    h += '<span class="pill" style="' + (aZone === z ? 'font-weight:800' : '') +
+      '" onclick="finZone(\'' + z + '\')">' + esc(ZONES[z]) + ' (' + n + ')</span>';
+  });
+  h += '</div></div>';
+
+  let montres = 0;
   AJ.forEach((j, k) => {
+    const its = j.items.filter(i => !aZone || (i.z || "fr") === aZone);
+    if (!its.length) return;
+    montres += its.length;
     h += '<div class="card"><h2>' + esc(finDate(j.d)) + '</h2>';
-    j.items.forEach(it => {
+    its.forEach((it, n) => {
       h += '<div class="acc"><div class="head" onclick="this.nextElementSibling.style.display=' +
         'this.nextElementSibling.style.display===\'block\'?\'none\':\'block\'">' +
-        '<b>' + esc(it.t) + '</b></div><div style="display:' + (k === 0 ? 'block' : 'none') +
-        ';padding:0 13px 13px">' +
+        '<span class="note" style="display:block;font-size:10px;letter-spacing:.6px;' +
+        'text-transform:uppercase;margin-bottom:2px">' + esc(ZONES[it.z] || "France") + '</span>' +
+        '<b>' + esc(it.t) + '</b></div><div style="display:' +
+        (k === 0 && n === 0 ? 'block' : 'none') + ';padding:0 13px 13px">' +
         '<p>' + esc(it.q) + '</p>' +
         '<div class="fmeta" style="margin-top:10px">Pourquoi ça compte</div><p>' + esc(it.p) + '</p>' +
         '<div class="ftip"><b>En entretien.</b> ' + esc(it.e) + '</div>' +
@@ -1724,9 +1777,11 @@ function finActu(){
     });
     h += '</div>';
   });
+  if (!montres) h += '<div class="card"><p class="note">Rien sur cette zone pour le moment.</p></div>';
   h += '<button class="btn bsec" onclick="finQuitter()">Retour</button>';
   el("fin").innerHTML = h;
 }
+function finZone(z){ aZone = z; finActu(); window.scrollTo(0, 0); }
 function finDate(d){
   const J = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
   const M = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
