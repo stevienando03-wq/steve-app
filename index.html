@@ -182,34 +182,91 @@ body.dark .donut-c{fill:#E8EBF1}
   background:var(--bleu);color:#fff;font-size:21px;cursor:pointer;
   /* Le lisere creme le detache du texte : sans lui il se posait au ras des phrases. */
   border:3px solid var(--creme);
-  box-shadow:0 6px 18px rgba(31,56,100,.34);display:flex;align-items:center;justify-content:center}
-.asFab:active{transform:scale(.94)}
-.asVoile{position:fixed;inset:0;z-index:70;background:rgba(20,24,34,.44);display:none}
+  box-shadow:0 6px 18px rgba(31,56,100,.34);display:flex;align-items:center;justify-content:center;
+  transition:transform .16s ease}
+.asFab:active{transform:scale(.92)}
+.asVoile{position:fixed;inset:0;z-index:70;background:rgba(20,24,34,.46);display:none;
+  opacity:0;transition:opacity .2s ease}
 .asVoile.on{display:block}
+.asVoile.vu{opacity:1}
 .asPan{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--creme);
-  border-radius:18px 18px 0 0;display:none;flex-direction:column;max-height:86vh;
-  box-shadow:0 -8px 30px rgba(20,24,34,.22)}
+  border-radius:20px 20px 0 0;display:none;flex-direction:column;height:88vh;max-height:88vh;
+  box-shadow:0 -10px 34px rgba(20,24,34,.24);
+  transform:translateY(100%);transition:transform .26s cubic-bezier(.22,1,.36,1)}
 .asPan.on{display:flex}
-.asPan > .t{padding:13px 15px 10px;border-bottom:1px solid var(--ligne);display:flex;
+.asPan.vu{transform:translateY(0)}
+
+/* La poignee : glisser vers le bas ferme, c'est le geste attendu sur telephone. */
+.asPoignee{padding:9px 0 4px;cursor:grab;touch-action:none;display:flex;justify-content:center}
+.asPoignee i{display:block;width:42px;height:4px;border-radius:3px;background:var(--ligne)}
+.asPan > .t{padding:2px 15px 11px;border-bottom:1px solid var(--ligne);display:flex;
   justify-content:space-between;align-items:center;gap:10px}
-.asPan > .t b{font-size:15px}
-.asPan > .t .x{background:none;border:none;font-size:21px;line-height:1;cursor:pointer;color:var(--anthr)}
-.asLog{flex:1;overflow-y:auto;padding:13px 15px;min-height:120px}
-.asQ{background:var(--bleu);color:#fff;border-radius:14px 14px 4px 14px;padding:9px 13px;
-  margin:0 0 8px auto;max-width:82%;width:fit-content;font-size:13.5px;line-height:1.45}
-.asR{background:#fff;border:1px solid var(--ligne);border-radius:14px 14px 14px 4px;
-  padding:11px 13px;margin-bottom:14px;font-size:13px;line-height:1.6;color:var(--anthr);
-  overflow-wrap:break-word}
+.asPan > .t .nom{display:flex;align-items:center;gap:9px;min-width:0}
+.asPan > .t .av{width:30px;height:30px;border-radius:50%;background:var(--bleu);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto}
+.asPan > .t b{font-size:15px;display:block;line-height:1.15}
+.asPan > .t .sous{font-size:11px;color:var(--anthr);opacity:.75}
+.asPan > .t .out{display:flex;gap:4px;flex:0 0 auto}
+.asPan > .t .x{background:none;border:none;font-size:19px;line-height:1;cursor:pointer;
+  color:var(--anthr);width:34px;height:34px;border-radius:9px}
+.asPan > .t .x:active{background:var(--ligne)}
+
+.asLog{flex:1;overflow-y:auto;padding:14px 15px 4px;min-height:120px;-webkit-overflow-scrolling:touch}
+.asEch{margin-bottom:16px}
+.asQ{background:var(--bleu);color:#fff;border-radius:16px 16px 5px 16px;padding:10px 14px;
+  margin:0 0 9px auto;max-width:84%;width:fit-content;font-size:14.5px;line-height:1.5;
+  animation:asMonte .22s ease both}
+.asDe{font-size:10.5px;color:var(--anthr);opacity:.62;margin:0 2px 4px;display:flex;
+  align-items:center;gap:5px}
+.asDe.moi{justify-content:flex-end}
+.asR{background:#fff;border-radius:16px 16px 16px 5px;padding:13px 15px;
+  font-size:14.5px;line-height:1.62;color:var(--anthr);overflow-wrap:break-word;
+  box-shadow:0 1px 3px rgba(20,24,34,.07);animation:asMonte .24s ease both}
 .asR > *:first-child{margin-top:0}
-.asBas{padding:11px 15px 15px;border-top:1px solid var(--ligne);background:var(--creme);
-  border-radius:0 0 18px 18px}
-.asBas .form{display:flex;gap:8px}
-.asBas input{flex:1;min-width:0}
-.asBas .pills{margin-top:9px}
-.asOk{background:var(--vertbg);border-radius:10px;padding:10px 12px;font-size:12.5px;
-  line-height:1.5;color:var(--anthr);margin-top:8px}
+.asR .ing{font-size:15px;line-height:1.5}
+.asR .note{font-size:13.5px;line-height:1.58}
+.asR .row{padding:9px 0}
+.asR .lab{font-size:13.5px}
+.asR .etape{font-size:13.5px;line-height:1.62;padding:6px 0}
+@keyframes asMonte{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+/* Trois points : la reponse est instantanee, mais l'oeil a besoin de savoir ou regarder. */
+.asTape{background:#fff;border-radius:16px 16px 16px 5px;padding:14px 16px;width:fit-content;
+  box-shadow:0 1px 3px rgba(20,24,34,.07);display:flex;gap:5px}
+.asTape i{width:7px;height:7px;border-radius:50%;background:var(--anthr);opacity:.4;
+  animation:asPoint 1.1s infinite}
+.asTape i:nth-child(2){animation-delay:.18s}
+.asTape i:nth-child(3){animation-delay:.36s}
+@keyframes asPoint{0%,60%,100%{opacity:.28;transform:translateY(0)}30%{opacity:.85;transform:translateY(-4px)}}
+
+.asSuites{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.asChip{background:var(--creme);border:1px solid var(--ligne);border-radius:16px;
+  padding:8px 13px;font-size:13px;cursor:pointer;color:var(--bleu);font-weight:600;
+  line-height:1.2}
+.asChip:active{background:var(--ligne)}
+
+.asBasBtn{position:absolute;left:50%;transform:translateX(-50%);bottom:104px;z-index:5;
+  background:#fff;border:1px solid var(--ligne);border-radius:50%;width:36px;height:36px;
+  cursor:pointer;box-shadow:0 3px 10px rgba(20,24,34,.16);font-size:15px;display:none;
+  color:var(--bleu)}
+.asBasBtn.on{display:block}
+
+.asBas{padding:11px 15px calc(13px + env(safe-area-inset-bottom));border-top:1px solid var(--ligne);
+  background:var(--creme);border-radius:0 0 20px 20px}
+.asBas .form{display:flex;gap:8px;align-items:flex-end}
+.asBas textarea{flex:1;min-width:0;resize:none;height:44px;max-height:112px;overflow-y:auto;
+  font-size:15px;line-height:1.45;padding:11px 13px;font-family:inherit}
+.asEnv{width:44px;height:44px;border-radius:50%;background:var(--bleu);color:#fff;border:none;
+  font-size:17px;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.asEnv:disabled{opacity:.4}
+.asBas .pills{margin-top:10px;display:flex;flex-wrap:wrap;gap:7px}
+.asOk{background:var(--vertbg);border-radius:11px;padding:11px 13px;font-size:13.5px;
+  line-height:1.55;color:var(--anthr);margin-top:8px}
+.asIco{background:var(--creme);border:1px solid var(--ligne);border-radius:50%;width:44px;
+  height:44px;font-size:17px;cursor:pointer;flex:0 0 auto;line-height:1}
 body.dark .asPan,body.dark .asBas{background:#1B2233}
-body.dark .asR{background:#222B40}
+body.dark .asR,body.dark .asTape{background:#222B40;box-shadow:none}
+body.dark .asChip,body.dark .asBasBtn{background:#222B40;border-color:#33405C;color:#C6CEDC}
 /* ---------- La voix et le mode cuisine, 13/09/2026 ---------- */
 .asIco{background:var(--creme);border:1px solid var(--ligne);border-radius:12px;width:42px;
   height:38px;font-size:17px;cursor:pointer;flex:0 0 auto;line-height:1}
@@ -247,11 +304,16 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
 <button class="asFab" id="asFab" aria-label="Un coup de main">💬</button>
 <div class="asVoile" id="asVoile"></div>
 <div class="asPan" id="asPan">
-  <div class="t"><b>Un coup de main</b><button class="x" id="asX" aria-label="Fermer">&times;</button></div>
+  <div class="asPoignee" id="asPoignee"><i></i></div>
+  <div class="t">
+    <div class="nom"><span class="av">💬</span><span><b>Un coup de main</b><span class="sous" id="asSous">toujours là, même sans réseau</span></span></div>
+    <div class="out"><button class="x" id="asVider" title="Effacer la conversation">🗑</button><button class="x" id="asX" aria-label="Fermer">&times;</button></div>
+  </div>
   <div id="asBarre" style="padding:0 15px"></div>
   <div class="asLog" id="asLog"></div>
+  <button class="asBasBtn" id="asBasBtn" aria-label="Revenir en bas">↓</button>
   <div class="asBas">
-    <div class="form"><button class="asIco" id="asMic" title="Dicter">🎤</button><input type="text" id="asIn" placeholder="une question, ou dis-moi ce que tu as fait"><button class="asIco" id="asVoix" title="Lire a voix haute">🔊</button><button class="btn light" id="asGo" style="width:auto;padding:0 14px">Envoyer</button></div>
+    <div class="form"><button class="asIco" id="asMic" title="Dicter">🎤</button><textarea id="asIn" rows="1" placeholder="une question, ou dis-moi ce que tu as fait"></textarea><button class="asIco" id="asVoix" title="Lire à voix haute">🔊</button><button class="asEnv" id="asGo" aria-label="Envoyer">↑</button></div>
     <div class="pills" id="asPills"></div>
   </div>
 </div>
@@ -266,9 +328,9 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=38"></script>
-<script src="entrainement.js?v=38"></script>
-<script src="actu.js?v=38"></script>
+<script src="fiches.js?v=40"></script>
+<script src="entrainement.js?v=40"></script>
+<script src="actu.js?v=40"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2737,7 +2799,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v38";
+const FINV = "v40";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
@@ -3620,10 +3682,15 @@ function asAide(){
 }
 
 /* ---------------------------------------------------------------- LE ROUTEUR */
+/* Ce qui fait avancer une conversation sans taper. C'est le detail qui manque le plus aux
+   assistants maison : on repond, et l'utilisateur ne sait pas quoi demander ensuite. */
+let asSuites = [];
+function asSuite(){ asSuites = Array.prototype.slice.call(arguments); }
+
 function asRepond(q){
   const n = bNorm(q);
   if (!n) return "";
-  asVocal = "";
+  asVocal = ""; asSuites = [];
 
   /* 1. les actions, les plus specifiques d'abord. On photographie l'etat AVANT pour
      pouvoir tout annuler d'un mot, meme si la dictee a mal entendu un montant. */
@@ -3641,16 +3708,16 @@ function asRepond(q){
 
   /* 2. les consultations */
   if (/^(aide|help|\?+)$|que sais tu|tu sers a quoi|comment ca marche/.test(n)) return asAide();
-  if (/ou j en suis|point du jour|resume|ma journee|quoi de neuf|bonjour|salut/.test(n)) return asPoint();
-  if (/solde|budget|argent|combien il me reste|fin de mois|depense/.test(n)) return asSolde();
-  if (/rendez|rdv|agenda|prochain/.test(n)) return asRdv();
-  if (/seance|sport|salle|muscu|cycle|pull|push|legs/.test(n)) return asSport();
-  if (/actu|actualite|bce|fed|bceao|beac|nigeria|marche|taux/.test(n)) return asActu();
-  if (/combien|prix|total|cout|panier/.test(n)) return bBlocCourses();
+  if (/ou j en suis|point du jour|resume|ma journee|quoi de neuf|bonjour|salut/.test(n)) { asSuite("lis ma liste", "mes rendez-vous", "mon solde"); return asPoint(); }
+  if (/solde|budget|argent|combien il me reste|fin de mois|depense/.test(n)) { asSuite("j'ai dépensé 12,50 en courses", "va dans budget"); return asSolde(); }
+  if (/rendez|rdv|agenda|prochain/.test(n)) { asSuite("rendez-vous dentiste mardi à 14h", "où j'en suis"); return asRdv(); }
+  if (/seance|sport|salle|muscu|cycle|pull|push|legs/.test(n)) { asSuite("séance faite", "j'ai bu un verre"); return asSport(); }
+  if (/actu|actualite|bce|fed|bceao|beac|nigeria|marche|taux/.test(n)) { asSuite("entraîne-moi", "calcul mental"); return asActu(); }
+  if (/combien|prix|total|cout|panier/.test(n)) { asSuite("lis ma liste", "j'ai pris le poulet"); return bBlocCourses(); }
 
-  const j = bJour(n); if (j) return bBlocJour(j);
-  const p = bPlat(n); if (p) return bBlocRecette(p.d, p.x);
-  const i = bIngredient(n); if (i) return bBlocIngredient(i);
+  const j = bJour(n); if (j) { asSuite("cuisine", "combien ça coûte"); return bBlocJour(j); }
+  const p = bPlat(n); if (p) { asSuite("cuisine", "minuteur 11 minutes"); return bBlocRecette(p.d, p.x); }
+  const i = bIngredient(n); if (i) { asSuite("la recette de ce soir", "lis ma liste"); return bBlocIngredient(i); }
 
   if (typeof SKILLS !== "undefined") {
     let sk = null;
@@ -3900,47 +3967,98 @@ function asPills(){
   return l.map(x => '<span class="pill" data-as="' + bEsc(x) + '">' + bEsc(x) + '</span>').join("") +
     '<span class="pill" data-as="aide">Ce que je sais faire</span>';
 }
+function asHeureCourte(ts){
+  const d = new Date(ts || Date.now());
+  return String(d.getHours()).padStart(2, "0") + "h" + String(d.getMinutes()).padStart(2, "0");
+}
 function asRendu(){
   const L = el("asLog");
   if (!L) return;
   if (!asLog.length) {
-    L.innerHTML = '<div class="asR"><b>Dis-moi ce que tu veux.</b><br>Je réponds sur tes repas, ton sport, ' +
-      'ton budget, tes rendez-vous, tes compétences et tes révisions. Et je peux agir : cocher une course, ' +
-      'noter une dépense, marquer ta séance. Tout ça sans réseau.' + asPoint() + '</div>';
+    L.innerHTML = '<div class="asEch"><div class="asDe">Un coup de main</div><div class="asR">' +
+      '<b>Dis-moi ce que tu veux, ou parle-moi.</b><br>Je réponds sur tes repas, ton sport, ton budget, ' +
+      'tes rendez-vous, tes compétences et tes révisions. Et je peux agir : cocher une course, noter une ' +
+      'dépense, marquer ta séance, lancer un minuteur. Tout ça sans réseau.' + asPoint() + '</div></div>';
   } else {
-    L.innerHTML = asLog.map(m => '<div class="asQ">' + bEsc(m.q) + '</div><div class="asR">' + m.r + '</div>').join("");
+    L.innerHTML = asLog.map((m, k) => {
+      let h = '<div class="asEch">';
+      h += '<div class="asQ">' + bEsc(m.q) + '</div>';
+      h += '<div class="asDe moi">' + asHeureCourte(m.t) + '</div>';
+      if (m.r === null) {
+        h += '<div class="asTape"><i></i><i></i><i></i></div>';
+      } else {
+        h += '<div class="asDe">Un coup de main   ' + asHeureCourte(m.t) + '</div>';
+        h += '<div class="asR">' + m.r;
+        if (k === asLog.length - 1 && m.suites && m.suites.length) {
+          h += '<div class="asSuites">' + m.suites.map(s =>
+            '<span class="asChip" data-as="' + bEsc(s) + '">' + bEsc(s) + '</span>').join("") + '</div>';
+        }
+        h += '</div>';
+      }
+      return h + '</div>';
+    }).join("");
   }
   el("asPills").innerHTML = asPills();
   const hb = asBlocMin() + asCuisBloc();
   const z = el("asBarre"); if (z) z.innerHTML = hb;
   const bv = el("asVoix"); if (bv) bv.classList.toggle("on", !!S.bouffe.voix);
   const bm = el("asMic"); if (bm && !asSR()) bm.style.display = "none";
+  const so = el("asSous");
+  if (so) so.textContent = asCuis ? "mode cuisine en cours" : (asTimer ? "minuteur en cours" : "toujours là, même sans réseau");
   asMajMicro();
   asBrancheP();
   L.scrollTop = L.scrollHeight;
+  asMajBas();
+}
+function asMajBas(){
+  const L = el("asLog"), b = el("asBasBtn");
+  if (!L || !b) return;
+  b.classList.toggle("on", L.scrollHeight - L.scrollTop - L.clientHeight > 90);
+}
+function asAutoH(){
+  const i = el("asIn"); if (!i) return;
+  i.style.height = "auto";
+  i.style.height = Math.min(112, Math.max(44, i.scrollHeight)) + "px";
 }
 function asEnvoie(q){
   q = (q || "").trim();
   if (!q) return;
-  let r;
-  try { r = asRepond(q); }
-  catch (e) { r = '<b>Je me suis cassé la figure sur cette question.</b><br>' + bEsc(e.name + " : " + e.message); }
-  if (r === "") return;                 /* action qui a change d'onglet, rien a afficher */
-  asParle(asVocal || asTexte(r).slice(0, 420));
-  asLog.push({q: q, r: r});
-  if (asLog.length > 30) asLog = asLog.slice(-30);
-  const i = el("asIn"); if (i) i.value = "";
+  const i = el("asIn"); if (i) { i.value = ""; asAutoH(); }
+  asLog.push({q: q, r: null, t: Date.now(), suites: []});
+  if (asLog.length > 40) asLog = asLog.slice(-40);
+  const k = asLog.length - 1;
   asRendu();
+  /* Les 260 ms ne servent pas a calculer, la reponse est deja prete. Elles servent a l'oeil :
+     sans elles le texte apparait d'un bloc et on relit le debut deux fois. */
+  setTimeout(() => {
+    let r;
+    try { r = asRepond(q); }
+    catch (e) { r = '<b>Je me suis cassé la figure sur cette question.</b><br>' + bEsc(e.name + " : " + e.message); }
+    if (r === "") { asLog.splice(k, 1); asRendu(); return; }
+    asParle(asVocal || asTexte(r).slice(0, 420));
+    if (asLog[k]) { asLog[k].r = r; asLog[k].suites = asSuites.slice(); }
+    asRendu();
+  }, 260);
 }
 function asOuvre(){
   el("asPan").classList.add("on");
   el("asVoile").classList.add("on");
   asRendu();
-  setTimeout(() => { const i = el("asIn"); if (i) i.focus(); }, 90);
+  /* Le temps d'un rendu avant d'animer, sinon la transition ne part pas. */
+  requestAnimationFrame(() => {
+    el("asPan").classList.add("vu");
+    el("asVoile").classList.add("vu");
+  });
+  asAutoH();
 }
 function asFerme(){
-  el("asPan").classList.remove("on");
-  el("asVoile").classList.remove("on");
+  el("asPan").classList.remove("vu");
+  el("asVoile").classList.remove("vu");
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  setTimeout(() => {
+    el("asPan").classList.remove("on");
+    el("asVoile").classList.remove("on");
+  }, 240);
 }
 function asBrancheP(){
   el("asLog").querySelectorAll("[data-brem]").forEach(b => b.addEventListener("click", () => {
@@ -3949,6 +4067,8 @@ function asBrancheP(){
     asEnvoie("j'ai choisi " + b.getAttribute("data-bval"));
   }));
   el("asLog").querySelectorAll("[data-bq]").forEach(b => b.addEventListener("click", () => asEnvoie(b.getAttribute("data-bq"))));
+  /* Les puces de suite vivent DANS le journal. Sans cette ligne elles etaient mortes. */
+  el("asLog").querySelectorAll("[data-as]").forEach(b => b.addEventListener("click", () => asEnvoie(b.getAttribute("data-as"))));
   const cp = el("asLog").querySelector("#bCopier");
   if (cp) cp.addEventListener("click", () => {
     const t = bPourClaude(asLog.length ? asLog[asLog.length - 1].q : "");
@@ -3972,6 +4092,28 @@ function asBrancheP(){
   el("asVoile").addEventListener("click", asFerme);
   el("asGo").addEventListener("click", () => asEnvoie(el("asIn").value));
   el("asMic").addEventListener("click", asMicro);
+  el("asIn").addEventListener("input", asAutoH);
+  el("asLog").addEventListener("scroll", asMajBas);
+  el("asBasBtn").addEventListener("click", () => {
+    const L = el("asLog"); L.scrollTo({top: L.scrollHeight, behavior: "smooth"});
+  });
+  el("asVider").addEventListener("click", () => { asLog = []; asRendu(); });
+  /* Glisser la poignee vers le bas ferme : c'est le geste attendu sur telephone. */
+  (function(){
+    const p = el("asPoignee"); let y0 = null;
+    p.addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, {passive: true});
+    p.addEventListener("touchmove", e => {
+      if (y0 === null) return;
+      const dy = e.touches[0].clientY - y0;
+      if (dy > 0) el("asPan").style.transform = "translateY(" + dy + "px)";
+    }, {passive: true});
+    p.addEventListener("touchend", e => {
+      const d = el("asPan").style.transform.match(/translateY\((\d+(?:\.\d+)?)px\)/);
+      el("asPan").style.transform = "";
+      if (d && +d[1] > 70) asFerme();
+      y0 = null;
+    });
+  })();
   el("asVoix").addEventListener("click", () => {
     S.bouffe.voix = !S.bouffe.voix; save();
     if (!S.bouffe.voix && "speechSynthesis" in window) speechSynthesis.cancel();
@@ -3979,7 +4121,10 @@ function asBrancheP(){
     if (S.bouffe.voix) asParle("La voix est allumée.", true);
   });
   if (!asSR()) el("asMic").style.display = "none";
-  el("asIn").addEventListener("keydown", e => { if (e.key === "Enter") asEnvoie(el("asIn").value); });
+  el("asIn").addEventListener("keydown", e => {
+    /* Entree envoie, Maj plus Entree saute une ligne. C'est ce que tout le monde attend. */
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); asEnvoie(el("asIn").value); }
+  });
   document.addEventListener("keydown", e => { if (e.key === "Escape") asFerme(); });
 })();
 renderAll();
