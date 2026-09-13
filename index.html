@@ -205,9 +205,9 @@ body.dark .donut-c{fill:#E8EBF1}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=32"></script>
-<script src="entrainement.js?v=32"></script>
-<script src="actu.js?v=32"></script>
+<script src="fiches.js?v=34"></script>
+<script src="entrainement.js?v=34"></script>
+<script src="actu.js?v=34"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -562,13 +562,14 @@ const PERIODE = {
    "temps": "10 min actif, 30 en tout",
    "h": "20:00",
    "dur": 35,
-   "ing": "400 g de poulet, 3 carottes, 500 g de pommes de terre, 2 oignons, la moitié d'une plaquette de Golden Curry, 70 cl d'eau, 300 g de riz, 1 cuillère à soupe d'huile",
+   "ing": "400 g de poulet, 3 carottes, 500 g de pommes de terre, 2 oignons, la moitié d'une plaquette de Golden Curry, 70 cl d'eau, 300 g de riz, 1 brocoli, 1 cuillère à soupe d'huile",
    "etapes": [
     "Riz : 300 g dans 60 cl d'eau salée, même méthode que dimanche.",
     "Poulet en morceaux de 3 cm. Casserole, huile, feu vif, 4 min pour colorer. Réserver.",
     "Oignons en lamelles épaisses, 5 min. Carottes en rondelles de 1 cm et pommes de terre en cubes de 3 cm, 3 min en remuant.",
     "Poulet remis, 70 cl d'eau pour couvrir. Ébullition, puis feu doux, couvert, 15 min. Une pomme de terre doit s'écraser sous une fourchette.",
-    "COUPER LE FEU. Casser les carrés de roux dans la casserole et les faire fondre en remuant. Remettre 3 min à feu doux, ça épaissit d'un coup."
+    "COUPER LE FEU. Casser les carrés de roux dans la casserole et les faire fondre en remuant. Remettre 3 min à feu doux, ça épaissit d'un coup.",
+    "Le brocoli va ici. En bouquets, 8 min dans une casserole d'eau bouillante salée, égoutté, servi À CÔTÉ et pas dedans. Le curry est doux et nourrissant, il lui faut quelque chose de vert et de ferme en face. C'est le légume de la semaine pour Inès."
    ],
    "alerte": "Le roux jeté dans un liquide bouillant fait des grumeaux et brûle au fond. On coupe le feu avant de l'ajouter, toujours. C'est la seule erreur qui rate ce plat.",
    "batch": "2 assiettes ce soir avec le riz. 2 tupperwares montés ce soir et pas demain matin, riz au fond, curry par-dessus. Ils couvrent ton mercredi midi. Le plat de soutenance : aucune décision à prendre en rentrant."
@@ -1361,7 +1362,1024 @@ function joursPeriode(){
   return L;
 }
 function repasDu(d){ return PERIODE.planning[d] || null; }
-function dinerDu(d){ return PERIODE.diners[d] || null; }
+
+/* ================= LE COUP DE MAIN ================= */
+/* Assistant SANS modele de langage, ajoute le 13/09/2026. Il repond a partir des donnees
+   deja presentes : la table de remplacement ci-dessous, les recettes de la periode, la
+   liste de courses. Consequences voulues : reponse instantanee, fonctionne HORS LIGNE donc
+   en rayon, cout nul, et aucune cle d'API dans une page que GitHub Pages sert en clair.
+   Pour le reste, il prepare la question et Steve la pose a Claude. */
+
+const REMPLACE = {
+ "Brocoli": {
+  "syn": [
+   "brocoli",
+   "brocolis"
+  ],
+  "role": "légume vert d'accompagnement, cuit à l'eau ou à la poêle",
+  "ok": [
+   [
+    "Haricots verts",
+    "Le plus proche. Même cuisson, même prix, même tenue dans l'assiette. 8 min à l'eau bouillante salée."
+   ],
+   [
+    "Chou-fleur",
+    "Même famille, même goût de fond. Compte 12 min à l'eau au lieu de 8, il est plus dense."
+   ],
+   [
+    "Courgette",
+    "Beaucoup plus rapide, 5 min à la poêle. Mais elle rend de l'eau : feu vif et jamais de couvercle."
+   ],
+   [
+    "Épinards",
+    "Dépannage. Ils fondent en 40 secondes, prends-en trois fois le volume, ils s'effondrent."
+   ]
+  ],
+  "non": [
+   [
+    "Salade",
+    "Elle ne se cuit pas. Ce n'est pas le même rôle dans l'assiette."
+   ]
+  ]
+ },
+ "Épinards frais": {
+  "syn": [
+   "epinard",
+   "epinards"
+  ],
+  "role": "verdure qui fond dans une garniture chaude",
+  "ok": [
+   [
+    "Roquette",
+    "Même geste, jetée hors du feu. Plus poivrée, donc sale un peu moins."
+   ],
+   [
+    "Jeunes pousses",
+    "Identique à l'usage, souvent moins cher au sachet."
+   ],
+   [
+    "Chou kale",
+    "Plus ferme, il lui faut 3 min dans la poêle et pas 40 secondes."
+   ],
+   [
+    "Épinards surgelés",
+    "Moitié prix. Mais ils rendent beaucoup d'eau : presse-les dans une passoire avant de les mettre, sinon ils détrempent le wrap."
+   ]
+  ],
+  "non": [
+   [
+    "Salade verte",
+    "Elle devient amère et grise à la cuisson."
+   ]
+  ]
+ },
+ "Poivrons": {
+  "syn": [
+   "poivron",
+   "poivrons"
+  ],
+  "role": "légume qui tient à la cuisson et apporte du sucré",
+  "ok": [
+   [
+    "Courgette",
+    "Tient bien, cuit un peu plus vite. Coupe en dés de 1 cm comme le poivron."
+   ],
+   [
+    "Carotte",
+    "Plus dure : dés de 5 mm et 3 min de plus, sinon elle reste crue au milieu."
+   ],
+   [
+    "Aubergine",
+    "Bonne tenue mais elle boit l'huile. Compte une cuillère de plus."
+   ],
+   [
+    "Poivrons surgelés en lanières",
+    "Souvent moitié prix. Ne les décongèle pas, jette-les gelés dans la poêle très chaude."
+   ]
+  ],
+  "non": [
+   [
+    "Tomate fraîche",
+    "Elle se délite en 2 min et rend de l'eau. Elle ne remplace pas un légume de tenue."
+   ]
+  ]
+ },
+ "Courgette": {
+  "syn": [
+   "courgette",
+   "courgettes"
+  ],
+  "role": "légume tendre à cuisson rapide",
+  "ok": [
+   [
+    "Aubergine",
+    "Même rôle, mais 8 min au lieu de 5 et beaucoup plus d'huile."
+   ],
+   [
+    "Poivron",
+    "Plus de tenue et plus de goût, 7 min."
+   ],
+   [
+    "Brocoli",
+    "Change le plat mais fonctionne. Blanchis-le 5 min avant de le poêler."
+   ]
+  ],
+  "non": [
+   [
+    "Concombre",
+    "Cru uniquement. Cuit, il devient de l'eau."
+   ]
+  ]
+ },
+ "Aubergine": {
+  "syn": [
+   "aubergine",
+   "aubergines"
+  ],
+  "role": "légume fondant qui porte la sauce",
+  "ok": [
+   [
+    "Courgette",
+    "Le plus simple. Moins fondante, mais deux fois moins d'huile."
+   ],
+   [
+    "Champignons de Paris",
+    "Même fondant, 6 min à feu vif. Ne les sale qu'à la fin, sinon ils rendent toute leur eau."
+   ],
+   [
+    "Poivron",
+    "Plus ferme, plus sucré. Change le plat sans le rater."
+   ]
+  ],
+  "non": []
+ },
+ "Carottes": {
+  "syn": [
+   "carotte",
+   "carottes"
+  ],
+  "role": "légume racine, long à cuire, sucré",
+  "ok": [
+   [
+    "Panais",
+    "Même cuisson, même découpe, goût plus doux."
+   ],
+   [
+    "Navet",
+    "Même cuisson, plus amer. Coupe-le un peu plus petit."
+   ],
+   [
+    "Patate douce",
+    "Fonctionne très bien en curry. Deux fois plus rapide, surveille-la."
+   ],
+   [
+    "Carottes surgelées en rondelles",
+    "Parfaites en curry, zéro épluchage, moins cher."
+   ]
+  ],
+  "non": []
+ },
+ "Oignons": {
+  "syn": [
+   "oignon",
+   "oignons"
+  ],
+  "role": "la base de presque tout, il fait le fond de goût",
+  "ok": [
+   [
+    "Échalotes",
+    "Plus fin, plus cher. Compte 2 échalotes pour 1 oignon."
+   ],
+   [
+    "Blanc de poireau",
+    "Plus doux, plus rapide, 4 min. Excellent dans le curry."
+   ],
+   [
+    "Oignons surgelés émincés",
+    "Zéro épluchage, zéro larme. Jette-les gelés dans la poêle."
+   ]
+  ],
+  "non": [
+   [
+    "Ail seul",
+    "L'ail parfume, il ne fait pas le fond. Un plat sans oignon manque de corps, même avec beaucoup d'ail."
+   ]
+  ]
+ },
+ "Pommes de terre": {
+  "syn": [
+   "pomme de terre",
+   "pommes de terre",
+   "patate",
+   "patates"
+  ],
+  "role": "féculent qui tient dans un plat mijoté",
+  "ok": [
+   [
+    "Patate douce",
+    "Cuit deux fois plus vite. Ajoute-la 7 min après les autres légumes."
+   ],
+   [
+    "Panais",
+    "Fondant, un peu sucré, même temps de cuisson."
+   ],
+   [
+    "Riz servi à côté",
+    "Si tu n'as vraiment rien : le curry se mange très bien avec le riz seul, sans pomme de terre dedans."
+   ]
+  ],
+  "non": [
+   [
+    "Purée en flocons",
+    "Elle se dissout dans le liquide. Elle sert à côté, jamais dans le plat."
+   ]
+  ]
+ },
+ "Maïs": {
+  "syn": [
+   "mais",
+   "maïs"
+  ],
+  "role": "apport sucré et croquant dans une garniture",
+  "ok": [
+   [
+    "Petits pois",
+    "Même boîte, même prix, même geste. Le remplacement direct."
+   ],
+   [
+    "Poivron rouge en dés",
+    "Moins sucré, plus de mâche. Il faut le cuire 5 min de plus."
+   ],
+   [
+    "Carotte râpée",
+    "Ajoutée à la fin, hors du feu, pour le croquant."
+   ]
+  ],
+  "non": []
+ },
+ "Haricots rouges": {
+  "syn": [
+   "haricot rouge",
+   "haricots rouges"
+  ],
+  "role": "légumineuse qui tient et qui rassasie",
+  "ok": [
+   [
+    "Haricots blancs",
+    "Même prix, même tenue, goût plus neutre. Rince-les pareil."
+   ],
+   [
+    "Pois chiches",
+    "Plus de mâche, très bien dans un wrap."
+   ],
+   [
+    "Lentilles cuites en conserve",
+    "Plus fines, elles se mêlent à la viande au lieu de rester distinctes."
+   ]
+  ],
+  "non": [
+   [
+    "Haricots rouges secs non trempés",
+    "Douze heures de trempage et une heure de cuisson. Pas pour ce soir."
+   ]
+  ]
+ },
+ "Tomates pelées": {
+  "syn": [
+   "tomate pelee",
+   "tomates pelees",
+   "tomate en boite",
+   "coulis"
+  ],
+  "role": "la base liquide et acide d'une sauce",
+  "ok": [
+   [
+    "Tomates concassées",
+    "Identique, déjà coupé, tu gagnes l'écrasement à la cuillère."
+   ],
+   [
+    "Coulis de tomate",
+    "Plus lisse et plus liquide. Laisse réduire 3 min de plus."
+   ],
+   [
+    "Concentré de tomate",
+    "2 cuillères à soupe plus 15 cl d'eau valent une demi-boîte. Plus fort en goût, sale moins."
+   ]
+  ],
+  "non": [
+   [
+    "Ketchup",
+    "Sucré et vinaigré. Il ne fait pas une sauce, il fait un dessert raté."
+   ]
+  ]
+ },
+ "Crème de coco": {
+  "syn": [
+   "creme de coco",
+   "creme coco",
+   "coco"
+  ],
+  "role": "ce qui nappe et adoucit la garniture",
+  "ok": [
+   [
+    "Lait de coco",
+    "Deux fois plus liquide. Prends-en le double et laisse réduire 4 min de plus, sinon ça n'épaissit jamais."
+   ],
+   [
+    "Crème fraîche épaisse",
+    "Fonctionne très bien, goût tout autre. Même quantité, même feu moyen."
+   ],
+   [
+    "Fromage frais nature",
+    "2 cuillères à soupe délayées hors du feu. C'est ce que tu as déjà dans ton frigo."
+   ],
+   [
+    "Beurre de cacahuète",
+    "Une cuillère à soupe délayée dans 5 cl d'eau chaude. Ça change le plat, mais avec du poulet et de la courgette ça marche vraiment."
+   ]
+  ],
+  "non": [
+   [
+    "Lait",
+    "Trop liquide, il tranche et il ne nappera jamais."
+   ]
+  ]
+ },
+ "Filets de poulet": {
+  "syn": [
+   "poulet",
+   "filet de poulet",
+   "filets de poulet",
+   "blanc de poulet"
+  ],
+  "role": "viande blanche à cuisson rapide",
+  "ok": [
+   [
+    "Hauts de cuisse désossés",
+    "Souvent moitié prix, plus de goût, et ils ne sèchent pas. Le meilleur choix en curry. 2 min de cuisson en plus."
+   ],
+   [
+    "Escalopes de dinde",
+    "Même cuisson, même prix. Encore plus sec, ne dépasse pas 5 min."
+   ],
+   [
+    "Cuisses de poulet entières",
+    "Le moins cher. Il faut les désosser, compte 10 min de travail en plus."
+   ],
+   [
+    "Pois chiches et œufs",
+    "La version sans viande. 1 boîte plus 2 œufs remplacent 400 g pour le tiers du prix."
+   ]
+  ],
+  "non": [
+   [
+    "Poulet pané",
+    "Déjà cuit et assaisonné. Il se défait dans une sauce."
+   ]
+  ]
+ },
+ "Viande hachée": {
+  "syn": [
+   "viande hachee",
+   "hache",
+   "steak hache",
+   "boeuf hache"
+  ],
+  "role": "viande qui se mêle à la garniture",
+  "ok": [
+   [
+    "Haché de dinde ou de poulet",
+    "Moins cher, plus sec. Ajoute une cuillère d'huile dans la poêle, elle ne rendra pas de graisse."
+   ],
+   [
+    "Chair à saucisse",
+    "Plus grasse et déjà assaisonnée. Sale beaucoup moins."
+   ],
+   [
+    "Lentilles cuites et champignons",
+    "La version sans viande, et elle tient vraiment dans un wrap. 1 boîte de lentilles plus 250 g de champignons hachés."
+   ]
+  ],
+  "non": [
+   [
+    "Haché à 5 %",
+    "Il ne rend pas de graisse, donc les poivrons cuisent à sec et attachent. Prends la 15 %, elle coûte moins cher en plus."
+   ]
+  ]
+ },
+ "Crevettes": {
+  "syn": [
+   "crevette",
+   "crevettes",
+   "gambas"
+  ],
+  "role": "protéine qui cuit en 2 minutes",
+  "ok": [
+   [
+    "Surimi",
+    "Trois fois moins cher. Ajoute-le hors du feu, il est déjà cuit."
+   ],
+   [
+    "Thon en boîte",
+    "Tu en as déjà un ouvert. Égoutté, ajouté hors du feu."
+   ],
+   [
+    "Poulet en lanières",
+    "Change le plat. 5 min à la poêle avant la sauce."
+   ],
+   [
+    "Crevettes surgelées",
+    "Moitié prix. Jette-les gelées dans la sauce, 4 min au lieu de 2."
+   ]
+  ],
+  "non": [
+   [
+    "Crevettes recuites longtemps",
+    "Au-delà de 3 min elles deviennent caoutchouteuses. Ce n'est pas un remplacement, c'est l'erreur à éviter."
+   ]
+  ]
+ },
+ "Limande": {
+  "syn": [
+   "limande",
+   "poisson",
+   "filet de poisson"
+  ],
+  "role": "poisson blanc fin, à la poêle",
+  "ok": [
+   [
+    "Colin ou cabillaud",
+    "Plus épais, donc 5 min par face au lieu de 3."
+   ],
+   [
+    "Filets de merlu",
+    "Même finesse, même cuisson, souvent moins cher."
+   ],
+   [
+    "Poisson pané",
+    "Dépannage. 8 min à la poêle en le retournant à mi-parcours."
+   ]
+  ],
+  "non": [
+   [
+    "Saumon",
+    "Beaucoup plus gras et plus fort. Il écrase la pomme de terre au lieu de l'accompagner."
+   ]
+  ]
+ },
+ "Œufs": {
+  "syn": [
+   "oeuf",
+   "oeufs",
+   "œuf",
+   "œufs"
+  ],
+  "role": "ta protéine de secours, la moins chère de la cuisine",
+  "ok": [
+   [
+    "Thon en boîte",
+    "Même rôle de dépannage, prêt à manger."
+   ],
+   [
+    "Fromage blanc ou skyr",
+    "250 g valent à peu près 3 œufs en protéines."
+   ]
+  ],
+  "non": []
+ },
+ "Emmental râpé": {
+  "syn": [
+   "emmental",
+   "fromage rape",
+   "gruyere"
+  ],
+  "role": "ce qui lie la garniture du wrap en fondant",
+  "ok": [
+   [
+    "Mozzarella râpée",
+    "Fond mieux, file davantage, goût plus doux."
+   ],
+   [
+    "Comté ou cheddar râpé",
+    "Plus fort, il en faut moins."
+   ],
+   [
+    "Fromage frais aux herbes",
+    "Tu en as déjà. Étalé sur la galette avant la garniture, il joue le même rôle de liant."
+   ]
+  ],
+  "non": []
+ },
+ "Skyr ou fromage blanc": {
+  "syn": [
+   "skyr",
+   "fromage blanc",
+   "yaourt grec"
+  ],
+  "role": "la protéine de ta collation",
+  "ok": [
+   [
+    "Yaourt nature",
+    "Deux fois moins de protéines. Prends-en le double ou ajoute des œufs durs à côté."
+   ],
+   [
+    "Cottage cheese",
+    "Même niveau de protéines, texture toute autre."
+   ],
+   [
+    "Yaourts Activia",
+    "Tu en as déjà au frigo. Moins protéiné, mais ça dépanne un jour."
+   ]
+  ],
+  "non": []
+ },
+ "Lait": {
+  "syn": [
+   "lait"
+  ],
+  "role": "le liquide de ton porridge du matin",
+  "ok": [
+   [
+    "Boisson au soja",
+    "Le seul végétal qui tienne au niveau protéines, 3 g pour 100 ml."
+   ],
+   [
+    "Eau et lait en poudre",
+    "Le moins cher au litre, si tu en as."
+   ],
+   [
+    "Eau seule",
+    "Le porridge se fait très bien à l'eau. Tu perds 10 g de protéines, rattrape-les avec un œuf ou du skyr."
+   ]
+  ],
+  "non": [
+   [
+    "Boisson à l'amande",
+    "Presque zéro protéine. Pour une prise de masse ça ne sert à rien."
+   ]
+  ]
+ },
+ "Riz": {
+  "syn": [
+   "riz"
+  ],
+  "role": "le féculent du curry et du wrap",
+  "ok": [
+   [
+    "Couscous",
+    "Tu en as cinq sachets. 5 minutes hors du feu, à volume égal d'eau bouillante. Le plus rapide de tous."
+   ],
+   [
+    "Quinoa",
+    "Tu en as. 15 min à l'eau, plus de protéines que le riz."
+   ],
+   [
+    "Pâtes",
+    "Change le plat mais nourrit pareil."
+   ],
+   [
+    "Purée en flocons",
+    "Excellente sous un curry. 3 minutes."
+   ]
+  ],
+  "non": []
+ },
+ "Pâtes": {
+  "syn": [
+   "pate",
+   "pates",
+   "fusilli",
+   "farfalle",
+   "spaghetti"
+  ],
+  "role": "le féculent du plat du mercredi",
+  "ok": [
+   [
+    "Riz",
+    "Même rôle. Compte 11 min de cuisson et 5 de repos."
+   ],
+   [
+    "Couscous",
+    "Le plus rapide, 5 min hors du feu."
+   ],
+   [
+    "Quinoa",
+    "Plus de protéines, 15 min."
+   ]
+  ],
+  "non": []
+ },
+ "Galettes de wrap": {
+  "syn": [
+   "wrap",
+   "wraps",
+   "galette",
+   "galettes",
+   "tortilla",
+   "tortillas"
+  ],
+  "role": "l'enveloppe",
+  "ok": [
+   [
+    "Pain pita",
+    "Ouvert en poche, il tient mieux une garniture humide qu'une galette."
+   ],
+   [
+    "Pain de mie ou baguette",
+    "La garniture devient une garniture de sandwich. Ça marche."
+   ],
+   [
+    "Rien du tout",
+    "Sers la garniture sur le riz, en assiette. C'est le même plat, et tu économises la galette."
+   ]
+  ],
+  "non": [
+   [
+    "Feuilles de brick",
+    "Elles brûlent et se déchirent. Ce n'est pas le même produit."
+   ]
+  ]
+ },
+ "Flocons d'avoine": {
+  "syn": [
+   "avoine",
+   "flocon d avoine",
+   "flocons d avoine",
+   "porridge"
+  ],
+  "role": "la base de ton petit-déjeuner de prise de masse",
+  "ok": [
+   [
+    "Semoule de blé",
+    "Même geste, 3 min dans le lait. Moins de fibres."
+   ],
+   [
+    "Muesli sans sucre ajouté",
+    "Prêt, mais lis l'étiquette : la plupart sont très sucrés."
+   ],
+   [
+    "Pain complet et beurre de cacahuète",
+    "4 tranches valent à peu près 100 g d'avoine."
+   ]
+  ],
+  "non": []
+ },
+ "Beurre de cacahuète": {
+  "syn": [
+   "beurre de cacahuete",
+   "cacahuete",
+   "peanut butter"
+  ],
+  "role": "ce qui rend ton bol du matin finissable, 180 kcal pour 20 g",
+  "ok": [
+   [
+    "Purée d'amande ou de noisette",
+    "Même densité, plus cher."
+   ],
+   [
+    "Cacahuètes concassées",
+    "Même apport, plus de mâche, moins cher au kilo."
+   ],
+   [
+    "Huile d'olive dans le porridge",
+    "Étrange mais efficace. Une cuillère à soupe apporte les mêmes calories, sans le goût sucré."
+   ]
+  ],
+  "non": []
+ },
+ "Golden Curry": {
+  "syn": [
+   "golden curry",
+   "curry japonais",
+   "roux",
+   "curry"
+  ],
+  "role": "le roux qui épaissit et assaisonne le curry d'un coup",
+  "ok": [
+   [
+    "Curry en poudre et farine",
+    "1 cuillère à soupe de chaque, plus une noix de beurre ou d'huile. Fais-les cuire 1 min ensemble avant d'ajouter le liquide."
+   ],
+   [
+    "Pâte de curry en pot",
+    "2 cuillères à soupe, ajoutées en début de cuisson et pas à la fin comme le roux."
+   ],
+   [
+    "Paprika, cumin et concentré de tomate",
+    "La version avec ce que tu as. Ce n'est plus un curry japonais, c'est un mijoté, et c'est bon quand même."
+   ]
+  ],
+  "non": [
+   [
+    "Roux ajouté dans un liquide bouillant",
+    "Grumeaux garantis et fond brûlé. Coupe le feu d'abord, toujours."
+   ]
+  ]
+ },
+ "Huile": {
+  "syn": [
+   "huile",
+   "huile de tournesol",
+   "huile d olive"
+  ],
+  "role": "la cuisson, et pour toi le surplus calorique",
+  "ok": [
+   [
+    "Beurre",
+    "Pour le poisson et les pommes de terre, meilleur. Il brûle au-delà de feu moyen, ne monte pas plus haut."
+   ],
+   [
+    "Huile de colza",
+    "Même usage, même prix."
+   ]
+  ],
+  "non": [
+   [
+    "Huile d'olive à feu vif",
+    "Elle fume et devient amère. Garde-la pour l'assaisonnement à froid et les cuissons douces."
+   ]
+  ]
+ }
+};
+
+/* Champ par champ, jamais objet par objet. Un etat ecrit par une version anterieure
+   ferait planter tout l'onglet sinon. Lecon du 13/09 sur l'onglet Finance. */
+S.bouffe = (S.bouffe && typeof S.bouffe === "object") ? S.bouffe : {};
+if (!S.bouffe.remplace || typeof S.bouffe.remplace !== "object") S.bouffe.remplace = {};
+if (!S.bouffe.perm || typeof S.bouffe.perm !== "object") S.bouffe.perm = {};
+
+let bQ = "", bMode = "";
+
+function bNorm(s){
+  return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\u2019'`]/g, " ").replace(/\s+/g, " ").trim();
+}
+function bEsc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* ---------- recherche ---------- */
+function bIngredient(n){
+  if (n.length < 3) return null;
+  let best = null;
+  Object.keys(REMPLACE).forEach(k => {
+    [bNorm(k)].concat((REMPLACE[k].syn || []).map(bNorm)).forEach(c => {
+      if (!c || c.length < 3) return;
+      if (n === c || n.indexOf(c) >= 0 || c.indexOf(n) >= 0) {
+        if (!best || c.length > best.l) best = {k: k, l: c.length};
+      }
+    });
+  });
+  return best ? best.k : null;
+}
+function bPlat(n){
+  if (n.length < 3) return null;
+  let r = null;
+  joursPeriode().forEach(d => {
+    const x = dinerDu(d); if (!x || r) return;
+    const t = bNorm(x.nm);
+    if (t.indexOf(n) >= 0) { r = {d: d, x: x}; return; }
+    const mots = n.split(" ").filter(w => w.length > 3);
+    if (mots.length && mots.every(w => t.indexOf(w) >= 0)) r = {d: d, x: x};
+  });
+  return r;
+}
+const BJOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+function bJour(n){
+  if (/aujourd|ce soir|ce midi/.test(n)) return auj();
+  if (/demain/.test(n)) return plusJours(auj(), 1);
+  let r = null;
+  joursPeriode().forEach(d => {
+    if (r) return;
+    if (n.indexOf(bNorm(BJOURS[parse(d).getDay()])) >= 0) r = d;
+  });
+  return r;
+}
+
+/* ---------- ou sert un ingredient ---------- */
+function bOuSert(k){
+  const cles = [bNorm(k)].concat((REMPLACE[k].syn || []).map(bNorm));
+  const out = [];
+  joursPeriode().forEach(d => {
+    const x = dinerDu(d); if (!x) return;
+    const t = bNorm(x.nm + " " + x.ing);
+    if (cles.some(c => c.length > 2 && t.indexOf(c) >= 0)) out.push(libelle(d) + ", " + x.nm);
+  });
+  PERIODE.courses.lignes.forEach(l => {
+    const t = bNorm(l.n);
+    if (cles.some(c => c.length > 2 && (t.indexOf(c) >= 0 || c.indexOf(t) >= 0)))
+      out.push("ta liste de courses, " + l.q);
+  });
+  return out;
+}
+
+/* ---------- les blocs de reponse ---------- */
+function bTitre(t){ return '<div class="fmeta" style="margin:12px 0 6px">' + bEsc(t) + '</div>'; }
+
+function bBlocIngredient(k){
+  const v = REMPLACE[k], sert = bOuSert(k), pris = S.bouffe.remplace[k];
+  let h = '<div class="ing"><b>' + bEsc(k) + '</b>, ' + bEsc(v.role) + '.</div>';
+  if (sert.length) h += '<div class="note" style="margin-top:7px"><b>Ça sert dans :</b> ' + bEsc(sert.join(" ; ")) + '.</div>';
+  if (pris) h += '<div class="alerte" style="margin-top:9px">Tu as déjà choisi <b>' + bEsc(pris) + '</b> à la place. <button class="gcal" id="bAnnuleRem" style="cursor:pointer;margin-left:6px">Annuler</button></div>';
+  h += bTitre("Par quoi le remplacer");
+  v.ok.forEach((c, i) => {
+    h += '<div class="row"><div class="lab"><b>' + bEsc(c[0]) + '</b><br>' +
+         '<span style="font-size:12.5px">' + bEsc(c[1]) + '</span></div>' +
+         '<button class="gcal" style="cursor:pointer;white-space:nowrap" data-brem="' + bEsc(k) + '" data-bval="' + bEsc(c[0]) + '">Je prends ça</button></div>';
+  });
+  if (v.non.length) {
+    h += bTitre("Ce qu'il ne faut pas prendre");
+    v.non.forEach(c => {
+      h += '<div class="alerte" style="margin-top:7px"><b>' + bEsc(c[0]) + '.</b> ' + bEsc(c[1]) + '</div>';
+    });
+  }
+  return h;
+}
+
+function bBlocRecette(d, x){
+  let h = '<div class="ing"><b>' + bEsc(x.nm) + '</b>, ' + bEsc(libelle(d)) + ', ' + x.portions + ' portions, ' + bEsc(x.temps) + '.</div>';
+  h += '<div class="note" style="margin-top:7px"><b>Il te faut :</b> ' + bEsc(x.ing) + '</div>';
+  x.etapes.forEach((e, i) => {
+    h += '<div class="etape"><span class="n">' + (i + 1) + '</span><span>' + bEsc(e) + '</span></div>';
+  });
+  if (x.alerte) h += '<div class="alerte" style="margin-top:9px">' + bEsc(x.alerte) + '</div>';
+  if (x.batch) h += '<div class="note" style="margin-top:9px"><b>Ce qui part en boîte :</b> ' + bEsc(x.batch) + '</div>';
+  return h;
+}
+
+function bBlocJour(d){
+  const p = repasDu(d), x = dinerDu(d);
+  if (!p) return '<div class="note">Le ' + bEsc(libelleLong(d)) + ' est hors de ta période.</div>';
+  let h = '<div class="ing"><b>' + bEsc(libelleLong(d)) + '</b></div>';
+  [["Matin", p.matin], ["Collation", p.collation], ["Midi", p.midi], ["Soir", p.soir]].forEach(l => {
+    if (l[1]) h += '<div class="row"><div class="lab"><b>' + l[0] + '</b></div><div style="font-size:13px;text-align:right">' + bEsc(l[1]) + '</div></div>';
+  });
+  if (x) h += bBlocRecette(d, x);
+  return h;
+}
+
+function bBlocCourses(){
+  const C = PERIODE.courses;
+  const tb = C.lignes.reduce((a, l) => a + l.bas, 0), th = C.lignes.reduce((a, l) => a + l.haut, 0);
+  const rb = C.lignes.reduce((a, l, i) => a + (S.shop[cleShop(i)] ? 0 : l.bas), 0);
+  const rh = C.lignes.reduce((a, l, i) => a + (S.shop[cleShop(i)] ? 0 : l.haut), 0);
+  const pris = C.lignes.filter((l, i) => S.shop[cleShop(i)]).length;
+  let h = '<div class="ing"><b>Tout le panier :</b> ' + fmtEur(tb) + ' à ' + fmtEur(th) + ', sur ' + C.lignes.length + ' lignes.</div>';
+  h += '<div class="row"><div class="lab"><b>Déjà dans le panier</b></div><div style="font-weight:700">' + pris + ' / ' + C.lignes.length + '</div></div>';
+  h += '<div class="row"><div class="lab"><b>Il te reste à prendre</b></div><div style="font-weight:700;color:var(--or)">' + fmtEur(rb) + ' à ' + fmtEur(rh) + '</div></div>';
+  const jours = joursPeriode().length;
+  h += '<div class="note" style="margin-top:9px">Soit ' + fmtEur(tb / (jours * 2)) + ' à ' + fmtEur(th / (jours * 2)) + ' par personne et par jour, sur ' + jours + ' jours à deux.</div>';
+  h += '<div class="note" style="margin-top:7px">' + bEsc(C.verite) + '</div>';
+  return h;
+}
+
+/* ---------- la question preparee, pour ce que je ne sais pas ---------- */
+function bPourClaude(q){
+  const L = ["Question sur mes repas : " + q, ""];
+  L.push("Contexte : je suis deux, je n'ai PAS de four, j'ai un petit frigo, je suis en prise de masse, et je fais mes courses chez Lidl.");
+  L.push("Ma période va du " + PERIODE.du + " au " + PERIODE.au + ".");
+  L.push("");
+  joursPeriode().forEach(d => {
+    const x = dinerDu(d);
+    if (x) L.push(libelle(d) + " : " + x.nm + ". " + x.ing);
+  });
+  L.push("");
+  L.push("Déjà chez moi : " + PERIODE.courses.dejaLa);
+  const R = Object.keys(S.bouffe.remplace);
+  if (R.length) L.push("J'ai déjà remplacé : " + R.map(k => k + " par " + S.bouffe.remplace[k]).join(", ") + ".");
+  return L.join("\n");
+}
+
+function bBlocRien(q){
+  return '<div class="ing">Je n\'ai pas ça en mémoire.</div>' +
+    '<div class="note" style="margin-top:7px">Je réponds sur un ingrédient, un plat de ta période, un jour, ou le coût des courses. ' +
+    'Pour le reste, le bouton ci-dessous prépare ta question avec toute ta période dedans, tu la colles dans Claude.</div>' +
+    '<button class="btn light" id="bCopier" style="margin-top:10px">Préparer la question pour Claude</button>' +
+    '<div class="note" id="bCopieOk" style="margin-top:7px;display:none">Copié. Colle-le dans Claude.</div>';
+}
+
+/* ---------- le routeur ---------- */
+function bRepond(q){
+  const n = bNorm(q);
+  if (n.length < 2) return "";
+  if (/combien|prix|total|cout|budget|depens|cher|panier/.test(n)) return bBlocCourses();
+  const j = bJour(n); if (j) return bBlocJour(j);
+  const p = bPlat(n); if (p) {
+    let h = bBlocRecette(p.d, p.x);
+    const i = bIngredient(n);
+    if (i) h += '<div class="note" style="margin-top:9px">Tu cherchais l\'ingrédient ? ' +
+      '<button class="gcal" style="cursor:pointer" data-bq="' + bEsc(i) + '">Voir ' + bEsc(i) + '</button></div>';
+    return h;
+  }
+  const i = bIngredient(n); if (i) return bBlocIngredient(i);
+  return bBlocRien(q);
+}
+
+/* ---------- la carte ---------- */
+function bCarte(){
+  let h = '<div class="card sec-or"><h2>Un coup de main <span class="tag">hors ligne</span></h2>' +
+    '<div class="note">Tape un ingrédient, un plat, un jour, ou « combien ». Ça marche sans réseau, donc en rayon.</div>' +
+    '<div class="form" style="margin-top:10px"><input type="text" id="bIn" placeholder="brocoli, curry, mardi, combien" value="' + bEsc(bQ) + '"></div>' +
+    '<div class="pills" style="margin-top:9px">' +
+    '<span class="pill" data-bq="brocoli">Il me manque un truc</span>' +
+    '<span class="pill" data-bq="curry">Une recette</span>' +
+    '<span class="pill" data-bq="combien">Combien ça coûte</span>' +
+    '<span class="pill" id="bEchanger">Intervertir deux soirs</span></div>';
+
+  const R = Object.keys(S.bouffe.remplace);
+  if (R.length) {
+    h += '<div class="note" style="margin-top:10px"><b>Tes remplacements en cours :</b> ' +
+      bEsc(R.map(k => k + " devient " + S.bouffe.remplace[k]).join(" ; ")) +
+      '. <button class="gcal" id="bResetRem" style="cursor:pointer;margin-left:6px">Tout annuler</button></div>';
+  }
+  if (Object.keys(S.bouffe.perm).length) {
+    h += '<div class="note" style="margin-top:7px"><b>Tu as interverti des soirs.</b> ' +
+      '<button class="gcal" id="bResetPerm" style="cursor:pointer;margin-left:6px">Remettre l\'ordre</button></div>';
+  }
+
+  if (bMode === "echange") {
+    const opts = joursPeriode().filter(d => dinerDu(d))
+      .map(d => '<option value="' + d + '">' + bEsc(libelle(d)) + ", " + bEsc(dinerDu(d).nm) + '</option>').join("");
+    h += '<div style="margin-top:11px;padding-top:11px;border-top:1px solid #F0ECE2">' +
+      '<div class="fmeta" style="margin-bottom:6px">Quels deux soirs ?</div>' +
+      '<select id="bEchA" style="width:100%;margin-bottom:7px">' + opts + '</select>' +
+      '<select id="bEchB" style="width:100%">' + opts + '</select>' +
+      '<button class="btn light" id="bEchOk" style="margin-top:9px">Intervertir</button></div>';
+  }
+
+  const rep = bRepond(bQ);
+  if (rep) h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #F0ECE2">' + rep + '</div>';
+  return h + '</div>';
+}
+
+/* ---------- les actions ---------- */
+function bVa(q){ bQ = q; bMode = ""; renderBouffe(); }
+function bEchangeFait(){
+  const a = el("bEchA").value, b = el("bEchB").value;
+  if (a === b) { bMode = ""; renderBouffe(); return; }
+  const p = S.bouffe.perm, ra = p[a] || a, rb = p[b] || b;
+  p[a] = rb; p[b] = ra;
+  Object.keys(p).forEach(k => { if (p[k] === k) delete p[k]; });
+  save(); bMode = ""; renderBouffe();
+}
+function bBranche(){
+  const w = el("bouffe");
+  const i = w.querySelector("#bIn");
+  if (i) {
+    i.addEventListener("input", () => { bQ = i.value; });
+    i.addEventListener("change", () => bVa(i.value));
+    i.addEventListener("keydown", e => { if (e.key === "Enter") bVa(i.value); });
+  }
+  w.querySelectorAll("[data-bq]").forEach(b => b.addEventListener("click", () => bVa(b.getAttribute("data-bq"))));
+  w.querySelectorAll("[data-brem]").forEach(b => b.addEventListener("click", () => {
+    S.bouffe.remplace[b.getAttribute("data-brem")] = b.getAttribute("data-bval");
+    save(); renderBouffe();
+  }));
+  const ar = w.querySelector("#bAnnuleRem");
+  if (ar) ar.addEventListener("click", () => {
+    const k = bIngredient(bNorm(bQ));
+    if (k) delete S.bouffe.remplace[k];
+    save(); renderBouffe();
+  });
+  const rr = w.querySelector("#bResetRem");
+  if (rr) rr.addEventListener("click", () => { S.bouffe.remplace = {}; save(); renderBouffe(); });
+  const rp = w.querySelector("#bResetPerm");
+  if (rp) rp.addEventListener("click", () => { S.bouffe.perm = {}; save(); renderBouffe(); });
+  const ec = w.querySelector("#bEchanger");
+  if (ec) ec.addEventListener("click", () => { bMode = (bMode === "echange" ? "" : "echange"); renderBouffe(); });
+  const eo = w.querySelector("#bEchOk");
+  if (eo) eo.addEventListener("click", bEchangeFait);
+  const cp = w.querySelector("#bCopier");
+  if (cp) cp.addEventListener("click", () => {
+    const t = bPourClaude(bQ);
+    const fini = () => { const o = w.querySelector("#bCopieOk"); if (o) o.style.display = "block"; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(fini).catch(() => bSecours(t));
+    else bSecours(t);
+  });
+}
+/* Sur un navigateur qui refuse le presse-papiers, on affiche le texte a selectionner. */
+function bSecours(t){
+  const o = el("bouffe").querySelector("#bCopieOk");
+  if (!o) return;
+  o.style.display = "block";
+  o.innerHTML = '<b>Copie ce texte :</b><textarea readonly style="width:100%;height:130px;margin-top:6px;font-size:12px"></textarea>';
+  o.querySelector("textarea").value = t;
+}
+
+/* Les remplacements choisis s'affichent dans les recettes. */
+function bRemplacesDe(txt){
+  const t = bNorm(txt), out = [];
+  Object.keys(S.bouffe.remplace).forEach(k => {
+    const cles = [bNorm(k)].concat((REMPLACE[k] ? REMPLACE[k].syn : []) || []).map(bNorm);
+    if (cles.some(c => c.length > 2 && t.indexOf(c) >= 0)) out.push(k + " devient " + S.bouffe.remplace[k]);
+  });
+  return out;
+}
+
+/* L'interversion de deux soirs vit dans S.bouffe.perm. En passant par ici, elle se
+   repercute PARTOUT : le calendrier, l'onglet Aujourd'hui, la semaine et le fichier ICS. */
+function dinerDu(d){
+  const p = (S.bouffe && S.bouffe.perm && S.bouffe.perm[d]) || d;
+  return PERIODE.diners[p] || null;
+}
 
 /* Rend la recette complete d'un diner. Sortie en accordeon, replie par defaut. */
 function blocRecette(r, ouvert){
@@ -1369,6 +2387,8 @@ function blocRecette(r, ouvert){
     '<div class="h"><span class="nm">La recette</span>' +
     '<span class="meta">' + r.portions + ' portions, ' + r.temps + '</span></div><div class="b">' +
     '<div class="ing"><b>Il te faut :</b> ' + r.ing + '</div>';
+  const rem = (typeof bRemplacesDe === "function") ? bRemplacesDe(r.ing) : [];
+  if (rem.length) x += '<div class="alerte" style="margin-top:9px"><b>Tes remplacements :</b> ' + rem.join(" ; ") + '.</div>';
   r.etapes.forEach((e, i) => {
     x += '<div class="etape"><span class="n">' + (i + 1) + '</span><span>' + e + '</span></div>';
   });
@@ -1401,6 +2421,8 @@ function renderBouffe(){
 
   h += '<div class="card hero"><h2>Ta période</h2><div class="big">' + PERIODE.titre + '</div>' +
        '<div class="sub">Du ' + libelleLong(PERIODE.du) + ' au ' + libelleLong(PERIODE.au) + '.<br>' + PERIODE.intro + '</div></div>';
+
+  h += bCarte();
 
   if (t > PERIODE.au) {
     h += '<div class="hint"><b>Cette période est finie.</b> Donne ta prochaine liste de courses et tes repas, ' +
@@ -1483,6 +2505,7 @@ function renderBouffe(){
   h += '</div>';
 
   el("bouffe").innerHTML = h;
+  bBranche();
   el("bouffe").querySelectorAll(".acc").forEach(a =>
     a.querySelector(".h").addEventListener("click", () => a.classList.toggle("open")));
   el("bouffe").querySelectorAll("[data-shop]").forEach(x => x.addEventListener("click", () => {
@@ -1648,7 +2671,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v32";
+const FINV = "v34";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};

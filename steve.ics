@@ -852,7 +852,7 @@ DTSTAMP:20260913T080000Z
 DTSTART:20260915T200000
 DTEND:20260915T203500
 SUMMARY:Cuisine : Curry japonais poulet\, carottes et pommes de terre
-DESCRIPTION:400 g de poulet\, 3 carottes\, 500 g de pommes de terre\, 2 oignons\, la moitié d'une plaquette de Golden Curry\, 70 cl d'eau\, 300 g de riz\, 1 cuillère à soupe d'huile || Le roux jeté dans un liquide bouillant fait des grumeaux et brûle au fond. On coupe le feu avant de l'ajouter\, toujours. C'est la seule erreur qui rate ce plat.
+DESCRIPTION:400 g de poulet\, 3 carottes\, 500 g de pommes de terre\, 2 oignons\, la moitié d'une plaquette de Golden Curry\, 70 cl d'eau\, 300 g de riz\, 1 brocoli\, 1 cuillère à soupe d'huile || Le roux jeté dans un liquide bouillant fait des grumeaux et brûle au fond. On coupe le feu avant de l'ajouter\, toujours. C'est la seule erreur qui rate ce plat.
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Curry japonais poulet\, carottes et pommes de terre à préparer dans une heure
