@@ -26,7 +26,7 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .head .date{font-size:12px;color:var(--or);margin-top:4px;font-weight:600}
 .head button{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.14);border:0;color:#fff;
   width:34px;height:34px;border-radius:9px;font-size:15px;cursor:pointer}
-.wrap{padding:14px}
+.wrap{padding:14px;overflow-wrap:break-word}
 .card{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:15px;margin-bottom:12px}
 .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--anthr);margin-bottom:10px;font-weight:700}
 .card h2 .tag{float:right;font-size:11px;color:var(--or);text-transform:none;letter-spacing:0}
@@ -38,6 +38,10 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .sec-vert{border-left:4px solid #5BA86B}
 .sec-rouge{border-left:4px solid var(--rouge)}
 .row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0ECE2;gap:10px}
+/* Un enfant de flex a min-width:auto par defaut et REFUSE de retrecir sous la taille de son
+   contenu. Un texte long dans une colonne poussait donc la page entiere a 946 px de large
+   sur un ecran de 375. Constate le 13/09/2026. */
+.row > *{min-width:0}
 .row:last-child{border-bottom:0}
 .row .lab{font-size:13.5px;color:var(--anthr);flex:1;line-height:1.45}
 .row .lab b{color:var(--bleu)}
@@ -201,9 +205,9 @@ body.dark .donut-c{fill:#E8EBF1}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=27"></script>
-<script src="entrainement.js?v=27"></script>
-<script src="actu.js?v=27"></script>
+<script src="fiches.js?v=32"></script>
+<script src="entrainement.js?v=32"></script>
+<script src="actu.js?v=32"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -348,15 +352,15 @@ const RECETTES = [
 const PERIODE = {
  "du": "2026-09-13",
  "au": "2026-09-16",
- "titre": "À deux, du dimanche 13 au mercredi 16",
- "intro": "Quatre jours, trois vraies sessions de cuisine. Aucun four dans cette cuisine, donc tout se fait à la poêle ou à la casserole. Chaque dîner est doublé : la moitié le soir, la moitié en tupperware pour le lendemain midi au travail. Tu pars jeudi matin, donc on finit le frais mercredi soir et on n'achète rien qui traînerait.",
+ "titre": "À deux, de dimanche à mercredi",
+ "intro": "Quatre jours, quatre sessions de cuisine, la plus longue fait 40 minutes. Aucun four dans cette cuisine, donc tout se fait à la poêle ou à la casserole. Chaque dîner est doublé : la moitié le soir, la moitié en tupperware pour le lendemain midi au travail. Mercredi soir vide le frigo avant ton départ de jeudi matin, et il ne demande aucun achat.",
  "courses": {
   "d": "2026-09-13",
   "h": "15:00",
   "dur": 40,
   "quand": "cet après-midi",
-  "attendu": 33,
-  "verite": "Aucun prix n'est vérifié au catalogue. Ce sont des fourchettes Lidl, à corriger en rayon. Le total réel tombera entre 26 et 41 €, soit 3,30 à 5,10 € par personne et par jour.",
+  "attendu": 28,
+  "verite": "Aucun prix n'est vérifié au catalogue. Ce sont des fourchettes Lidl, à corriger en rayon. Le total réel tombera entre 22 et 35 €, soit 2,80 à 4,40 € par personne et par jour.",
   "lignes": [
    {
     "n": "Galettes de wrap",
@@ -389,6 +393,12 @@ const PERIODE = {
     "haut": 3.0
    },
    {
+    "n": "Courgettes",
+    "q": "2",
+    "bas": 1.2,
+    "haut": 2.2
+   },
+   {
     "n": "Oignons",
     "q": "1 kg",
     "bas": 1.2,
@@ -396,27 +406,15 @@ const PERIODE = {
    },
    {
     "n": "Pommes de terre",
-    "q": "1,5 kg",
-    "bas": 1.5,
-    "haut": 2.5
-   },
-   {
-    "n": "Œufs",
-    "q": "12",
-    "bas": 2.6,
-    "haut": 3.8
+    "q": "1 kg",
+    "bas": 1.0,
+    "haut": 1.8
    },
    {
     "n": "Skyr ou fromage blanc",
     "q": "1 kg",
     "bas": 2.2,
     "haut": 3.5
-   },
-   {
-    "n": "Bananes",
-    "q": "1 kg",
-    "bas": 1.3,
-    "haut": 2.0
    },
    {
     "n": "Brocoli",
@@ -432,27 +430,32 @@ const PERIODE = {
    },
    {
     "n": "Lait",
-    "q": "2 litres",
-    "bas": 1.8,
-    "haut": 2.6
+    "q": "1 litre",
+    "bas": 0.9,
+    "haut": 1.3
    }
   ],
-  "dejaLa": "Riz, fusilli, farfalle, couscous, purée en flocons, flocons d'avoine, quinoa, haricots rouges, tomates pelées, Golden Curry, pâte miso, wakame, beurre de cacahuète, graines de chia, courgette, aubergine, tomate, carottes, salade, pommes de terre déjà cuites, emmental râpé, fromage frais aux herbes, crevettes, limande du Nord, yaourts, pommes, huiles, paprika, poivre, herbes, ail, thé, matcha.",
+  "dejaLa": "Bananes, pommes, yaourts, 6 œufs, des pommes de terre, du lait entamé. Riz, fusilli, farfalle, couscous, purée en flocons, flocons d'avoine, quinoa, haricots rouges, tomates pelées, Golden Curry, pâte miso, wakame, beurre de cacahuète, graines de chia. Courgette, aubergine, tomate, carottes, salade, emmental râpé, fromage frais aux herbes, crevettes, limande du Nord. Huiles, paprika, poivre, herbes, ail, thé, matcha.",
   "verifier": [
    {
     "n": "Maïs",
-    "besoin": "1 boîte pour le wrap de lundi",
-    "si": "0,60 à 1,00 €. La grande conserve jaune ouverte dans ton frigo y ressemble beaucoup, mais l'étiquette n'est pas lisible sur la photo. Regarde avant de partir."
+    "besoin": "1 boîte pour le wrap de lundi. La grande conserve jaune ouverte dans ton frigo y ressemble, mais l'étiquette n'est pas lisible sur la photo.",
+    "si": "0,60 à 1,00 €"
    },
    {
     "n": "Riz",
-    "besoin": "450 g en tout sur la période",
-    "si": "1,30 à 2,20 €. Ton sachet est au repère 625 g, ça passe, mais de justesse."
+    "besoin": "450 g sur les trois jours. Ton sachet est au repère 625 g, ça passe.",
+    "si": "1,30 à 2,20 €"
    },
    {
     "n": "Carottes",
     "besoin": "3 pour le curry de mardi",
     "si": "1,00 à 1,60 €"
+   },
+   {
+    "n": "Pommes de terre",
+    "besoin": "500 g crues pour le curry. Tu en as, mais pas un kilo : regarde avant de prendre le sac.",
+    "si": "1,00 à 1,80 €"
    }
   ],
   "rayon": [
@@ -556,7 +559,7 @@ const PERIODE = {
   "2026-09-15": {
    "nm": "Curry japonais poulet, carottes et pommes de terre",
    "portions": 4,
-   "temps": "10 min actif, 30 min en tout",
+   "temps": "10 min actif, 30 en tout",
    "h": "20:00",
    "dur": 35,
    "ing": "400 g de poulet, 3 carottes, 500 g de pommes de terre, 2 oignons, la moitié d'une plaquette de Golden Curry, 70 cl d'eau, 300 g de riz, 1 cuillère à soupe d'huile",
@@ -568,7 +571,7 @@ const PERIODE = {
     "COUPER LE FEU. Casser les carrés de roux dans la casserole et les faire fondre en remuant. Remettre 3 min à feu doux, ça épaissit d'un coup."
    ],
    "alerte": "Le roux jeté dans un liquide bouillant fait des grumeaux et brûle au fond. On coupe le feu avant de l'ajouter, toujours. C'est la seule erreur qui rate ce plat.",
-   "batch": "2 assiettes ce soir avec le riz. 2 tupperwares montés ce soir et pas demain matin, riz au fond, curry par-dessus. Le plat de soutenance : aucune décision à prendre en rentrant."
+   "batch": "2 assiettes ce soir avec le riz. 2 tupperwares montés ce soir et pas demain matin, riz au fond, curry par-dessus. Ils couvrent ton mercredi midi. Le plat de soutenance : aucune décision à prendre en rentrant."
   },
   "2026-09-16": {
    "nm": "Pâtes crevettes, courgette et aubergine",
@@ -576,7 +579,7 @@ const PERIODE = {
    "temps": "25 min",
    "h": "19:30",
    "dur": 30,
-   "ing": "250 g de fusilli, 370 g de crevettes, 1 courgette, 1 aubergine, la moitié de la boîte de tomates pelées, 2 gousses d'ail, huile d'olive, herbes, paprika",
+   "ing": "250 g de fusilli, 370 g de crevettes, 1 courgette, 1 aubergine, la moitié de la boîte de tomates pelées, 2 gousses d'ail, huile d'olive, herbes, paprika. Aucun achat, tout est déjà chez toi.",
    "etapes": [
     "Aubergine en cubes de 2 cm. Poêle, 3 cuillères à soupe d'huile d'olive, feu moyen-vif, 8 min. Elle boit toute l'huile dans la première minute puis la rend : n'en rajoute pas, attends.",
     "Courgette en demi-rondelles, 5 min.",
@@ -584,7 +587,7 @@ const PERIODE = {
     "Pâtes dans l'eau bouillante salée, 1 minute de MOINS que le paquet. Garde une louche d'eau de cuisson avant d'égoutter.",
     "Crevettes dans la sauce 2 min, pas une de plus, elles deviennent caoutchouteuses. Pâtes égouttées versées dans la poêle avec la louche d'eau de cuisson, 1 min en remuant hors du feu."
    ],
-   "alerte": "L'eau de cuisson est ce qui lie la sauce aux pâtes. Ne la jette jamais entièrement, c'est la différence entre des pâtes en sauce et des pâtes sèches avec de la sauce à côté.",
+   "alerte": "Regarde la date des crevettes DÈS AUJOURD'HUI. Si elle tombe avant mercredi, inverse : ce plat passe lundi soir et le wrap haricots rouges passe mercredi, les conserves attendent sans problème.",
    "batch": "Deux assiettes, rien en tupperware. Tu pars jeudi matin à 9h38, ce dîner est là pour vider le frigo avant de fermer la porte."
   }
  },
@@ -616,12 +619,13 @@ const PERIODE = {
  },
  "regle": "Les cuillères d'huile ne sont pas décoratives, elles portent ton surplus. Mais vous êtes deux maintenant, et Inès ne cherche pas de surplus : sers-toi l'huile dans TON assiette, pas dans la poêle commune, sauf quand la recette la demande pour cuire. Et c'est toi qui prends le rab de féculents, pas elle.",
  "bilan": [
-  "Trois vraies sessions de cuisine : dimanche, lundi, mardi. Mercredi, 25 minutes.",
-  "Chaque dîner est doublé, donc trois midis au bureau sont déjà couverts.",
-  "Légumes servis sur les quatre jours : courgette, poivrons, maïs, carottes, épinards, brocoli, aubergine, salade, tomate. C'est sa part du contrat.",
-  "Œufs prévus : ils ne sont dans aucun plat, ils sont la réserve. Douze achetés, zéro programmé, et c'est voulu."
+  "Quatre sessions de cuisine, une par soir. La plus longue fait 40 minutes.",
+  "Trois dîners sur quatre sont doublés : lundi, mardi et mercredi midi sont déjà couverts au bureau, sans rien préparer le matin.",
+  "Mercredi soir ne demande aucun achat, il ne vit que de ce que tu as déjà.",
+  "Légumes servis sur les quatre jours : courgette, poivrons, maïs, carottes, épinards, brocoli, aubergine, salade. C'est sa part du contrat.",
+  "Tes 6 œufs ne sont dans aucun plat, ils sont la réserve. Deux œufs durs le soir quand tu as faim, c'est la protéine la moins chère de ta cuisine."
  ],
- "reste": "Ce que tu laisses en partant jeudi : les pâtes entamées, le couscous, le quinoa, la purée en flocons, le riz restant, les conserves, les œufs, le skyr et les fruits. Rien de périssable ne traîne. Au retour du 20, redonne-moi une liste."
+ "reste": "Ce que tu laisses en partant jeudi : le reste des pâtes, le couscous, le quinoa, la purée en flocons, le riz, les conserves, tes œufs, le skyr et les fruits. Rien de périssable ne traîne dans ce petit frigo. Au retour du 20, redonne-moi une liste."
 };
 
 const CAT_IN  = ["Salaire", "Tickets resto", "Remboursement", "Retrait d'épargne", "Autre"];
@@ -1359,7 +1363,23 @@ function joursPeriode(){
 function repasDu(d){ return PERIODE.planning[d] || null; }
 function dinerDu(d){ return PERIODE.diners[d] || null; }
 
-function blocJourRepas(d){
+/* Rend la recette complete d'un diner. Sortie en accordeon, replie par defaut. */
+function blocRecette(r, ouvert){
+  let x = '<div class="acc' + (ouvert ? " open" : "") + '" style="margin-top:10px">' +
+    '<div class="h"><span class="nm">La recette</span>' +
+    '<span class="meta">' + r.portions + ' portions, ' + r.temps + '</span></div><div class="b">' +
+    '<div class="ing"><b>Il te faut :</b> ' + r.ing + '</div>';
+  r.etapes.forEach((e, i) => {
+    x += '<div class="etape"><span class="n">' + (i + 1) + '</span><span>' + e + '</span></div>';
+  });
+  if (r.alerte) x += '<div class="alerte" style="margin-top:9px">' + r.alerte + '</div>';
+  if (r.batch)  x += '<div class="note" style="margin-top:9px;padding-top:9px;border-top:1px solid #F0ECE2"><b>Ce qui part en boîte :</b> ' + r.batch + '</div>';
+  return x + '</div></div>';
+}
+
+/* avecRecette n'est vrai que dans l'onglet Bouffe. Les onglets Aujourd'hui et Semaine
+   reutilisent ce bloc et doivent rester courts. */
+function blocJourRepas(d, avecRecette){
   const p = repasDu(d); if (!p) return "";
   const din = dinerDu(d), estAuj = (d === auj());
   let x = '<div class="jour-repas' + (estAuj ? " auj" : "") + '">' +
@@ -1370,7 +1390,8 @@ function blocJourRepas(d){
   x += l("Midi", p.midi);
   x += l("Soir", din ? "<b>" + din.nm + "</b>, " + din.temps : p.soir);
   if (d === PERIODE.courses.d) x += l("Courses", "<b>Les courses</b>, vers " + PERIODE.courses.h.replace(":", "h") + ", environ " + PERIODE.courses.attendu + " \u20ac");
-  if (din && din.alerte) x += '<div class="alerte">' + din.alerte + '</div>';
+  if (din && din.alerte && !avecRecette) x += '<div class="alerte">' + din.alerte + '</div>';
+  if (din && avecRecette) x += blocRecette(din, estAuj);
   return x + '</div>';
 }
 
@@ -1388,7 +1409,7 @@ function renderBouffe(){
 
   /* ---------- LE CALENDRIER DES REPAS ---------- */
   h += '<div class="card"><h2>Ton calendrier <span class="tag">jour par jour</span></h2>';
-  joursPeriode().forEach(d => { h += blocJourRepas(d); });
+  joursPeriode().forEach(d => { h += blocJourRepas(d, true); });
   h += '</div>';
 
   /* ---------- LES COURSES ---------- */
@@ -1423,7 +1444,7 @@ function renderBouffe(){
   h += '<div style="margin-top:10px">';
   C.verifier.forEach(v => {
     h += '<div class="row"><div class="lab"><b>' + v.n + '</b><br><span style="font-size:12px">Il te faut ' + v.besoin + '</span></div>' +
-         '<div style="font-size:12px;color:var(--anthr);text-align:right;white-space:nowrap">si manquant<br><b>' + v.si + '</b></div></div>';
+         '<div style="font-size:12px;color:var(--anthr);text-align:right;max-width:46%">si manquant<br><b>' + v.si + '</b></div></div>';
   });
   h += '</div></div>';
 
@@ -1431,23 +1452,8 @@ function renderBouffe(){
   C.rayon.forEach(r => { h += '<div class="row"><div class="lab">' + r + '</div></div>'; });
   h += '</div>';
 
-  /* ---------- LES DINERS EN DETAIL ---------- */
-  h += '<div class="card"><h2>Les dîners <span class="tag">touche pour la recette</span></h2>';
-  joursPeriode().forEach(d => {
-    const r = dinerDu(d); if (!r) return;
-    const estAuj = (d === auj());
-    h += '<div class="acc' + (estAuj ? " open" : "") + '"><div class="h"><span class="nm">' + libelle(d) + ", " + r.nm + '</span>' +
-         '<span class="meta">' + r.portions + ' portions</span></div><div class="b">' +
-         '<div class="ing"><b>Il te faut :</b> ' + r.ing + '</div>' +
-         '<div style="font-size:11.5px;color:var(--or);font-weight:700;margin:9px 0 3px">' + r.temps + '</div>';
-    r.etapes.forEach((e, i) => {
-      h += '<div class="etape"><span class="n">' + (i + 1) + '</span><span>' + e + '</span></div>';
-    });
-    if (r.alerte) h += '<div class="alerte">' + r.alerte + '</div>';
-    if (r.batch)  h += '<div class="note" style="margin-top:9px;padding-top:9px;border-top:1px solid #F0ECE2"><b>Ce qui part en boîte :</b> ' + r.batch + '</div>';
-    h += '</div></div>';
-  });
-  h += '</div>';
+  /* La carte « Les diners » a ete retiree le 13/09/2026 : les recettes sont desormais
+     depliables sous le plat de chaque jour, dans le calendrier ci-dessus. */
 
   /* ---------- LES REPAS FIXES ---------- */
   h += '<div class="card"><h2>Les repas fixes <span class="tag">identiques chaque jour</span></h2>';
@@ -1642,7 +1648,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v27";
+const FINV = "v32";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};

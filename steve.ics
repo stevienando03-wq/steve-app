@@ -812,8 +812,8 @@ UID:courses-2026-09-13@steve
 DTSTAMP:20260913T080000Z
 DTSTART:20260913T150000
 DTEND:20260913T154000
-SUMMARY:Courses\, environ 33 €
-DESCRIPTION:Galettes de wrap 1 paquet de 8\, Filets de poulet 800 g\, Viande hachée 500 g\, Crème de coco 1 brique de 20 cl\, Poivrons 3\, Oignons 1 kg\, Pommes de terre 1\,5 kg\, Œufs 12\, Skyr ou fromage blanc 1 kg\, Bananes 1 kg\, Brocoli 1\, Épinards frais 300 g\, Lait 2 litres
+SUMMARY:Courses\, environ 28 €
+DESCRIPTION:Galettes de wrap 1 paquet de 8\, Filets de poulet 800 g\, Viande hachée 500 g\, Crème de coco 1 brique de 20 cl\, Poivrons 3\, Courgettes 2\, Oignons 1 kg\, Pommes de terre 1 kg\, Skyr ou fromage blanc 1 kg\, Brocoli 1\, Épinards frais 300 g\, Lait 1 litre
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Courses dans une heure\, la liste est dans l'app
@@ -865,7 +865,7 @@ DTSTAMP:20260913T080000Z
 DTSTART:20260916T193000
 DTEND:20260916T200000
 SUMMARY:Cuisine : Pâtes crevettes\, courgette et aubergine
-DESCRIPTION:250 g de fusilli\, 370 g de crevettes\, 1 courgette\, 1 aubergine\, la moitié de la boîte de tomates pelées\, 2 gousses d'ail\, huile d'olive\, herbes\, paprika || L'eau de cuisson est ce qui lie la sauce aux pâtes. Ne la jette jamais entièrement\, c'est la différence entre des pâtes en sauce et des pâtes sèches avec de la sauce à côté.
+DESCRIPTION:250 g de fusilli\, 370 g de crevettes\, 1 courgette\, 1 aubergine\, la moitié de la boîte de tomates pelées\, 2 gousses d'ail\, huile d'olive\, herbes\, paprika. Aucun achat\, tout est déjà chez toi. || Regarde la date des crevettes DÈS AUJOURD'HUI. Si elle tombe avant mercredi\, inverse : ce plat passe lundi soir et le wrap haricots rouges passe mercredi\, les conserves attendent sans problème.
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Pâtes crevettes\, courgette et aubergine à préparer dans une heure
