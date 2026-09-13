@@ -1,0 +1,7 @@
+# La norme iCalendar impose des fins de ligne CRLF. Git est en core.autocrlf=true sur cette
+# machine, il les convertissait donc en LF au commit et le fichier publie n'etait plus
+# conforme. Constate le 13/09/2026 : 20 776 octets sur le disque, 20 193 une fois pousses.
+*.ics -text
+
+# Le service worker et les donnees sont servis tels quels, on ne touche a rien.
+*.js text eol=lf
