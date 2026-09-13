@@ -202,6 +202,8 @@ body.dark .donut-c{fill:#E8EBF1}
 </div>
 
 <script src="fiches.js"></script>
+<script src="entrainement.js"></script>
+<script src="actu.js"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1540,6 +1542,9 @@ function renderFin(){
     w.innerHTML = '<div class="card"><h2>Finance</h2><p class="note">La banque de fiches n\'est pas chargée. Recharge la page une fois en ligne.</p></div>';
     return;
   }
+  if (fVue === "exo") return finEcranExo();
+  if (fVue === "actu") return finActu();
+  if (fVue === "memo") return finMemo();
   if (fVue === "calcul") return finEcranCalcul();
   if (fVue === "fiches") return finEcranFiches();
   finAccueil();
@@ -1553,13 +1558,16 @@ function finAccueil(){
     '<div class="kpi" style="margin-top:12px">' +
     finKpi(S.fin.serie || 0, "jours de suite") +
     finKpi(vus, "fiches vues") +
-    finKpi(FI.length, "au total") + '</div>';
+    finKpi(EXO.length, "exercices") + '</div>';
   if (rev) h += '<p class="note" style="margin-top:10px">' + rev + ' fiche(s) mises de côté à revoir.</p>';
   h += '</div>';
 
   h += '<div class="card"><h2>Aujourd\'hui</h2>' +
-    '<button class="btn" onclick="finGo(\'calcul\')">Calcul mental, 10 questions</button>' +
-    '<button class="btn bsec" onclick="finGo(\'fiches\')">Fiches finance, 10 cartes</button>';
+    '<button class="btn" onclick="exoGo(\'\')">Exercices chiffrés, 6 cas</button>' +
+    '<button class="btn bsec" onclick="finGo(\'calcul\')">Calcul mental, 10 questions</button>' +
+    '<button class="btn bsec" onclick="finGo(\'fiches\')">Fiches finance, 10 cartes</button>' +
+    '<button class="btn bsec" onclick="finVa(\'actu\')">Le point du jour</button>' +
+    '<button class="btn bsec" onclick="finVa(\'memo\')">Mémo, formules et seuils</button>';
   if (rev) h += '<button class="btn bsec" onclick="finGo(\'fiches\',\'@revoir\')">Revoir mes ' + rev + ' fiches de côté</button>';
   h += '</div>';
 
@@ -1605,6 +1613,7 @@ function finGo(v, theme){
   }
   renderFin(); window.scrollTo(0, 0);
 }
+function finVa(v){ fVue = v; renderFin(); window.scrollTo(0, 0); }
 function finQuitter(){ fVue = "accueil"; renderFin(); window.scrollTo(0, 0); }
 
 function finBarre(){
@@ -1684,6 +1693,143 @@ function finBilan(titre){
     '<button class="btn" onclick="finGo(\'' + (titre === "Fiches" ? "fiches" : "calcul") + '\',\'' + fTheme + '\')">Une autre série</button>' +
     '<button class="btn bsec" onclick="finQuitter()">Retour</button></div>';
   el("fin").innerHTML = h;
+}
+
+/* ---------- exercices, memo, actualite : ajoutes le 13/09 ---------- */
+const EXO = (typeof ENTRAINEMENT !== "undefined" && ENTRAINEMENT.exercices) ? ENTRAINEMENT.exercices : [];
+const MEMO = (typeof ENTRAINEMENT !== "undefined" && ENTRAINEMENT.memo) ? ENTRAINEMENT.memo : [];
+const ET = (typeof ENTRAINEMENT !== "undefined" && ENTRAINEMENT.themes) ? ENTRAINEMENT.themes : {};
+const AJ = (typeof ACTU !== "undefined" && ACTU.jours) ? ACTU.jours : [];
+let eLot = [], ePos = 0, eBon = 0, eRep = false;
+
+function finActu(){
+  let h = '<div class="card hero"><h2>Le point du jour</h2>' +
+    '<p class="note">Mis à jour chaque jour. Pour chaque sujet : ce qui s\'est passé, ' +
+    'pourquoi ça compte, et ce que tu peux en dire en entretien.</p></div>';
+  if (!AJ.length){
+    h += '<div class="card"><p class="note">Pas encore d\'actualité chargée.</p></div>';
+    el("fin").innerHTML = h; return;
+  }
+  AJ.forEach((j, k) => {
+    h += '<div class="card"><h2>' + esc(finDate(j.d)) + '</h2>';
+    j.items.forEach(it => {
+      h += '<div class="acc"><div class="head" onclick="this.nextElementSibling.style.display=' +
+        'this.nextElementSibling.style.display===\'block\'?\'none\':\'block\'">' +
+        '<b>' + esc(it.t) + '</b></div><div style="display:' + (k === 0 ? 'block' : 'none') +
+        ';padding:0 13px 13px">' +
+        '<p>' + esc(it.q) + '</p>' +
+        '<div class="fmeta" style="margin-top:10px">Pourquoi ça compte</div><p>' + esc(it.p) + '</p>' +
+        '<div class="ftip"><b>En entretien.</b> ' + esc(it.e) + '</div>' +
+        '<p class="note" style="margin-top:8px">Source : ' + esc(it.s) + '</p></div></div>';
+    });
+    h += '</div>';
+  });
+  h += '<button class="btn bsec" onclick="finQuitter()">Retour</button>';
+  el("fin").innerHTML = h;
+}
+function finDate(d){
+  const J = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+  const M = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+  const x = new Date(d + "T12:00:00");
+  return J[x.getDay()] + " " + x.getDate() + " " + M[x.getMonth()];
+}
+
+function finMemo(){
+  let h = '<div class="card hero"><h2>Mémo</h2><p class="note">Les formules et les seuils ' +
+    'à avoir en tête. C\'est la référence, pas un quiz.</p></div>';
+  const par = {};
+  MEMO.forEach(m => { (par[m.t] = par[m.t] || []).push(m); });
+  Object.keys(par).forEach(k => {
+    h += '<div class="card"><h2>' + esc(ET[k] || k) + '</h2>';
+    par[k].forEach(m => {
+      h += '<div class="acc"><div class="head" onclick="this.nextElementSibling.style.display=' +
+        'this.nextElementSibling.style.display===\'block\'?\'none\':\'block\'"><b>' +
+        esc(m.n) + '</b></div><div style="display:none;padding:4px 13px 13px">';
+      m.l.forEach(x => { h += '<p style="margin:6px 0">' + esc(x) + '</p>'; });
+      h += '</div></div>';
+    });
+    h += '</div>';
+  });
+  h += '<button class="btn bsec" onclick="finQuitter()">Retour</button>';
+  el("fin").innerHTML = h;
+}
+
+function finEcranExo(){
+  if (ePos >= eLot.length) return finBilanExo();
+  const x = eLot[ePos];
+  let h = '<div class="card">' +
+    '<div class="fprog"><i style="width:' + Math.round(ePos / eLot.length * 100) + '%"></i></div>' +
+    '<div class="fmeta">' + esc(ET[x.t] || "") + '   exercice ' + (ePos + 1) + ' sur ' + eLot.length + '</div>' +
+    '<div class="fq" style="font-size:17px">' + esc(x.n) + '</div>' +
+    '<p style="background:#F7F5EF;border-radius:9px;padding:11px 13px;line-height:1.6">' + esc(x.e) + '</p>' +
+    '<p style="font-weight:700;margin-top:12px">' + esc(x.q) + '</p>';
+  if (!eRep){
+    h += '<input class="fin-in" id="exoRep" inputmode="decimal" placeholder="ta réponse' +
+      (x.u ? " en " + x.u : "") + '" autocomplete="off">' +
+      '<button class="btn" id="exoBtn" onclick="exoValide()">Valider</button>' +
+      '<button class="btn bsec" onclick="exoMontre()">Je sèche, montre la correction</button>' +
+      '<button class="btn bsec" onclick="finQuitter()">Arrêter</button>';
+  }
+  h += '</div>';
+  el("fin").innerHTML = h;
+  const i = el("exoRep");
+  if (i){ i.addEventListener("keydown", e => { if (e.key === "Enter") exoValide(); }); i.focus(); }
+}
+function exoCorrection(juste){
+  const x = eLot[ePos];
+  let h = '<div class="frep" style="color:var(--' + (juste === null ? "anthr" : (juste ? "vert" : "rouge")) + ')">' +
+    (juste === null ? "La réponse est " : (juste ? "Juste. " : "Non. La réponse est ")) +
+    (juste ? "" : fNum(x.r) + (x.u ? " " + x.u : "")) + '</div>' +
+    '<div class="fmeta" style="margin-top:12px">La correction</div>';
+  x.c.forEach((s, i) => {
+    h += '<p style="margin:7px 0"><b>' + (i + 1) + '.</b> ' + esc(s) + '</p>';
+  });
+  h += '<div class="ftip"><b>Le piège.</b> ' + esc(x.p) + '</div>' +
+    '<button class="btn" onclick="exoSuivant()">Suivant</button>' +
+    '<button class="btn bsec" onclick="finQuitter()">Arrêter</button>';
+  return h;
+}
+function exoValide(){
+  if (eRep) return;
+  const x = eLot[ePos], br = el("exoRep").value.trim().replace(/\s/g, "").replace(",", ".");
+  if (br === "") return;
+  const v = parseFloat(br);
+  const juste = isFinite(v) && Math.abs(v - x.r) <= Math.max(0.05, Math.abs(x.r) * 0.01);
+  if (juste) eBon++;
+  eRep = true;
+  const inp = el("exoRep");
+  inp.classList.add(juste ? "fbon" : "fmal"); inp.disabled = true;
+  const b = el("exoBtn"); if (b) b.style.display = "none";
+  const d = document.createElement("div");
+  d.innerHTML = exoCorrection(juste);
+  inp.parentNode.appendChild(d);
+}
+function exoMontre(){
+  eRep = true;
+  const c = el("fin").querySelector(".card");
+  const d = document.createElement("div");
+  d.innerHTML = exoCorrection(null);
+  c.appendChild(d);
+  const i = el("exoRep"); if (i) i.disabled = true;
+  const b = el("exoBtn"); if (b) b.style.display = "none";
+}
+function exoSuivant(){ ePos++; eRep = false; finEcranExo(); window.scrollTo(0, 0); }
+function exoGo(theme){
+  let src = theme ? EXO.filter(x => x.t === theme) : EXO.slice();
+  for (let i = src.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = src[i]; src[i] = src[j]; src[j] = t; }
+  eLot = src.slice(0, 6); ePos = 0; eBon = 0; eRep = false;
+  fVue = "exo"; finEcranExo(); window.scrollTo(0, 0);
+}
+function finBilanExo(){
+  finPointe();
+  const pct = Math.round(eBon / eLot.length * 100);
+  let mot = "À retravailler.";
+  if (pct >= 84) mot = "Excellent."; else if (pct >= 67) mot = "Bon niveau."; else if (pct >= 50) mot = "Ça vient.";
+  el("fin").innerHTML = '<div class="card hero"><h2>Exercices terminés</h2>' +
+    '<div style="font-size:40px;font-weight:800;color:var(--bleu);margin:8px 0">' + eBon + ' / ' + eLot.length + '</div>' +
+    '<p class="note">' + mot + ' Série en cours : ' + S.fin.serie + ' jour(s).</p>' +
+    '<button class="btn" onclick="exoGo(\'\')">Six autres</button>' +
+    '<button class="btn bsec" onclick="finQuitter()">Retour</button></div>';
 }
 
 /* ================= NAVIGATION ================= */
