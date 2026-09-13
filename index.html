@@ -210,6 +210,22 @@ body.dark .donut-c{fill:#E8EBF1}
   line-height:1.5;color:var(--anthr);margin-top:8px}
 body.dark .asPan,body.dark .asBas{background:#1B2233}
 body.dark .asR{background:#222B40}
+/* ---------- La voix et le mode cuisine, 13/09/2026 ---------- */
+.asIco{background:var(--creme);border:1px solid var(--ligne);border-radius:12px;width:42px;
+  height:38px;font-size:17px;cursor:pointer;flex:0 0 auto;line-height:1}
+.asIco.on{background:var(--bleu);border-color:var(--bleu);color:#fff}
+.asIco.ecoute{background:var(--rouge);border-color:var(--rouge);color:#fff;animation:asPulse 1s infinite}
+@keyframes asPulse{0%,100%{opacity:1}50%{opacity:.45}}
+.asCuis{background:var(--bleu);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.asCuis .p{font-size:11px;letter-spacing:.6px;text-transform:uppercase;opacity:.72}
+.asCuis .e{font-size:15px;line-height:1.55;margin-top:5px}
+.asCuis .b{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.asCuis .b button{background:rgba(255,255,255,.16);color:#fff;border:none;border-radius:9px;
+  padding:7px 12px;font-size:12.5px;cursor:pointer;font-weight:600}
+.asMin{background:var(--orbg);border-radius:11px;padding:10px 13px;margin-bottom:11px;
+  font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:9px}
+.asMin b{font-size:16px}
+body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
 </style>
 </head>
 <body>
@@ -232,9 +248,10 @@ body.dark .asR{background:#222B40}
 <div class="asVoile" id="asVoile"></div>
 <div class="asPan" id="asPan">
   <div class="t"><b>Un coup de main</b><button class="x" id="asX" aria-label="Fermer">&times;</button></div>
+  <div id="asBarre" style="padding:0 15px"></div>
   <div class="asLog" id="asLog"></div>
   <div class="asBas">
-    <div class="form"><input type="text" id="asIn" placeholder="une question, ou dis-moi ce que tu as fait"><button class="btn light" id="asGo" style="width:auto;padding:0 16px">Envoyer</button></div>
+    <div class="form"><button class="asIco" id="asMic" title="Dicter">🎤</button><input type="text" id="asIn" placeholder="une question, ou dis-moi ce que tu as fait"><button class="asIco" id="asVoix" title="Lire a voix haute">🔊</button><button class="btn light" id="asGo" style="width:auto;padding:0 14px">Envoyer</button></div>
     <div class="pills" id="asPills"></div>
   </div>
 </div>
@@ -249,9 +266,9 @@ body.dark .asR{background:#222B40}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=36"></script>
-<script src="entrainement.js?v=36"></script>
-<script src="actu.js?v=36"></script>
+<script src="fiches.js?v=38"></script>
+<script src="entrainement.js?v=38"></script>
+<script src="actu.js?v=38"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2495,6 +2512,12 @@ function renderBouffe(){
          '<span class="nm">' + l.n + '<span class="sq">' + l.q + '</span></span>' +
          '<span class="qt">' + fmtEur(l.bas) + ' à ' + fmtEur(l.haut) + '</span></div>';
   });
+  (S.bouffe && S.bouffe.plus || []).forEach((nom, k) => {
+    const id = "plus" + PERIODE.du + "_" + k, on = !!S.shop[id];
+    h += '<div class="chk' + (on ? " on" : "") + '" data-shop="' + id + '"><span class="bx">' + (on ? "\u2713" : "") + '</span>' +
+         '<span class="nm">' + nom + '<span class="sq">ajouté par toi</span></span>' +
+         '<span class="qt">sans prix</span></div>';
+  });
   h += '<div class="row" style="border-top:1px solid #F0ECE2;margin-top:4px"><div class="lab"><b>Tout le panier</b></div>' +
        '<div style="font-weight:700;font-size:13px">' + fmtEur(totBas) + ' à ' + fmtEur(totHaut) + '</div></div>';
   if (pris > 0 && pris < nb) {
@@ -2714,7 +2737,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v36";
+const FINV = "v38";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
@@ -3221,6 +3244,104 @@ function asNb(n){
 /* Chacune rend null si elle ne s'applique pas. L'ordre compte : les plus specifiques
    d'abord, sinon « j'ai bu un verre » finirait dans le budget. */
 const AS_ACTIONS = [
+/* --- annuler la derniere action, par remise de l'etat photographie --- */
+function(n, q){
+  if (!/^(annule|annuler|undo|oublie ca|retire ca|non pas ca|c est faux)/.test(n)) return null;
+  if (!asUndo.length) return '<b>Il n\'y a rien à annuler.</b>';
+  const u = asUndo.pop();
+  asRestaure(u.etat);
+  asDit("Annulé.");
+  return '<div class="asOk"><b>Annulé.</b><br>« ' + bEsc(u.q) + ' » n\'a plus d\'effet.</div>';
+},
+
+/* --- le mode cuisine, mains libres --- */
+function(n, q){
+  if (asCuis) {
+    if (/^(suivant|ensuite|apres|la suite|next|etape suivante)/.test(n)) return asCuisPas(1);
+    if (/^(precedent|avant|retour|etape d avant)/.test(n)) return asCuisPas(-1);
+    if (/^(repete|redis|encore|relis)/.test(n)) return asCuisPas(0);
+    if (/^(stop|fini|termine|arrete|c est bon)/.test(n)) {
+      asCuis = null; asDit("Mode cuisine arrêté.");
+      return '<div class="asOk">Mode cuisine arrêté.</div>';
+    }
+  }
+  if (!/^(on cuisine|cuisine|mode cuisine|guide moi|aide moi a cuisiner|je cuisine)/.test(n)) return null;
+  let d = auj(), r = dinerDu(d);
+  const p = bPlat(n); if (p) { d = p.d; r = p.x; }
+  if (!r) return '<b>Il n\'y a pas de plat prévu aujourd\'hui.</b><br>Dis « cuisine le curry » pour un autre soir.';
+  asCuis = {d: d, i: 0};
+  return '<div class="asOk"><b>Mode cuisine, ' + bEsc(r.nm) + '.</b><br>' + bEsc(r.ing) + '</div>' + asCuisEtape(r, 0);
+},
+
+/* --- le minuteur --- */
+function(n, q){
+  if (/^(stop minuteur|arrete le minuteur|annule le minuteur)/.test(n)) {
+    if (!asTimer) return '<b>Aucun minuteur en cours.</b>';
+    clearTimeout(asTimer.id); clearInterval(asTimer.tic); asTimer = null;
+    return '<div class="asOk">Minuteur arrêté.</div>';
+  }
+  if (!/minuteur|minute|compte a rebours|previens moi dans|reveille moi dans/.test(n)) return null;
+  const v = asNb(n);
+  if (v === null || v <= 0 || v > 180) return '<b>Combien de minutes ?</b><br>Dis « minuteur 11 minutes ».';
+  const quoi = asCuis ? (dinerDu(asCuis.d) ? dinerDu(asCuis.d).nm : "") : "";
+  asMinuteur(v, quoi);
+  asDit("Minuteur de " + v + " minutes lancé.");
+  return '<div class="asOk"><b>Minuteur de ' + v + ' minutes.</b><br>Je te préviens, avec une vibration et la voix. Tu peux fermer le panneau, il continue.</div>';
+},
+
+/* --- lire la liste de courses --- */
+function(n, q){
+  if (!/^(lis|lis moi|dis moi|donne moi)?\s*(ma |la )?liste|qu est ce qu il me reste a prendre|il me reste quoi/.test(n)) return null;
+  if (!/liste|reste a prendre|reste quoi/.test(n)) return null;
+  return asListe();
+},
+
+/* --- ajouter une ligne de courses --- */
+function(n, q){
+  const m = q.match(/^\s*(?:ajoute|rajoute|mets)\s+(.+?)\s*(?:a|dans|sur)?\s*(?:ma|la)?\s*liste\s*$/i);
+  if (!m) return null;
+  const nom = m[1].trim();
+  if (!nom) return null;
+  S.bouffe.plus = S.bouffe.plus || [];
+  S.bouffe.plus.push(nom);
+  save(); renderBouffe();
+  asDit(nom + " ajouté à la liste.");
+  return '<div class="asOk"><b>« ' + bEsc(nom) + ' » ajouté à ta liste.</b><br>Il apparaît dans l\'onglet Bouffe, sans prix, parce que je ne l\'invente pas.</div>';
+},
+
+/* --- enlever une ligne ajoutee --- */
+function(n, q){
+  const m = q.match(/^\s*(?:enleve|retire|supprime)\s+(.+?)\s*(?:de)?\s*(?:ma|la)?\s*liste\s*$/i);
+  if (!m) return null;
+  const c = bNorm(m[1]);
+  S.bouffe.plus = S.bouffe.plus || [];
+  const i = S.bouffe.plus.findIndex(x => bNorm(x).indexOf(c) >= 0);
+  if (i < 0) return '<b>Ce n\'est pas dans tes ajouts.</b><br>Je ne peux enlever que ce que tu as ajouté toi-même.';
+  const nom = S.bouffe.plus.splice(i, 1)[0];
+  save(); renderBouffe();
+  return '<div class="asOk"><b>« ' + bEsc(nom) + ' » retiré.</b></div>';
+},
+
+/* --- ajouter un rendez-vous --- */
+function(n, q){
+  const m = q.match(/^\s*(?:rendez[- ]vous|rdv|note un rendez[- ]vous)\s+(.+)/i);
+  if (!m) return null;
+  const reste = m[1];
+  const d = asDate(bNorm(reste)), h = asHeure(bNorm(reste));
+  if (!d) return '<b>Je n\'ai pas compris la date.</b><br>Dis « rendez-vous dentiste mardi à 14h », ou « rendez-vous dentiste le 25/09 à 14h ».';
+  let titre = reste.replace(/\b(le|a|à|du)\b/gi, " ")
+    .replace(/\d{1,2}\s*[\/.]\s*\d{1,2}/g, " ")
+    .replace(/\d{1,2}\s*(?:h|heures?)\s*\d{0,2}/gi, " ")
+    .replace(new RegExp("\\b(" + BJOURS.join("|") + "|demain|apres[- ]demain|" + AS_MOIS.join("|") + ")\\b", "gi"), " ")
+    .replace(/\s+/g, " ").trim();
+  if (!titre) titre = "Rendez-vous";
+  titre = titre.charAt(0).toUpperCase() + titre.slice(1);
+  S.rdv.push({d: d, h: h || "09:00", dur: 60, t: titre, note: ""});
+  save(); renderSemaine(); renderJour();
+  asDit(titre + " noté le " + libelleLong(d) + " à " + (h || "09:00").replace(":", " heures "));
+  return '<div class="asOk"><b>' + bEsc(titre) + '</b><br>' + bEsc(libelleLong(d)) + ', ' + (h || "09:00").replace(":", "h") +
+    (h ? '' : '<br>Pas d\'heure comprise, j\'ai mis 9h. Corrige dans l\'onglet Semaine.') + '</div>';
+},
 
 /* --- budget : une depense ou une rentree --- */
 function(n, q){
@@ -3502,11 +3623,20 @@ function asAide(){
 function asRepond(q){
   const n = bNorm(q);
   if (!n) return "";
+  asVocal = "";
 
-  /* 1. les actions, les plus specifiques d'abord */
+  /* 1. les actions, les plus specifiques d'abord. On photographie l'etat AVANT pour
+     pouvoir tout annuler d'un mot, meme si la dictee a mal entendu un montant. */
+  const avant = JSON.stringify(S);
   for (let i = 0; i < AS_ACTIONS.length; i++) {
     const r = AS_ACTIONS[i](n, q);
-    if (r !== null && r !== undefined) return r;
+    if (r !== null && r !== undefined) {
+      if (JSON.stringify(S) !== avant) {
+        asUndo.push({q: q, etat: avant});
+        if (asUndo.length > 12) asUndo.shift();
+      }
+      return r;
+    }
   }
 
   /* 2. les consultations */
@@ -3534,8 +3664,225 @@ function asRepond(q){
     }
   }
   const f = asFiche(n); if (f) return f;
+  const g = asCherchePartout(n); if (g) return g;
 
   return bBlocRien(q);
+}
+
+/* ================= LA VOIX, LA CUISINE, L'ANNULATION ================= */
+/* Ajoute le 13/09/2026. La LECTURE a voix haute marche hors ligne, les voix sont dans le
+   telephone. La DICTEE, elle, envoie l'audio a un serveur sur la plupart des navigateurs :
+   elle ne marche donc PAS hors ligne, contrairement au reste de l'assistant. Le bouton du
+   micro se cache quand le navigateur ne sait pas faire. */
+
+if (typeof S.bouffe.voix !== "boolean") S.bouffe.voix = false;
+let asVocal = "", asCuis = null, asTimer = null, asUndo = [], asEcoute = null;
+
+/* ---------- lire a voix haute ---------- */
+function asTexte(h){
+  const d = document.createElement("div");
+  d.innerHTML = h;
+  return d.textContent.replace(/\s+/g, " ").trim();
+}
+function asParle(t, force){
+  if (!force && !S.bouffe.voix) return;
+  if (!("speechSynthesis" in window) || !t) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(t).slice(0, 600));
+    u.lang = "fr-FR"; u.rate = 1.03; u.pitch = 1;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function asDit(t){ asVocal = t; }
+
+/* ---------- la dictee ---------- */
+function asSR(){ return window.SpeechRecognition || window.webkitSpeechRecognition; }
+function asMicro(){
+  const SR = asSR();
+  if (!SR) return;
+  if (asEcoute) { try { asEcoute.stop(); } catch (e) {} asEcoute = null; asMajMicro(); return; }
+  const r = new SR();
+  r.lang = "fr-FR"; r.interimResults = false; r.maxAlternatives = 1; r.continuous = false;
+  r.onresult = ev => {
+    const t = ev.results[0][0].transcript;
+    const i = el("asIn"); if (i) i.value = t;
+    asEcoute = null; asMajMicro();
+    asEnvoie(t);
+  };
+  r.onerror = ev => {
+    asEcoute = null; asMajMicro();
+    const quoi = ev.error === "not-allowed" ? "Le micro est refusé. Autorise-le dans les réglages du navigateur."
+      : ev.error === "no-speech" ? "Je n'ai rien entendu."
+      : ev.error === "network" ? "La dictée a besoin du réseau, et il ne répond pas. Tape ta question, ça marchera."
+      : "La dictée a échoué (" + ev.error + ").";
+    asLog.push({q: "🎤", r: '<b>' + quoi + '</b>'});
+    asRendu();
+  };
+  r.onend = () => { if (asEcoute) { asEcoute = null; asMajMicro(); } };
+  asEcoute = r;
+  try { r.start(); asMajMicro(); } catch (e) { asEcoute = null; asMajMicro(); }
+}
+function asMajMicro(){
+  const b = el("asMic"); if (!b) return;
+  b.classList.toggle("ecoute", !!asEcoute);
+  b.textContent = asEcoute ? "◉" : "🎤";
+}
+
+/* ---------- l'annulation, par photographie de l'etat ---------- */
+/* Photographier l'etat avant chaque action et le remettre pour annuler est plus sur que
+   dix fonctions d'annulation ecrites a la main, dont une finirait par etre fausse. */
+function asRestaure(j){
+  const o = JSON.parse(j);
+  Object.keys(S).forEach(k => { delete S[k]; });
+  Object.keys(o).forEach(k => { S[k] = o[k]; });
+  save(); renderAll();
+}
+
+/* ---------- le minuteur ---------- */
+function asMinuteur(min, quoi){
+  if (asTimer) { clearTimeout(asTimer.id); clearInterval(asTimer.tic); }
+  const fin = Date.now() + min * 60000;
+  const id = setTimeout(() => {
+    const t = quoi ? (quoi + ", c'est prêt.") : "Les " + min + " minutes sont passées.";
+    notifier("Minuteur", t);
+    asParle(t, true);
+    asTimer = null;
+    if (el("asPan").classList.contains("on")) asRendu();
+  }, min * 60000);
+  const tic = setInterval(() => {
+    if (!asTimer) { clearInterval(tic); return; }
+    if (el("asPan").classList.contains("on")) asMajMin();
+  }, 1000);
+  asTimer = {fin: fin, quoi: quoi, id: id, tic: tic, min: min};
+  demanderNotif(function(){});
+}
+function asResteMin(){
+  if (!asTimer) return "";
+  const s = Math.max(0, Math.round((asTimer.fin - Date.now()) / 1000));
+  return Math.floor(s / 60) + " min " + String(s % 60).padStart(2, "0");
+}
+function asMajMin(){
+  const z = el("asMinZ"); if (!z || !asTimer) return;
+  const v = z.querySelector("b"); if (v) v.textContent = asResteMin();
+}
+function asBlocMin(){
+  if (!asTimer) return "";
+  return '<div class="asMin" id="asMinZ"><span>' + bEsc(asTimer.quoi || "Minuteur") +
+    '</span><b>' + asResteMin() + '</b>' +
+    '<button class="asIco" id="asMinStop" style="width:34px;height:30px;font-size:14px">✕</button></div>';
+}
+
+/* ---------- le mode cuisine, mains libres ---------- */
+function asCuisBloc(){
+  if (!asCuis) return "";
+  const r = dinerDu(asCuis.d); if (!r) return "";
+  const n = r.etapes.length;
+  return '<div class="asCuis"><div class="p">' + bEsc(r.nm) + ", étape " + (asCuis.i + 1) + " sur " + n + '</div>' +
+    '<div class="e">' + bEsc(r.etapes[asCuis.i]) + '</div>' +
+    '<div class="b"><button data-as="suivant">Suivant</button>' +
+    '<button data-as="précédent">Précédent</button>' +
+    '<button data-as="répète">Relire</button>' +
+    '<button data-as="stop cuisine">Terminer</button></div></div>';
+}
+function asCuisPas(d){
+  const r = dinerDu(asCuis.d);
+  const n = r.etapes.length;
+  const i = asCuis.i + d;
+  if (i >= n) {
+    asCuis = null;
+    asDit("C'est fini. Bon appétit.");
+    return '<div class="asOk"><b>C\'est fini.</b> Bon appétit. N\'oublie pas ce qui part en boîte : ' + bEsc(r.batch) + '</div>';
+  }
+  if (i < 0) return asCuisEtape(r, 0);
+  asCuis.i = i;
+  return asCuisEtape(r, i);
+}
+function asCuisEtape(r, i){
+  const t = r.etapes[i];
+  asDit("Étape " + (i + 1) + ". " + t);
+  /* une etape qui porte des minutes propose son minuteur */
+  const m = t.match(/(\d+)\s*min/);
+  let h = '<div class="ing"><b>Étape ' + (i + 1) + ' sur ' + r.etapes.length + '</b></div>' +
+    '<div style="margin-top:7px;font-size:14px;line-height:1.6">' + bEsc(t) + '</div>';
+  if (m) h += '<div class="note" style="margin-top:9px">Dis « minuteur ' + m[1] + ' minutes » et je te préviens.</div>';
+  h += '<div class="note" style="margin-top:7px">Dis « suivant », « répète » ou « stop ».</div>';
+  return h;
+}
+
+/* ---------- la liste de courses a voix haute ---------- */
+function asListe(){
+  const C = PERIODE.courses;
+  const reste = C.lignes.map((l, i) => ({l: l, i: i})).filter(x => !S.shop[cleShop(x.i)]);
+  if (!reste.length) { asDit("Ta liste est complète, tout est pris."); return '<div class="asOk"><b>Tout est pris.</b></div>'; }
+  asDit("Il te reste " + reste.length + " choses. " + reste.map(x => x.l.n + ", " + x.l.q).join(". "));
+  let h = '<div class="ing"><b>Il te reste ' + reste.length + ' lignes sur ' + C.lignes.length + '.</b></div>' +
+    '<div class="note" style="margin-top:6px">Dis « j\'ai pris le poulet » au fur et à mesure, je coche.</div>';
+  reste.forEach(x => {
+    h += '<div class="row"><div class="lab"><b>' + bEsc(x.l.n) + '</b><br><span style="font-size:12.5px">' + bEsc(x.l.q) + '</span></div>' +
+      '<button class="gcal" style="cursor:pointer;white-space:nowrap" data-as="j\'ai pris ' + bEsc(x.l.n) + '">Pris</button></div>';
+  });
+  return h;
+}
+
+/* ---------- un rendez-vous dicte ---------- */
+const AS_MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+function asDate(n){
+  const t = auj();
+  if (/demain/.test(n)) return plusJours(t, 1);
+  if (/apres demain/.test(n)) return plusJours(t, 2);
+  let m = n.match(/(\d{1,2})\s*[\/.]\s*(\d{1,2})/);
+  if (m) {
+    const d = new Date(parse(t).getFullYear(), +m[2] - 1, +m[1]);
+    return iso(d < parse(t) ? new Date(parse(t).getFullYear() + 1, +m[2] - 1, +m[1]) : d);
+  }
+  m = n.match(/(\d{1,2})\s+([a-z]+)/);
+  if (m) {
+    const im = AS_MOIS.findIndex(x => bNorm(x).indexOf(m[2]) === 0);
+    if (im >= 0) {
+      const d = new Date(parse(t).getFullYear(), im, +m[1]);
+      return iso(d < parse(t) ? new Date(parse(t).getFullYear() + 1, im, +m[1]) : d);
+    }
+  }
+  for (let i = 1; i <= 7; i++) {
+    const d = plusJours(t, i);
+    if (n.indexOf(bNorm(BJOURS[parse(d).getDay()])) >= 0) return d;
+  }
+  return null;
+}
+function asHeure(n){
+  const m = n.match(/(\d{1,2})\s*(?:h|heures?|:)\s*(\d{2})?/);
+  if (!m) return null;
+  const h = +m[1], mi = m[2] ? +m[2] : 0;
+  if (h > 23 || mi > 59) return null;
+  return String(h).padStart(2, "0") + ":" + String(mi).padStart(2, "0");
+}
+
+/* ---------- la recherche etendue ---------- */
+function asCherchePartout(n){
+  const mots = n.split(" ").filter(w => w.length > 3);
+  if (!mots.length) return null;
+  function score(t){ let s = 0; const b = bNorm(t); mots.forEach(w => { if (b.indexOf(w) >= 0) s++; }); return s; }
+  let best = null, sc = 0, type = "";
+  if (typeof EXO !== "undefined") EXO.forEach(x => {
+    const s = score(x.n + " " + x.e + " " + x.q);
+    if (s > sc) { sc = s; best = x; type = "exo"; }
+  });
+  if (typeof MEMO !== "undefined") MEMO.forEach(x => {
+    const s = score(x.n + " " + x.l.join(" "));
+    if (s > sc) { sc = s; best = x; type = "memo"; }
+  });
+  if (!best || sc < Math.min(2, mots.length)) return null;
+  if (type === "memo") {
+    let h = '<div class="ing"><b>' + bEsc(best.n) + '</b>, mémo finance.</div>';
+    best.l.forEach(x => { h += '<div style="margin-top:6px">' + bEsc(x) + '</div>'; });
+    return h;
+  }
+  return '<div class="ing"><b>' + bEsc(best.n) + '</b>, exercice de finance.</div>' +
+    '<div class="note" style="margin-top:7px">' + bEsc(best.e) + '</div>' +
+    '<div style="margin-top:8px;font-weight:700">' + bEsc(best.q) + '</div>' +
+    '<div class="ftip" style="margin-top:9px"><b>La réponse :</b> ' + bEsc(best.r) + " " + bEsc(best.u || "") + '</div>' +
+    '<div class="note" style="margin-top:8px">Dis « entraîne-moi » pour la série complète.</div>';
 }
 
 /* ---------------------------------------------------------------- LE PANNEAU */
@@ -3564,6 +3911,11 @@ function asRendu(){
     L.innerHTML = asLog.map(m => '<div class="asQ">' + bEsc(m.q) + '</div><div class="asR">' + m.r + '</div>').join("");
   }
   el("asPills").innerHTML = asPills();
+  const hb = asBlocMin() + asCuisBloc();
+  const z = el("asBarre"); if (z) z.innerHTML = hb;
+  const bv = el("asVoix"); if (bv) bv.classList.toggle("on", !!S.bouffe.voix);
+  const bm = el("asMic"); if (bm && !asSR()) bm.style.display = "none";
+  asMajMicro();
   asBrancheP();
   L.scrollTop = L.scrollHeight;
 }
@@ -3574,6 +3926,7 @@ function asEnvoie(q){
   try { r = asRepond(q); }
   catch (e) { r = '<b>Je me suis cassé la figure sur cette question.</b><br>' + bEsc(e.name + " : " + e.message); }
   if (r === "") return;                 /* action qui a change d'onglet, rien a afficher */
+  asParle(asVocal || asTexte(r).slice(0, 420));
   asLog.push({q: q, r: r});
   if (asLog.length > 30) asLog = asLog.slice(-30);
   const i = el("asIn"); if (i) i.value = "";
@@ -3605,12 +3958,27 @@ function asBrancheP(){
   });
   el("asPills").querySelectorAll("[data-as]").forEach(b =>
     b.addEventListener("click", () => asEnvoie(b.getAttribute("data-as"))));
+  const zb = el("asBarre");
+  if (zb) {
+    zb.querySelectorAll("[data-as]").forEach(b =>
+      b.addEventListener("click", () => asEnvoie(b.getAttribute("data-as"))));
+    const st = zb.querySelector("#asMinStop");
+    if (st) st.addEventListener("click", () => asEnvoie("stop minuteur"));
+  }
 }
 (function(){
   el("asFab").addEventListener("click", asOuvre);
   el("asX").addEventListener("click", asFerme);
   el("asVoile").addEventListener("click", asFerme);
   el("asGo").addEventListener("click", () => asEnvoie(el("asIn").value));
+  el("asMic").addEventListener("click", asMicro);
+  el("asVoix").addEventListener("click", () => {
+    S.bouffe.voix = !S.bouffe.voix; save();
+    if (!S.bouffe.voix && "speechSynthesis" in window) speechSynthesis.cancel();
+    asRendu();
+    if (S.bouffe.voix) asParle("La voix est allumée.", true);
+  });
+  if (!asSR()) el("asMic").style.display = "none";
   el("asIn").addEventListener("keydown", e => { if (e.key === "Enter") asEnvoie(el("asIn").value); });
   document.addEventListener("keydown", e => { if (e.key === "Escape") asFerme(); });
 })();
