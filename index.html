@@ -177,6 +177,39 @@ body.dark .etape .n{background:#3b4763}
 body.dark .bar{background:#2c3543}
 body.dark .nav button{color:#7e879a}
 body.dark .donut-c{fill:#E8EBF1}
+/* ---------- L'assistant global, ajoute le 13/09/2026 ---------- */
+.asFab{position:fixed;left:12px;bottom:72px;z-index:60;width:54px;height:54px;border-radius:50%;
+  background:var(--bleu);color:#fff;font-size:21px;cursor:pointer;
+  /* Le lisere creme le detache du texte : sans lui il se posait au ras des phrases. */
+  border:3px solid var(--creme);
+  box-shadow:0 6px 18px rgba(31,56,100,.34);display:flex;align-items:center;justify-content:center}
+.asFab:active{transform:scale(.94)}
+.asVoile{position:fixed;inset:0;z-index:70;background:rgba(20,24,34,.44);display:none}
+.asVoile.on{display:block}
+.asPan{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--creme);
+  border-radius:18px 18px 0 0;display:none;flex-direction:column;max-height:86vh;
+  box-shadow:0 -8px 30px rgba(20,24,34,.22)}
+.asPan.on{display:flex}
+.asPan > .t{padding:13px 15px 10px;border-bottom:1px solid var(--ligne);display:flex;
+  justify-content:space-between;align-items:center;gap:10px}
+.asPan > .t b{font-size:15px}
+.asPan > .t .x{background:none;border:none;font-size:21px;line-height:1;cursor:pointer;color:var(--anthr)}
+.asLog{flex:1;overflow-y:auto;padding:13px 15px;min-height:120px}
+.asQ{background:var(--bleu);color:#fff;border-radius:14px 14px 4px 14px;padding:9px 13px;
+  margin:0 0 8px auto;max-width:82%;width:fit-content;font-size:13.5px;line-height:1.45}
+.asR{background:#fff;border:1px solid var(--ligne);border-radius:14px 14px 14px 4px;
+  padding:11px 13px;margin-bottom:14px;font-size:13px;line-height:1.6;color:var(--anthr);
+  overflow-wrap:break-word}
+.asR > *:first-child{margin-top:0}
+.asBas{padding:11px 15px 15px;border-top:1px solid var(--ligne);background:var(--creme);
+  border-radius:0 0 18px 18px}
+.asBas .form{display:flex;gap:8px}
+.asBas input{flex:1;min-width:0}
+.asBas .pills{margin-top:9px}
+.asOk{background:var(--vertbg);border-radius:10px;padding:10px 12px;font-size:12.5px;
+  line-height:1.5;color:var(--anthr);margin-top:8px}
+body.dark .asPan,body.dark .asBas{background:#1B2233}
+body.dark .asR{background:#222B40}
 </style>
 </head>
 <body>
@@ -195,6 +228,17 @@ body.dark .donut-c{fill:#E8EBF1}
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
 <div class="tab" id="t-fin"><div class="wrap" id="fin"></div></div>
 
+<button class="asFab" id="asFab" aria-label="Un coup de main">💬</button>
+<div class="asVoile" id="asVoile"></div>
+<div class="asPan" id="asPan">
+  <div class="t"><b>Un coup de main</b><button class="x" id="asX" aria-label="Fermer">&times;</button></div>
+  <div class="asLog" id="asLog"></div>
+  <div class="asBas">
+    <div class="form"><input type="text" id="asIn" placeholder="une question, ou dis-moi ce que tu as fait"><button class="btn light" id="asGo" style="width:auto;padding:0 16px">Envoyer</button></div>
+    <div class="pills" id="asPills"></div>
+  </div>
+</div>
+
 <div class="nav">
   <button class="act" data-tab="jour"><span class="ic">📌</span>Aujourd'hui</button>
   <button data-tab="semaine"><span class="ic">🗓️</span>Semaine</button>
@@ -205,9 +249,9 @@ body.dark .donut-c{fill:#E8EBF1}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=34"></script>
-<script src="entrainement.js?v=34"></script>
-<script src="actu.js?v=34"></script>
+<script src="fiches.js?v=36"></script>
+<script src="entrainement.js?v=36"></script>
+<script src="actu.js?v=36"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2422,8 +2466,7 @@ function renderBouffe(){
   h += '<div class="card hero"><h2>Ta période</h2><div class="big">' + PERIODE.titre + '</div>' +
        '<div class="sub">Du ' + libelleLong(PERIODE.du) + ' au ' + libelleLong(PERIODE.au) + '.<br>' + PERIODE.intro + '</div></div>';
 
-  h += bCarte();
-
+  /* La carte est remontee dans l'assistant global, en bas a gauche. */
   if (t > PERIODE.au) {
     h += '<div class="hint"><b>Cette période est finie.</b> Donne ta prochaine liste de courses et tes repas, ' +
          'et tout se remet à jour d\'un coup : les cases, le calendrier des repas, l\'onglet Aujourd\'hui et le fichier Google Agenda.</div>';
@@ -2671,7 +2714,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v34";
+const FINV = "v36";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
@@ -3135,6 +3178,7 @@ function finBilanExo(){
 }
 
 /* ================= NAVIGATION ================= */
+
 const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin};
 function renderAll(){ Object.keys(RENDUS).forEach(k => RENDUS[k]()); }
 document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => {
@@ -3153,6 +3197,423 @@ document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click"
 function applyDark(){ document.body.classList.toggle("dark", !!S.dark); el("darkBtn").textContent = S.dark ? "☀️" : "🌙"; }
 el("darkBtn").addEventListener("click", () => { S.dark = !S.dark; save(); applyDark(); });
 applyDark();
+
+/* ================= L'ASSISTANT GLOBAL ================= */
+/* Toujours SANS modele de langage. Il repond et il AGIT a partir de l'etat de l'app.
+   Un bouton en bas a gauche, present sur les sept onglets. Ajoute le 13/09/2026. */
+
+let asLog = [], asMode = "";
+
+function asOngletActif(){
+  const b = document.querySelector(".nav button.act");
+  return b ? b.dataset.tab : "jour";
+}
+function asVa(tab){
+  const b = document.querySelector('.nav button[data-tab="' + tab + '"]');
+  if (b) b.click();
+}
+function asNb(n){
+  const m = n.match(/(\d+(?:[.,]\d{1,2})?)/);
+  return m ? parseFloat(m[1].replace(",", ".")) : null;
+}
+
+/* ---------------------------------------------------------------- LES ACTIONS */
+/* Chacune rend null si elle ne s'applique pas. L'ordre compte : les plus specifiques
+   d'abord, sinon « j'ai bu un verre » finirait dans le budget. */
+const AS_ACTIONS = [
+
+/* --- budget : une depense ou une rentree --- */
+function(n, q){
+  if (!/depens|j ai paye|j ai achet|ca m a coute|j ai recu|j ai gagne|encaiss|rembours/.test(n)) return null;
+  const v = asNb(n);
+  if (v === null || v <= 0) return '<b>Il me manque le montant.</b><br>Écris par exemple « j\'ai dépensé 12,50 en courses ».';
+  const entree = /recu|gagne|encaiss|rembours|salaire/.test(n);
+  const cats = entree ? CAT_IN : CAT_OUT;
+  let cat = "Autre";
+  cats.forEach(c => { if (n.indexOf(bNorm(c)) >= 0) cat = c; });
+  if (cat === "Autre" && !entree) {
+    if (/course|lidl|super|march/.test(n)) cat = "Courses";
+    else if (/resto|restau|midi dehors|kebab|burger/.test(n)) cat = "Restaurant";
+    else if (/metro|navigo|train|essence|uber|bus/.test(n)) cat = "Transport";
+    else if (/loyer|edf|electric|internet|charges/.test(n)) cat = "Logement";
+    else if (/pharma|medecin|dentiste|mutuelle/.test(n)) cat = "Santé";
+    else if (/salle|proteine|sport/.test(n)) cat = "Sport";
+    else if (/abonnement|spotify|netflix|forfait/.test(n)) cat = "Abonnements";
+  }
+  S.budget.mvts.push({d: auj(), type: entree ? "in" : "out", montant: v, cat: cat, lib: ""});
+  save(); renderEuro(); renderJour();
+  return '<div class="asOk"><b>C\'est noté.</b> ' + (entree ? "Entrée" : "Sortie") + ' de ' +
+    fmtEur(v) + ' en ' + cat + ', datée d\'aujourd\'hui.</div>' + asSolde();
+},
+
+/* --- sport : la seance est faite --- */
+function(n, q){
+  if (!/(seance|salle|muscu|entrain).*(fait|fini|termin)|j ai fait ma seance|j ai ete a la salle|c est fait/.test(n)) return null;
+  const t = auj();
+  S.track[t] = S.track[t] || {seance: false, eau: 0, note: ""};
+  if (S.track[t].seance) return '<div class="asOk">Ta séance d\'aujourd\'hui était déjà cochée.</div>';
+  S.track[t].seance = true;
+  if (typeof finPointe === "function") { /* la serie finance a son propre compteur */ }
+  save(); renderJour(); renderSport();
+  return '<div class="asOk"><b>Séance cochée.</b> ' + seanceDu(t) + ', ' + libelle(t) + '.</div>' + asSport();
+},
+
+/* --- suivi : un verre d'eau --- */
+function(n, q){
+  if (!/j ai bu|verre d eau|un verre|\+ ?1 eau|de l eau/.test(n)) return null;
+  const t = auj();
+  S.track[t] = S.track[t] || {seance: false, eau: 0, note: ""};
+  const v = asNb(n);
+  S.track[t].eau = Math.min(8, S.track[t].eau + (v && v <= 8 ? v : 1));
+  save(); renderJour();
+  return '<div class="asOk"><b>' + S.track[t].eau + ' verres sur 8</b> aujourd\'hui.' +
+    (S.track[t].eau >= 8 ? ' Objectif atteint.' : ' Il t\'en reste ' + (8 - S.track[t].eau) + '.') + '</div>';
+},
+
+/* --- suivi : la note du jour --- */
+function(n, q){
+  const m = q.match(/^\s*note\s*:?\s*(.+)/i);
+  if (!m) return null;
+  const t = auj();
+  S.track[t] = S.track[t] || {seance: false, eau: 0, note: ""};
+  S.track[t].note = m[1].trim();
+  save(); renderJour();
+  return '<div class="asOk"><b>Note du jour enregistrée.</b><br>' + bEsc(m[1].trim()) + '</div>';
+},
+
+/* --- skills : poser un niveau --- */
+function(n, q){
+  if (typeof SKILLS === "undefined") return null;
+  const m = n.match(/(?:je suis a|niveau|je mets|je me mets)\s*(\d)\s*(?:\/ ?5)?\s*(?:en|sur|pour|a)?\s*(.*)/);
+  if (!m) return null;
+  const niv = parseInt(m[1], 10);
+  if (niv < 0 || niv > 5) return '<b>Le niveau va de 0 à 5.</b>';
+  const cible = (m[2] || "").trim();
+  if (!cible) return '<b>Quelle compétence ?</b><br>Écris par exemple « je suis à 3 en Power BI ».';
+  let trouve = null;
+  SKILLS.forEach(s => { if (!trouve && bNorm(s.nm).indexOf(cible) >= 0) trouve = s.nm; });
+  if (!trouve) return '<b>Je ne trouve pas cette compétence.</b><br>Elles sont dans l\'onglet Skills.';
+  const cur = S.skills[trouve] || {n: 0, note: ""};
+  const av = cur.n;
+  cur.n = niv; S.skills[trouve] = cur; save(); renderSkills();
+  return '<div class="asOk"><b>' + bEsc(trouve) + ' : ' + niv + ' sur 5.</b>' +
+    (av !== niv ? ' Tu étais à ' + av + '.' : '') + '</div>';
+},
+
+/* --- bouffe : cocher une ligne de courses --- */
+function(n, q){
+  if (!/j ai pris|coche|dans le panier|je l ai/.test(n)) return null;
+  const C = PERIODE.courses;
+  let idx = -1;
+  C.lignes.forEach((l, i) => {
+    const c = bNorm(l.n);
+    if (idx < 0 && c.length > 2 && (n.indexOf(c) >= 0 || c.split(" ").some(w => w.length > 4 && n.indexOf(w) >= 0))) idx = i;
+  });
+  if (idx < 0) return '<b>Je ne vois pas quelle ligne.</b><br>Dis « j\'ai pris le poulet », avec le nom tel qu\'il est dans la liste.';
+  const k = cleShop(idx);
+  if (S.shop[k]) return '<div class="asOk">« ' + bEsc(C.lignes[idx].n) + ' » était déjà coché.</div>' + bBlocCourses();
+  S.shop[k] = true; save(); renderBouffe();
+  return '<div class="asOk"><b>« ' + bEsc(C.lignes[idx].n) + ' » coché.</b></div>' + bBlocCourses();
+},
+
+/* --- bouffe : intervertir deux soirs --- */
+function(n, q){
+  if (!/interverti|inverse|echange.*soir|permute/.test(n)) return null;
+  const js = joursPeriode().filter(d => dinerDu(d));
+  const vus = js.filter(d => n.indexOf(bNorm(BJOURS[parse(d).getDay()])) >= 0);
+  if (vus.length !== 2) {
+    let h = '<b>Quels deux soirs ?</b><br>Dis par exemple « inverse lundi et mercredi ». Tes soirs :';
+    js.forEach(d => { h += '<div class="row"><div class="lab"><b>' + bEsc(libelle(d)) + '</b><br><span style="font-size:12.5px">' + bEsc(dinerDu(d).nm) + '</span></div></div>'; });
+    return h;
+  }
+  const a = vus[0], b = vus[1], p = S.bouffe.perm, ra = p[a] || a, rb = p[b] || b;
+  p[a] = rb; p[b] = ra;
+  Object.keys(p).forEach(k => { if (p[k] === k) delete p[k]; });
+  save(); renderBouffe(); renderJour(); renderSemaine();
+  return '<div class="asOk"><b>Interverti.</b><br>' + bEsc(libelle(a)) + ' : ' + bEsc(dinerDu(a).nm) +
+    '<br>' + bEsc(libelle(b)) + ' : ' + bEsc(dinerDu(b).nm) +
+    '<br>Le calendrier et le fichier d\'agenda suivent.</div>';
+},
+
+/* --- finance : lancer un entrainement --- */
+function(n, q){
+  if (!/entraine|entrainement|exercice|calcul mental|fais moi reviser|interroge moi|quiz/.test(n)) return null;
+  asFerme();
+  asVa("fin");
+  if (/calcul/.test(n)) { if (typeof finGo === "function") finGo("calcul"); return ""; }
+  if (/fiche|quiz/.test(n)) { if (typeof finGo === "function") finGo("fiches"); return ""; }
+  if (typeof exoGo === "function") exoGo("");
+  return "";
+},
+
+/* --- navigation --- */
+function(n, q){
+  if (!/^(va|ouvre|montre|affiche|passe|amene)/.test(n)) return null;
+  const T = {jour: /aujourd|jour|accueil/, semaine: /semaine|agenda|rendez/, sport: /sport|salle|muscu/,
+             skills: /skill|competence|progres/, euro: /budget|argent|euro|compte/,
+             bouffe: /bouffe|repas|manger|cuisine|course/, fin: /finance|revis|entrain/};
+  let cible = null;
+  Object.keys(T).forEach(k => { if (!cible && T[k].test(n)) cible = k; });
+  if (!cible) return '<b>Quel onglet ?</b><br>Aujourd\'hui, Semaine, Sport, Skills, Budget, Bouffe ou Finance.';
+  asFerme(); asVa(cible);
+  return "";
+},
+
+/* --- affichage --- */
+function(n, q){
+  if (!/mode sombre|mode clair|mode nuit|passe en (sombre|clair|nuit)/.test(n)) return null;
+  S.dark = !/clair/.test(n); save(); applyDark();
+  return '<div class="asOk">Mode ' + (S.dark ? "sombre" : "clair") + '.</div>';
+},
+];
+
+/* ---------------------------------------------------------------- LES RESUMES */
+function asSolde(){
+  if (!S.budget || S.budget.soldeDebut === null || S.budget.soldeDebut === undefined)
+    return '<div class="note">Ton budget n\'est pas encore démarré, va dans l\'onglet Budget.</div>';
+  const m = S.budget.mvts || [];
+  const ent = m.filter(x => x.type === "in").reduce((a, x) => a + x.montant, 0);
+  const sor = m.filter(x => x.type === "out").reduce((a, x) => a + x.montant, 0);
+  const s = S.budget.soldeDebut + ent - sor;
+  let h = '<div class="row"><div class="lab"><b>Solde aujourd\'hui</b></div><div style="font-weight:800;font-size:15px">' + fmtEur(s) + '</div></div>';
+  h += '<div class="row"><div class="lab">Entré ce mois</div><div style="font-weight:700">' + fmtEur(ent) + '</div></div>';
+  h += '<div class="row"><div class="lab">Sorti ce mois</div><div style="font-weight:700">' + fmtEur(sor) + '</div></div>';
+  const prev = (S.budget.prev || []);
+  if (prev.length) {
+    const ar = prev.filter(x => x.type === "in").reduce((a, x) => a + x.montant, 0);
+    const ap = prev.filter(x => x.type === "out").reduce((a, x) => a + x.montant, 0);
+    h += '<div class="row"><div class="lab"><b>Fin de mois estimée</b><br><span style="font-size:12px">' +
+      fmtEur(ar) + ' à recevoir, ' + fmtEur(ap) + ' à payer</span></div><div style="font-weight:800">' +
+      fmtEur(s + ar - ap) + '</div></div>';
+  }
+  const top = {};
+  m.filter(x => x.type === "out").forEach(x => { top[x.cat] = (top[x.cat] || 0) + x.montant; });
+  const cl = Object.keys(top).sort((a, b) => top[b] - top[a]).slice(0, 3);
+  if (cl.length) h += '<div class="note" style="margin-top:8px"><b>Où part l\'argent :</b> ' +
+    cl.map(c => c + " " + fmtEur(top[c])).join(", ") + '.</div>';
+  return h;
+}
+
+function asSport(){
+  const t = auj(), st = S.track[t] || {};
+  let h = '<div class="ing"><b>Aujourd\'hui : ' + seanceDu(t) + '</b>' +
+    (seanceDu(t) === "REPOS" ? ", repos." : ", " + creneauSport(t) + ".") + '</div>';
+  if (seanceDu(t) !== "REPOS") h += '<div class="note" style="margin-top:6px">' +
+    (st.seance ? "Elle est cochée comme faite." : "Pas encore cochée. Dis-moi « séance faite » quand c'est fait.") + '</div>';
+  h += bTitre("Les sept prochains jours");
+  for (let i = 0; i < 7; i++) {
+    const d = plusJours(t, i), s = seanceDu(d);
+    h += '<div class="row"><div class="lab">' + (i === 0 ? "Aujourd'hui" : bEsc(libelle(d))) + '</div>' +
+      '<span class="pill' + (s === "REPOS" ? '' : ' on') + '">' + (s === "REPOS" ? "repos" : s) + '</span></div>';
+  }
+  return h;
+}
+
+function asRdv(){
+  const p = prochainsRdv(5);
+  if (!p.length) return '<div class="note">Rien de prévu.</div>';
+  let h = "";
+  p.forEach(r => {
+    const j = joursEntre(auj(), r.d);
+    h += '<div class="row"><div class="lab"><b>' + bEsc(r.t) + '</b><br><span style="font-size:12.5px">' +
+      bEsc(libelleLong(r.d)) + ", " + r.h.replace(":", "h") +
+      (j === 0 ? ", aujourd'hui" : j === 1 ? ", demain" : ", dans " + j + " jours") + '</span></div></div>';
+    if (r.note) h += '<div class="note" style="margin:-2px 0 8px">' + bEsc(r.note) + '</div>';
+  });
+  return h;
+}
+
+function asFiche(n){
+  if (typeof FI === "undefined" || !FI.length) return null;
+  const mots = n.split(" ").filter(w => w.length > 3);
+  if (!mots.length) return null;
+  let best = null, score = 0;
+  FI.forEach(f => {
+    const t = bNorm(f.q + " " + f.r);
+    let s = 0;
+    mots.forEach(w => { if (t.indexOf(w) >= 0) s++; });
+    if (s > score) { score = s; best = f; }
+  });
+  if (!best || score < Math.min(2, mots.length)) return null;
+  return '<div class="ing"><b>' + bEsc(best.q) + '</b></div>' +
+    '<div style="margin-top:7px">' + bEsc(best.r) + '</div>' +
+    (best.x ? '<div class="ftip" style="margin-top:9px">' + bEsc(best.x) + '</div>' : '') +
+    '<div class="note" style="margin-top:9px">Une fiche parmi ' + FI.length + ', onglet Finance.</div>';
+}
+
+function asActu(){
+  if (typeof AJ === "undefined" || !AJ.length) return '<div class="note">Pas encore d\'actualité chargée.</div>';
+  const j = AJ[0];
+  let h = '<div class="ing"><b>' + bEsc(finDate(j.d)) + '</b>, ' + j.items.length + ' points.</div>';
+  j.items.forEach(it => {
+    h += '<div class="row"><div class="lab"><span class="note" style="text-transform:uppercase;font-size:10px">' +
+      bEsc((typeof ZONES !== "undefined" && ZONES[it.z]) || "France") + '</span><br><b>' + bEsc(it.t) + '</b>' +
+      '<br><span style="font-size:12.5px">' + bEsc(it.e) + '</span></div></div>';
+  });
+  return h;
+}
+
+function asPoint(){
+  const t = auj(), st = S.track[t] || {seance: false, eau: 0};
+  let h = '<div class="ing"><b>' + bEsc(libelleLong(t)) + '</b></div>';
+  const s = seanceDu(t);
+  h += '<div class="row"><div class="lab"><b>Sport</b></div><div style="text-align:right;font-size:13px">' +
+    (s === "REPOS" ? "repos" : s + (st.seance ? ", faite" : ", à faire")) + '</div></div>';
+  h += '<div class="row"><div class="lab"><b>Eau</b></div><div style="text-align:right;font-size:13px">' + (st.eau || 0) + ' / 8</div></div>';
+  const din = dinerDu(t), rep = repasDu(t);
+  if (din) h += '<div class="row"><div class="lab"><b>Ce soir</b></div><div style="text-align:right;font-size:13px">' + bEsc(din.nm) + '</div></div>';
+  else if (rep && rep.soir) h += '<div class="row"><div class="lab"><b>Ce soir</b></div><div style="text-align:right;font-size:13px">' + bEsc(rep.soir) + '</div></div>';
+  if (rep && rep.midi) h += '<div class="row"><div class="lab"><b>Ce midi</b></div><div style="text-align:right;font-size:13px">' + bEsc(rep.midi) + '</div></div>';
+  const p = prochainsRdv(1);
+  if (p.length) {
+    const j = joursEntre(t, p[0].d);
+    h += '<div class="row"><div class="lab"><b>Prochain rendez-vous</b></div><div style="text-align:right;font-size:13px">' +
+      bEsc(p[0].t) + '<br>' + (j === 0 ? "aujourd'hui" : j === 1 ? "demain" : "dans " + j + " jours") + '</div></div>';
+  }
+  if (S.budget && S.budget.soldeDebut !== null && S.budget.soldeDebut !== undefined) {
+    const m = S.budget.mvts || [];
+    const so = S.budget.soldeDebut + m.filter(x => x.type === "in").reduce((a, x) => a + x.montant, 0) -
+      m.filter(x => x.type === "out").reduce((a, x) => a + x.montant, 0);
+    h += '<div class="row"><div class="lab"><b>Solde</b></div><div style="text-align:right;font-weight:700">' + fmtEur(so) + '</div></div>';
+  }
+  const C = PERIODE.courses;
+  const pris = C.lignes.filter((l, i) => S.shop[cleShop(i)]).length;
+  if (pris < C.lignes.length && C.d >= t)
+    h += '<div class="row"><div class="lab"><b>Courses</b></div><div style="text-align:right;font-size:13px">' + pris + ' / ' + C.lignes.length + ' pris</div></div>';
+  return h;
+}
+
+function asAide(){
+  return '<div class="ing"><b>Ce que je sais faire, sans réseau.</b></div>' +
+    bTitre("Je te réponds") +
+    '<div class="note">Un ingrédient et par quoi le remplacer. Une recette. Le planning d\'un jour. ' +
+    'Le coût des courses. Ta séance et le cycle. Ton solde et ta fin de mois. Tes prochains rendez-vous. ' +
+    'Une fiche de finance parmi les 547. L\'actualité du jour. Et « où j\'en suis » pour tout d\'un coup.</div>' +
+    bTitre("J'agis pour toi") +
+    '<div class="note">« j\'ai dépensé 12,50 en courses ». « séance faite ». « j\'ai bu un verre ». ' +
+    '« note : ... ». « je suis à 3 en Power BI ». « j\'ai pris le poulet ». « inverse lundi et mercredi ». ' +
+    '« entraîne-moi ». « va dans budget ». « mode sombre ».</div>' +
+    bTitre("Ce que je ne sais pas") +
+    '<div class="note">Je n\'invente rien. Quand je ne sais pas, je te prépare la question avec tout ton ' +
+    'contexte dedans, et tu la colles dans Claude.</div>';
+}
+
+/* ---------------------------------------------------------------- LE ROUTEUR */
+function asRepond(q){
+  const n = bNorm(q);
+  if (!n) return "";
+
+  /* 1. les actions, les plus specifiques d'abord */
+  for (let i = 0; i < AS_ACTIONS.length; i++) {
+    const r = AS_ACTIONS[i](n, q);
+    if (r !== null && r !== undefined) return r;
+  }
+
+  /* 2. les consultations */
+  if (/^(aide|help|\?+)$|que sais tu|tu sers a quoi|comment ca marche/.test(n)) return asAide();
+  if (/ou j en suis|point du jour|resume|ma journee|quoi de neuf|bonjour|salut/.test(n)) return asPoint();
+  if (/solde|budget|argent|combien il me reste|fin de mois|depense/.test(n)) return asSolde();
+  if (/rendez|rdv|agenda|prochain/.test(n)) return asRdv();
+  if (/seance|sport|salle|muscu|cycle|pull|push|legs/.test(n)) return asSport();
+  if (/actu|actualite|bce|fed|bceao|beac|nigeria|marche|taux/.test(n)) return asActu();
+  if (/combien|prix|total|cout|panier/.test(n)) return bBlocCourses();
+
+  const j = bJour(n); if (j) return bBlocJour(j);
+  const p = bPlat(n); if (p) return bBlocRecette(p.d, p.x);
+  const i = bIngredient(n); if (i) return bBlocIngredient(i);
+
+  if (typeof SKILLS !== "undefined") {
+    let sk = null;
+    SKILLS.forEach(s => { if (!sk && bNorm(s.nm).length > 2 && n.indexOf(bNorm(s.nm)) >= 0) sk = s; });
+    if (sk) {
+      const cur = S.skills[sk.nm] || {n: 0, note: ""};
+      return '<div class="ing"><b>' + bEsc(sk.nm) + '</b>, niveau ' + cur.n + ' sur 5.</div>' +
+        '<div class="note" style="margin-top:7px"><b>La cible :</b> ' + bEsc(sk.cible) + '</div>' +
+        '<div style="margin-top:8px">' + bEsc(sk.faire) + '</div>' +
+        '<div class="note" style="margin-top:9px">Pour changer le niveau, dis « je suis à 3 en ' + bEsc(sk.nm) + ' ».</div>';
+    }
+  }
+  const f = asFiche(n); if (f) return f;
+
+  return bBlocRien(q);
+}
+
+/* ---------------------------------------------------------------- LE PANNEAU */
+const AS_SUGG = {
+  jour:    ["où j'en suis", "séance faite", "j'ai bu un verre", "mon solde"],
+  semaine: ["mes rendez-vous", "où j'en suis", "le cycle"],
+  sport:   ["séance faite", "le cycle", "où j'en suis"],
+  skills:  ["Power BI", "où j'en suis", "va dans finance"],
+  euro:    ["mon solde", "j'ai dépensé 12,50 en courses", "fin de mois"],
+  bouffe:  ["brocoli", "la recette de ce soir", "combien ça coûte", "j'ai pris le poulet"],
+  fin:     ["l'actualité", "entraîne-moi", "calcul mental"]
+};
+function asPills(){
+  const l = AS_SUGG[asOngletActif()] || AS_SUGG.jour;
+  return l.map(x => '<span class="pill" data-as="' + bEsc(x) + '">' + bEsc(x) + '</span>').join("") +
+    '<span class="pill" data-as="aide">Ce que je sais faire</span>';
+}
+function asRendu(){
+  const L = el("asLog");
+  if (!L) return;
+  if (!asLog.length) {
+    L.innerHTML = '<div class="asR"><b>Dis-moi ce que tu veux.</b><br>Je réponds sur tes repas, ton sport, ' +
+      'ton budget, tes rendez-vous, tes compétences et tes révisions. Et je peux agir : cocher une course, ' +
+      'noter une dépense, marquer ta séance. Tout ça sans réseau.' + asPoint() + '</div>';
+  } else {
+    L.innerHTML = asLog.map(m => '<div class="asQ">' + bEsc(m.q) + '</div><div class="asR">' + m.r + '</div>').join("");
+  }
+  el("asPills").innerHTML = asPills();
+  asBrancheP();
+  L.scrollTop = L.scrollHeight;
+}
+function asEnvoie(q){
+  q = (q || "").trim();
+  if (!q) return;
+  let r;
+  try { r = asRepond(q); }
+  catch (e) { r = '<b>Je me suis cassé la figure sur cette question.</b><br>' + bEsc(e.name + " : " + e.message); }
+  if (r === "") return;                 /* action qui a change d'onglet, rien a afficher */
+  asLog.push({q: q, r: r});
+  if (asLog.length > 30) asLog = asLog.slice(-30);
+  const i = el("asIn"); if (i) i.value = "";
+  asRendu();
+}
+function asOuvre(){
+  el("asPan").classList.add("on");
+  el("asVoile").classList.add("on");
+  asRendu();
+  setTimeout(() => { const i = el("asIn"); if (i) i.focus(); }, 90);
+}
+function asFerme(){
+  el("asPan").classList.remove("on");
+  el("asVoile").classList.remove("on");
+}
+function asBrancheP(){
+  el("asLog").querySelectorAll("[data-brem]").forEach(b => b.addEventListener("click", () => {
+    S.bouffe.remplace[b.getAttribute("data-brem")] = b.getAttribute("data-bval");
+    save(); renderBouffe();
+    asEnvoie("j'ai choisi " + b.getAttribute("data-bval"));
+  }));
+  el("asLog").querySelectorAll("[data-bq]").forEach(b => b.addEventListener("click", () => asEnvoie(b.getAttribute("data-bq"))));
+  const cp = el("asLog").querySelector("#bCopier");
+  if (cp) cp.addEventListener("click", () => {
+    const t = bPourClaude(asLog.length ? asLog[asLog.length - 1].q : "");
+    const fini = () => { const o = el("asLog").querySelector("#bCopieOk"); if (o) o.style.display = "block"; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(fini).catch(() => bSecours(t));
+    else bSecours(t);
+  });
+  el("asPills").querySelectorAll("[data-as]").forEach(b =>
+    b.addEventListener("click", () => asEnvoie(b.getAttribute("data-as"))));
+}
+(function(){
+  el("asFab").addEventListener("click", asOuvre);
+  el("asX").addEventListener("click", asFerme);
+  el("asVoile").addEventListener("click", asFerme);
+  el("asGo").addEventListener("click", () => asEnvoie(el("asIn").value));
+  el("asIn").addEventListener("keydown", e => { if (e.key === "Enter") asEnvoie(el("asIn").value); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") asFerme(); });
+})();
 renderAll();
 /* si un rendez-vous tombe dans deux jours, on previent des l'ouverture */
 setTimeout(rappelsDeuxJours, 1200);
