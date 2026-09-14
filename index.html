@@ -328,9 +328,9 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
 </div>
 
-<script src="fiches.js?v=44"></script>
-<script src="entrainement.js?v=44"></script>
-<script src="actu.js?v=44"></script>
+<script src="fiches.js?v=45"></script>
+<script src="entrainement.js?v=45"></script>
+<script src="actu.js?v=45"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2912,7 +2912,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v43";
+const FINV = "v45";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
