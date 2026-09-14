@@ -1,6 +1,6 @@
-const CACHE = "steve-v45";
-const ASSETS = ["./", "./index.html", "./fiches.js", "./actu.js", "./entrainement.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
-const DONNEES = ["fiches.js", "actu.js", "entrainement.js"];
+const CACHE = "steve-v46";
+const ASSETS = ["./", "./index.html", "./fiches.js", "./actu.js", "./entrainement.js", "./dscg.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
+const DONNEES = ["fiches.js", "actu.js", "entrainement.js", "dscg.js"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

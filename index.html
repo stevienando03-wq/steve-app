@@ -300,6 +300,7 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
 <div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
 <div class="tab" id="t-fin"><div class="wrap" id="fin"></div></div>
+<div class="tab" id="t-dscg"><div class="wrap" id="dscg"></div></div>
 
 <button class="asFab" id="asFab" aria-label="Un coup de main">💬</button>
 <div class="asVoile" id="asVoile"></div>
@@ -326,11 +327,13 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
+  <button data-tab="dscg"><span class="ic">🎓</span>DSCG</button>
 </div>
 
-<script src="fiches.js?v=45"></script>
-<script src="entrainement.js?v=45"></script>
-<script src="actu.js?v=45"></script>
+<script src="fiches.js?v=46"></script>
+<script src="entrainement.js?v=46"></script>
+<script src="actu.js?v=46"></script>
+<script src="dscg.js?v=46"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2912,7 +2915,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v45";
+const FINV = "v46";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
@@ -3458,7 +3461,182 @@ function finBilanExo(){
 
 /* ================= NAVIGATION ================= */
 
-const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin};
+
+/* ======================= DSCG, ajoute le 14/09/2026 =======================
+   Le contenu est dans dscg.js. Tout le reglementaire vient de l'arrete du 4 aout 2025.
+   dscgVue retient l'ecran courant, comme fVue pour l'onglet Finance. */
+let dscgVue = "accueil";
+function dscgVa(v){ dscgVue = v; renderDscg(); window.scrollTo(0, 0); }
+
+function renderDscg(){
+  try { renderDscgInterne(); }
+  catch (err){
+    el("dscg").innerHTML = '<div class="card"><h2>L\'onglet a buté</h2>' +
+      '<p class="note">Envoie-moi cette ligne, elle dit exactement où.</p>' +
+      '<p style="font-family:monospace;font-size:12px;background:#F7F5EF;padding:11px;' +
+      'border-radius:9px;word-break:break-word">' + esc(err.name + " : " + err.message) + '</p></div>';
+  }
+}
+
+function renderDscgInterne(){
+  if (typeof DSCG_UE === "undefined"){
+    el("dscg").innerHTML = '<div class="card"><h2>DSCG</h2><p class="note">' +
+      'Le fichier dscg.js n\'est pas chargé. Recharge la page.</p></div>'; return;
+  }
+  const V = {accueil:dscgAccueil, ue:dscgUe, cal:dscgCal, achats:dscgAchats,
+             plan:dscgPlan, verif:dscgVerif};
+  el("dscg").innerHTML = (V[dscgVue] || dscgAccueil)();
+  dscgBranche();
+}
+
+function dscgRetour(){
+  return '<button class="btn bsec" onclick="dscgVa(\'accueil\')">Retour</button>';
+}
+
+function dscgAccueil(){
+  /* Le nombre d'UE sans dispense possible est une donnee de l'arrete, pas un choix. */
+  const sansDisp = DSCG_UE.filter(u => !u.dispense).length;
+  const hTot = DSCG_UE.reduce((s, u) => s + u.h, 0);
+  let h = '<div class="card"><h2>DSCG, cap sur la session 2027</h2>' +
+    '<p class="note">Diplôme supérieur de comptabilité et gestion. ' + esc(DSCG_META.grade) + '</p>' +
+    '<div class="row" style="gap:8px;flex-wrap:wrap;margin-top:10px">' +
+    '<div class="kpi"><b>7</b><span>unités d\'enseignement</span></div>' +
+    '<div class="kpi"><b>' + hTot + ' h</b><span>de programme officiel</span></div>' +
+    '<div class="kpi"><b>' + sansDisp + '</b><span>UE sans dispense possible</span></div>' +
+    '<div class="kpi"><b>120</b><span>crédits européens</span></div>' +
+    '</div></div>';
+
+  h += '<div class="card sec-rouge"><h2>Avant tout le reste, deux choses à vérifier</h2>' +
+       '<p class="note">Elles décident si le projet est possible, et à quel prix. ' +
+       'Personne ne peut les vérifier à ma place.</p>' +
+       '<button class="btn" onclick="dscgVa(\'verif\')">Les quatre questions</button></div>';
+
+  h += '<div class="card sec-or"><h2>Le programme change à MA session</h2><ul class="note">';
+  DSCG_META.reforme.forEach(x => { h += '<li>' + esc(x) + '</li>'; });
+  h += '</ul><p class="note" style="margin-top:8px"><b>Conséquence directe :</b> ' +
+       'tout manuel qui ne porte pas la mention réforme 2026-2027 est périmé sur le fond.</p></div>';
+
+  h += '<div class="card"><h2>Où aller</h2><div class="pills">' +
+    '<span class="pill" onclick="dscgVa(\'ue\')">Les 7 UE et le programme</span>' +
+    '<span class="pill" onclick="dscgVa(\'plan\')">Dans quel ordre les passer</span>' +
+    '<span class="pill" onclick="dscgVa(\'cal\')">Le calendrier</span>' +
+    '<span class="pill" onclick="dscgVa(\'achats\')">Ce que j\'achète</span>' +
+    '</div></div>';
+
+  h += '<div class="card"><h2>Comment on décroche le diplôme</h2><ul class="note">';
+  DSCG_META.validation.forEach(x => { h += '<li>' + esc(x) + '</li>'; });
+  h += '</ul></div>';
+
+  h += '<div class="card sec-rouge"><h2>Le mémoire et l\'IA</h2>' +
+       '<p class="note">' + esc(DSCG_META.ia) + '</p></div>';
+
+  h += '<div class="card"><h2>Les liens qui servent</h2>';
+  DSCG_LIENS.forEach(l => {
+    h += '<p class="note" style="margin:6px 0"><a href="' + l[1] + '" target="_blank" rel="noopener">' +
+         esc(l[0]) + '</a></p>';
+  });
+  h += '<p class="note" style="margin-top:10px;opacity:.75">Source du contenu : ' +
+       esc(DSCG_META.source) + '. Mis à jour le ' + esc(DSCG_META.maj) + '.</p></div>';
+  return h;
+}
+
+function dscgUe(){
+  let h = dscgRetour() + '<div class="card"><h2>Les sept unités d\'enseignement</h2>' +
+    '<p class="note">Nature, durée, coefficient et crédits viennent de l\'article 11 de ' +
+    'l\'arrêté. Les parties et leurs volumes horaires viennent de l\'annexe 2.</p></div>';
+  DSCG_UE.forEach(u => {
+    const cl = u.dispense ? "" : " sec-rouge";
+    h += '<div class="card' + cl + '"><h2>UE ' + u.n + ' ' + esc(u.nm) + '</h2>' +
+      '<p class="note">' + esc(u.pour) + '</p>' +
+      '<div class="row" style="gap:8px;flex-wrap:wrap;margin:10px 0">' +
+      '<div class="kpi"><b>' + esc(u.duree) + '</b><span>' + esc(u.nat) + '</span></div>' +
+      '<div class="kpi"><b>' + esc(u.coef) + '</b><span>coefficient</span></div>' +
+      '<div class="kpi"><b>' + u.ects + '</b><span>crédits</span></div>' +
+      '<div class="kpi"><b>' + u.h + ' h</b><span>de programme</span></div>' +
+      '</div>';
+    if (!u.dispense){
+      h += '<p class="note"><b>Aucune dispense n\'est possible sur cette UE</b>, ' +
+           'article 5 de l\'arrêté. Elle se passe, quoi qu\'il arrive.</p>';
+    }
+    h += '<div class="acc"><div class="h"><span class="nm">Le programme, partie par partie</span>' +
+         '<span class="meta">voir</span></div><div class="b">';
+    u.parties.forEach(p => {
+      h += '<p style="margin:8px 0"><b>' + esc(p.t) + '</b>' +
+           (p.h ? ' <span class="note">' + p.h + ' heures</span>' : '') +
+           '<br><span class="note">' + esc(p.d) + '</span></p>';
+    });
+    h += '<p class="note" style="margin-top:10px"><b>Ce qu\'il faut savoir avant :</b> ' +
+         esc(u.prereq) + '</p></div></div>';
+    h += '<p class="note" style="margin-top:10px"><b>Où j\'en suis :</b> ' + esc(u.moi) + '</p>';
+    h += '</div>';
+  });
+  return h;
+}
+
+function dscgPlan(){
+  let h = dscgRetour() + '<div class="card"><h2>Dans quel ordre les passer</h2>' +
+    '<p class="note">Rien n\'oblige à tout passer la même année. Une note d\'au moins 10 ' +
+    'reste acquise huit sessions, donc on étale sans rien perdre.</p></div>';
+  DSCG_PLAN.forEach((v, i) => {
+    h += '<div class="card"><h2>' + (i + 1) + '. ' + esc(v.vague) + '</h2>' +
+      '<p style="font-size:20px;font-weight:800;margin:6px 0">' + esc(v.ue) + '</p>' +
+      '<p class="note">' + esc(v.x) + '</p>' +
+      '<p class="note" style="margin-top:8px;opacity:.8">' + esc(v.quand) + '</p></div>';
+  });
+  h += '<div class="card sec-or"><h2>Le piège de la dispense</h2>' +
+    '<p class="note">Une UE dispensée ne donne pas ses crédits européens et n\'entre pas ' +
+    'dans le calcul de la moyenne. Sur une UE où je suis bon, la dispense me prive donc ' +
+    'd\'une note qui aurait tiré la moyenne. À ne pas demander par réflexe.</p></div>';
+  return h;
+}
+
+function dscgCal(){
+  let h = dscgRetour() + '<div class="card"><h2>Le calendrier</h2>' +
+    '<p class="note">Les dates de la session 2027 ne sont pas encore publiées. ' +
+    'Ce qui est marqué à confirmer est une projection sur le rythme de 2026, ' +
+    'pas une date officielle.</p></div>';
+  DSCG_CAL.forEach(c => {
+    h += '<div class="card' + (c.sur ? ' sec-vert' : '') + '">' +
+      '<h2>' + esc(c.q) + '</h2>' +
+      '<p style="font-size:18px;font-weight:800;margin:4px 0">' + esc(c.d) + '</p>' +
+      '<p class="note">' + esc(c.x) + '</p></div>';
+  });
+  return h;
+}
+
+function dscgAchats(){
+  let h = dscgRetour() + '<div class="card"><h2>Ce que j\'achète</h2>' +
+    '<p class="note">Les prix sont des ordres de grandeur relevés chez les éditeurs et ' +
+    'sur le site du SIEC, pas des devis.</p></div>';
+  DSCG_ACHATS.forEach(a => {
+    const cl = a.prio === 1 ? " sec-vert" : (a.prio === 3 ? " sec-or" : "");
+    h += '<div class="card' + cl + '"><h2>' + esc(a.q) + '</h2>' +
+      '<p style="font-size:18px;font-weight:800;margin:4px 0">' + esc(a.p) + '</p>' +
+      '<p class="note">' + esc(a.x) + '</p></div>';
+  });
+  return h;
+}
+
+function dscgVerif(){
+  let h = dscgRetour() + '<div class="card sec-rouge"><h2>Les quatre questions à trancher</h2>' +
+    '<p class="note">Tant qu\'elles ne sont pas tranchées, le reste est théorique.</p></div>';
+  DSCG_VERIF.forEach(v => {
+    h += '<div class="card"><h2>' + esc(v.q) + '</h2>' +
+      '<p class="note">' + esc(v.r) + '</p>' +
+      '<p style="margin-top:10px;padding:11px;background:#F7F5EF;border-radius:9px">' +
+      '<b>Pour moi :</b> ' + esc(v.a) + '</p></div>';
+  });
+  return h;
+}
+
+/* Les accordeons de l'onglet se branchent comme partout ailleurs dans l'app. */
+function dscgBranche(){
+  el("dscg").querySelectorAll(".acc .h").forEach(x => {
+    x.addEventListener("click", () => x.parentNode.classList.toggle("open"));
+  });
+}
+
+const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg};
 function renderAll(){ Object.keys(RENDUS).forEach(k => RENDUS[k]()); }
 document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".nav button").forEach(x => x.classList.remove("act"));
