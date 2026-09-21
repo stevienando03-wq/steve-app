@@ -512,11 +512,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=73"></script>
-<script src="entrainement.js?v=73"></script>
-<script src="actu.js?v=73"></script>
-<script src="dscg.js?v=73"></script>
-<script src="signaux.js?v=73"></script>
+<script src="fiches.js?v=74"></script>
+<script src="entrainement.js?v=74"></script>
+<script src="actu.js?v=74"></script>
+<script src="dscg.js?v=74"></script>
+<script src="signaux.js?v=74"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2778,6 +2778,24 @@ function renderEuro(){
   let epTotal = epMois.net;
   b.histo.forEach(m => { epTotal += (m.epargne || 0); });
 
+  /* Le mois suivi peut prendre du retard sur le calendrier, parce que la cloture est un
+     geste a la main. Tant qu'elle n'est pas faite, les charges fixes ne sont pas revenues
+     dans le previsionnel et le solde de fin de mois ne veut plus rien dire. On le dit donc
+     tout en haut, avec le bouton sous la main. Une seule cloture suffit a rattraper, meme
+     apres plusieurs mois : elle saute directement au mois en cours. */
+  if ((b.mois || moisCourant()) < moisCourant()) {
+    let retard = 0, mtest = b.mois;
+    while (mtest < moisCourant() && retard < 36) { mtest = moisApres(mtest); retard++; }
+    h += '<div class="card sec-rouge"><h2>' + libelleMois(b.mois) + ' n\'est pas clôturé</h2>' +
+         '<div class="alerte">On est en <b>' + libelleMois(moisCourant()) + '</b> et tu suis ' +
+         'encore <b>' + libelleMois(b.mois) + '</b>' +
+         (retard > 1 ? ', soit ' + retard + ' mois de retard' : '') + '. Tant que tu ne ' +
+         'clôtures pas, tes charges fixes ne sont pas revenues dans le prévisionnel et le ' +
+         'solde de fin de mois est faux. Un seul clic rattrape tout.</div>' +
+         '<button class="btn or" id="resetMoisHaut" style="margin-top:10px">Clôturer ' +
+         libelleMois(b.mois) + ' et passer à ' + libelleMois(moisCourant()) + '</button></div>';
+  }
+
   const R = 62, C = 2 * Math.PI * R;
   h += '<div class="card"><h2>Mon solde <span class="tag">' + libelleMois(b.mois) + '</span></h2>' +
        '<svg class="donut" width="170" height="170" viewBox="0 0 170 170">' +
@@ -2832,9 +2850,16 @@ function renderEuro(){
        'prévu 100 et qu\'il n\'en sort que 60, les 60 passent en mouvement réel et 40 restent ' +
        'en prévision. Quand tu sais que ces 40 ne viendront plus, la croix les efface. ' +
        'Le libellé est facultatif : il sert à te rappeler de quoi il s\'agit. ' +
-       'Le prévisionnel survit à la clôture, et les lignes marquées <b>chaque mois</b> ' +
-       'viennent de tes charges fixes : elles se remettent toutes seules à chaque clôture.' +
-       '</div></div>';
+       'Le prévisionnel survit à la clôture.' +
+       '</div>' +
+       '<div class="note" style="margin-top:9px"><b>Les lignes marquées « chaque mois »</b> ' +
+       'viennent de tes charges fixes, la carte juste en dessous. Le trajet est toujours le ' +
+       'même : la charge fixe se recopie ici en début de mois, tu cliques sur <b>C\'est fait</b> ' +
+       'quand elle passe, elle devient un mouvement réel et <b>elle sort d\'ici</b> pour ne pas ' +
+       'être comptée deux fois. Elle <b>reste</b> dans tes charges fixes, et elle <b>revient</b> ' +
+       'ici toute seule à la clôture du mois. Supprimer la ligne d\'ici ne supprime que la ' +
+       'prévision de ce mois-ci ; pour arrêter l\'abonnement pour de bon, c\'est la croix dans ' +
+       'la carte du dessous.</div></div>';
 
   /* les abonnements et charges qui reviennent tous les mois */
   const recOut = b.recur.filter(r => r.type === "out").reduce((a, r) => a + r.montant, 0);
@@ -3071,7 +3096,10 @@ function renderEuro(){
     if (reste > 0) { p.montant = reste; } else { S.budget.prev.splice(i, 1); }
     save(); renderEuro();
   }));
-  el("resetMois").addEventListener("click", () => {
+  /* Deux boutons peuvent cloturer : celui du bas, toujours la, et celui du bandeau de
+     retard, qui n'existe que certains jours. Meme geste, donc meme fonction. */
+  ["resetMois", "resetMoisHaut"].forEach(idb => { const bt = el(idb); if (!bt) return;
+   bt.addEventListener("click", () => {
     if (!confirm("Clôturer le mois ? Il sera archivé pour que tu puisses comparer, et la liste repart à zéro.")) return;
     /* le mois archivé est celui qu'on suivait, pas celui du jour où on clique.
        Sans ça, clôturer août le 1er septembre archivait « septembre ». */
@@ -3094,6 +3122,7 @@ function renderEuro(){
     S.budget.prev = S.budget.prev.filter(p => !p.rid);
     injecteRecurrents();
     save(); renderEuro();
+   });
   });
 }
 
