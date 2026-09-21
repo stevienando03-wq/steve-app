@@ -512,11 +512,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=72"></script>
-<script src="entrainement.js?v=72"></script>
-<script src="actu.js?v=72"></script>
-<script src="dscg.js?v=72"></script>
-<script src="signaux.js?v=72"></script>
+<script src="fiches.js?v=73"></script>
+<script src="entrainement.js?v=73"></script>
+<script src="actu.js?v=73"></script>
+<script src="dscg.js?v=73"></script>
+<script src="signaux.js?v=73"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2270,6 +2270,7 @@ function poidsLisible(n){
 }
 
 let PAPIERS_EN_MEMOIRE = [];
+let PAP_MSG = null;   /* message a reposer apres le reaffichage */
 function renderDocs(){
   docsTous().then(l => { PAPIERS_EN_MEMOIRE = l || []; dessineDocs(); })
     .catch(() => { PAPIERS_EN_MEMOIRE = []; dessineDocs(true); });
@@ -2349,10 +2350,32 @@ function dessineDocs(panne){
   h += '<button class="btn bsec" style="margin-top:8px" data-pap="charge:@libre">' +
     'Ajouter un document</button></div>';
 
+  /* Un paquet remplit plusieurs emplacements d un coup. Steve : « tu peux pas
+     le mettre toi et puis supprimer vite vite ». Non : un depot public garde
+     tout dans son historique, meme apres suppression. Mais on peut lui eviter
+     cinq imports a la suite en lui envoyant UN fichier qui les contient tous,
+     de son ordinateur a son telephone, sans passer par le reseau. */
+  h += '<div class="card"><h2>Importer un paquet</h2>' +
+    '<div class="sub" style="margin-bottom:8px">Un seul fichier qui remplit plusieurs ' +
+    'emplacements d\'un coup. Je te l\'ai préparé avec tes trois CV et tes deux lettres : ' +
+    '<b>paquet-papiers.json</b>, dans « 01 - Mon CV et ma lettre ».</div>' +
+    '<button class="btn bsec" data-pap="paquet:@">Choisir le paquet</button>' +
+    '<div class="note" style="margin-top:9px">Tes papiers d\'identité, eux, tu les ajoutes ' +
+    'toi-même : je ne les ai pas, et ils ne doivent jamais transiter ailleurs que d\'un de ' +
+    'tes appareils à l\'autre.</div></div>';
+
   h += '<div class="card"><div class="note" id="papMsg">Un PDF, une photo ou un scan, tout ' +
     'passe. Pour un passeport ou un titre, une photo nette de la page vaut mieux qu\'un scan ' +
     'flou. Et garde une copie dans ton Drive : ce téléphone est une copie, pas une ' +
     'sauvegarde.</div></div>';
+
+  if (PAP_MSG){
+    h = h.replace('<div class="note" id="papMsg">',
+      '<div class="note" id="papMsg" style="border-left:3px solid var(--vert)">' +
+      PAP_MSG + '<br><span style="opacity:.75">');
+    h = h.replace('sauvegarde.</div></div>', 'sauvegarde.</span></div></div>');
+    PAP_MSG = null;
+  }
 
   el("docs").innerHTML = h;
   brancherPapiers();
@@ -2377,6 +2400,43 @@ function brancherPapiers(){
   }
   cont.querySelectorAll("[data-pap]").forEach(b => b.addEventListener("click", async () => {
     const [quoi, id] = b.dataset.pap.split(":");
+
+    if (quoi === "paquet"){
+      inp.value = "";
+      inp.onchange = () => {
+        const f = inp.files && inp.files[0];
+        if (!f){ dire("Aucun fichier choisi."); return; }
+        const r = new FileReader();
+        r.onload = async () => {
+          let o;
+          try { o = JSON.parse(String(r.result)); }
+          catch(e){ dire("<b>Ce n'est pas un paquet.</b> Le fichier doit être un .json.", 1); return; }
+          if (!o || o.paquet !== "papiers" || !Array.isArray(o.docs)){
+            dire("<b>Ce fichier n'est pas un paquet de papiers.</b> Rien n'a été touché.", 1); return;
+          }
+          let n = 0, rates = 0;
+          for (const d of o.docs){
+            try {
+              const bin = atob(d.b64 || "");
+              const u8 = new Uint8Array(bin.length);
+              for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+              await docMet({id: d.id, nm: d.nm, fichier: new Blob([u8], {type: d.type || "application/pdf"}),
+                            type: d.type || "application/pdf", taille: u8.length,
+                            nomFichier: d.nomFichier || (d.nm + ".pdf"), ajoute: auj()});
+              n++;
+            } catch(e){ rates++; }
+          }
+          PAP_MSG = "<b>" + n + " document" + (n > 1 ? "s" : "") + " enregistré" +
+            (n > 1 ? "s" : "") + ".</b>" + (rates ? " " + rates + " n'ont pas pu être lus." : "") +
+            " Tu peux supprimer le paquet de ton téléphone, ils sont dans l'app.";
+          renderDocs();
+        };
+        r.onerror = () => dire("<b>Lecture impossible.</b>", 1);
+        r.readAsText(f);
+      };
+      inp.click();
+      return;
+    }
 
     if (quoi === "charge"){
       inp.value = "";
