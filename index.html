@@ -473,6 +473,7 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <div class="tab" id="t-semaine"><div class="wrap" id="semaine"></div></div>
 <div class="tab" id="t-sport"><div class="wrap" id="sport"></div></div>
 <div class="tab" id="t-partir"><div class="wrap" id="partir"></div></div>
+<div class="tab" id="t-docs"><div class="wrap" id="docs"></div></div>
 <div class="tab" id="t-skills"><div class="wrap" id="skills"></div></div>
 <div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
@@ -504,17 +505,18 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
+  <button data-tab="docs"><span class="ic">🗂️</span>Papiers</button>
   <!-- DSCG sorti de la barre le 21/09 : son resume et son calendrier sont dans
        Parcours. Le code et les donnees restent en place, remettre ce bouton suffit. -->
 </div>
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=70"></script>
-<script src="entrainement.js?v=70"></script>
-<script src="actu.js?v=70"></script>
-<script src="dscg.js?v=70"></script>
-<script src="signaux.js?v=70"></script>
+<script src="fiches.js?v=71"></script>
+<script src="entrainement.js?v=71"></script>
+<script src="actu.js?v=71"></script>
+<script src="dscg.js?v=71"></script>
+<script src="signaux.js?v=71"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2185,6 +2187,246 @@ function htmlBoite(){
   return h;
 }
 
+/* ================= L'ONGLET PAPIERS =================
+   Steve, le 21/09 : « l import CV ne marche pas, cree un module documents ou
+   tu mets les CV, mes titre de sejour, passeport, carte etudiante et vitale
+   et autres trucs importants du quotidien, et que je peux importer en PDF ».
+   Et : « mais en local ».
+
+   POURQUOI CETTE VERSION REMPLACE LA PRECEDENTE.
+   1. L import passait par un <input type="file"> cache dans un <label>. Sur
+      telephone, ce montage n ouvre pas toujours le selecteur de fichiers :
+      c est le bug qu il a rencontre. Ici, un vrai bouton appelle click() sur
+      un input UNIQUE et permanent, et aucun filtre `accept` ne vient
+      empecher un fournisseur de fichiers Android de proposer ses documents.
+   2. Le stockage passe de localStorage a IndexedDB. Un passeport scanne pese
+      souvent plus qu un CV, et localStorage plafonne vers cinq megaoctets
+      pour TOUT, y compris son budget et ses taches. IndexedDB garde des
+      fichiers entiers, sans conversion en base64, et ne met pas son etat en
+      danger.
+
+   🚨 TOUT RESTE SUR SON TELEPHONE. Le depot de l app est PUBLIC : un passeport
+   ou un titre de sejour publie serait une catastrophe. Rien de ce module ne
+   part sur le reseau, jamais. */
+const BASE_DOC = "steve_papiers";
+function ouvreBase(){
+  return new Promise((ok, non) => {
+    const r = indexedDB.open(BASE_DOC, 1);
+    r.onupgradeneeded = () => {
+      if (!r.result.objectStoreNames.contains("docs"))
+        r.result.createObjectStore("docs", {keyPath: "id"});
+    };
+    r.onsuccess = () => ok(r.result);
+    r.onerror = () => non(r.error);
+  });
+}
+function docTx(mode, fn){
+  return ouvreBase().then(db => new Promise((ok, non) => {
+    const tx = db.transaction("docs", mode), st = tx.objectStore("docs");
+    const res = fn(st);
+    tx.oncomplete = () => ok(res && res.result !== undefined ? res.result : res);
+    tx.onerror = () => non(tx.error);
+  }));
+}
+function docsTous(){ return docTx("readonly", st => st.getAll()); }
+function docMet(o){ return docTx("readwrite", st => st.put(o)); }
+function docOte(id){ return docTx("readwrite", st => st.delete(id)); }
+
+/* Les cases prevues. Il peut en ajouter d autres, mais celles-la ont un nom,
+   une place et, pour les papiers qui perdent leur validite, une date. */
+const PAPIERS = [
+  {cat:"Identité", id:"passeport",  nm:"Passeport tchadien",      exp:true},
+  {cat:"Identité", id:"titre",      nm:"Titre de séjour",         exp:true,
+   note:"Expire le 18 février 2027. Dépôt du renouvellement entre le 18 octobre et le 18 décembre 2026."},
+  {cat:"Identité", id:"vitale",     nm:"Carte Vitale"},
+  {cat:"Identité", id:"etudiante",  nm:"Carte étudiante"},
+  {cat:"Identité", id:"naissance",  nm:"Acte de naissance"},
+  {cat:"Identité", id:"permis",     nm:"Permis de conduire"},
+
+  {cat:"Emploi",   id:"cvfr",       nm:"CV, version française"},
+  {cat:"Emploi",   id:"cven",       nm:"CV, version anglaise"},
+  {cat:"Emploi",   id:"cvennp",     nm:"CV anglais SANS photo",
+   note:"Celui à envoyer au Royaume-Uni, en Irlande, aux États-Unis et au Canada, où une photo fait écarter un dossier."},
+  {cat:"Emploi",   id:"lettrefr",   nm:"Lettre, version française"},
+  {cat:"Emploi",   id:"lettreen",   nm:"Lettre, version anglaise"},
+  {cat:"Emploi",   id:"contrat",    nm:"Contrat de travail CDI"},
+  {cat:"Emploi",   id:"bulletins",  nm:"Bulletins de paie",
+   note:"Inès conseille un à deux ans. Regroupe-les dans un seul PDF, c'est ce qu'on te demandera."},
+
+  {cat:"Diplômes", id:"m2esg",      nm:"M2 ESG, finance d'entreprise"},
+  {cat:"Diplômes", id:"m2esce",     nm:"M2 ESCE, finance de marché"},
+  {cat:"Diplômes", id:"toeic",      nm:"Attestation TOEIC, 955"},
+
+  {cat:"Logement", id:"domicile",   nm:"Justificatif de domicile",
+   note:"Il doit correspondre à l'adresse de tes dossiers. Refais-le après le déménagement."},
+  {cat:"Logement", id:"bail",       nm:"Bail ou attestation d'hébergement"},
+
+  {cat:"Impôts",   id:"impots",     nm:"Avis d'imposition"}
+];
+
+function poidsLisible(n){
+  return n < 1024 ? n + " o" : n < 1024 * 1024 ? Math.round(n / 1024) + " Ko"
+    : (Math.round(n / 1024 / 102.4) / 10) + " Mo";
+}
+
+let PAPIERS_EN_MEMOIRE = [];
+function renderDocs(){
+  docsTous().then(l => { PAPIERS_EN_MEMOIRE = l || []; dessineDocs(); })
+    .catch(() => { PAPIERS_EN_MEMOIRE = []; dessineDocs(true); });
+}
+function dessineDocs(panne){
+  const par = {};
+  PAPIERS_EN_MEMOIRE.forEach(d => { par[d.id] = d; });
+  const n = PAPIERS_EN_MEMOIRE.length;
+  const poids = PAPIERS_EN_MEMOIRE.reduce((a, d) => a + (d.taille || 0), 0);
+
+  let h = '<div class="card hero"><h2>Tes papiers</h2>' +
+    '<div class="big">' + n + ' document' + (n > 1 ? "s" : "") + '</div>' +
+    '<div class="sub">' + (n ? poidsLisible(poids) + ' sur ce téléphone. ' : '') +
+    'Tout reste ici. Rien n\'est envoyé, rien n\'est publié, même pas sur le dépôt de l\'app.' +
+    '</div></div>';
+
+  if (panne)
+    h += '<div class="card"><div class="alerte"><b>Le stockage du navigateur est ' +
+      'inaccessible.</b> C\'est le cas en navigation privée. Ouvre l\'app normalement.</div></div>';
+
+  /* Ce qui expire, en tete, parce que c est la seule chose qui se perime. */
+  const exp = PAPIERS.filter(p => p.exp);
+  h += '<div class="card"><h2>Ce qui expire</h2>';
+  h += '<div class="row"><div class="lab"><b>Titre de séjour</b><br>' +
+    '<span style="font-size:12px">expire le 18 février 2027</span></div>' +
+    '<div style="text-align:right"><b style="font-family:\'IBM Plex Mono\',monospace;font-size:15px;' +
+    'color:' + (joursAvant("2026-12-18") < 30 ? "var(--rouge)" : "var(--or)") + '">' +
+    joursAvant("2026-12-18") + ' j</b><br><span style="font-size:11.5px">avant la fin de la ' +
+    'fenêtre de dépôt</span></div></div>';
+  exp.forEach(p => {
+    const d = par[p.id];
+    if (d && d.expire)
+      h += '<div class="row"><div class="lab"><b>' + esc(p.nm) + '</b></div>' +
+        '<div style="text-align:right;font-family:\'IBM Plex Mono\',monospace;font-size:13px">' +
+        esc(d.expire) + '</div></div>';
+  });
+  h += '<div class="note" style="margin-top:9px">La fenêtre de dépôt du renouvellement va du ' +
+    '18 octobre au 18 décembre 2026. Après, c\'est 180 euros de pénalité et un risque sur la ' +
+    'régularité de ton séjour.</div></div>';
+
+  const cats = [];
+  PAPIERS.forEach(p => { if (cats.indexOf(p.cat) < 0) cats.push(p.cat); });
+  cats.forEach(c => {
+    const dedans = PAPIERS.filter(p => p.cat === c);
+    const ok = dedans.filter(p => par[p.id]).length;
+    h += '<div class="card"><h2>' + esc(c) + ' <span class="tag">' + ok + ' sur ' +
+      dedans.length + '</span></h2>';
+    dedans.forEach(p => {
+      const d = par[p.id];
+      h += '<div class="row"><div class="lab"><b>' + esc(p.nm) + '</b>' +
+        (p.note ? '<br><span style="font-size:12px">' + esc(p.note) + '</span>' : '') +
+        (d ? '<br><span style="font-size:11.5px;color:var(--vert);font-family:\'IBM Plex Mono\',' +
+             'monospace">' + poidsLisible(d.taille) + ', ajouté le ' + esc(d.ajoute) + '</span>' : '') +
+        '</div><div class="pills" style="justify-content:flex-end;flex:none">' +
+        (d ? '<button class="pill" data-pap="ouvre:' + p.id + '">Ouvrir</button>' +
+             '<button class="pill" data-pap="envoie:' + p.id + '">Envoyer</button>' +
+             '<button class="pill" data-pap="charge:' + p.id + '">Remplacer</button>' +
+             '<button class="pill" data-pap="ote:' + p.id + '">&times;</button>'
+           : '<button class="pill" data-pap="charge:' + p.id + '">Importer</button>') +
+        '</div></div>';
+    });
+    h += '</div>';
+  });
+
+  /* Les documents qu il a ajoutes lui-meme. */
+  const libres = PAPIERS_EN_MEMOIRE.filter(d => !PAPIERS.some(p => p.id === d.id));
+  h += '<div class="card"><h2>Autres documents <span class="tag">' + libres.length + '</span></h2>';
+  libres.forEach(d => {
+    h += '<div class="row"><div class="lab"><b>' + esc(d.nm) + '</b><br>' +
+      '<span style="font-size:11.5px;color:var(--vert);font-family:\'IBM Plex Mono\',monospace">' +
+      poidsLisible(d.taille) + ', ajouté le ' + esc(d.ajoute) + '</span></div>' +
+      '<div class="pills" style="justify-content:flex-end;flex:none">' +
+      '<button class="pill" data-pap="ouvre:' + esc(d.id) + '">Ouvrir</button>' +
+      '<button class="pill" data-pap="envoie:' + esc(d.id) + '">Envoyer</button>' +
+      '<button class="pill" data-pap="ote:' + esc(d.id) + '">&times;</button></div></div>';
+  });
+  h += '<button class="btn bsec" style="margin-top:8px" data-pap="charge:@libre">' +
+    'Ajouter un document</button></div>';
+
+  h += '<div class="card"><div class="note" id="papMsg">Un PDF, une photo ou un scan, tout ' +
+    'passe. Pour un passeport ou un titre, une photo nette de la page vaut mieux qu\'un scan ' +
+    'flou. Et garde une copie dans ton Drive : ce téléphone est une copie, pas une ' +
+    'sauvegarde.</div></div>';
+
+  el("docs").innerHTML = h;
+  brancherPapiers();
+}
+
+function brancherPapiers(){
+  const cont = el("docs");
+  const dire = (m, err) => {
+    const z = cont.querySelector("#papMsg"); if (!z) return;
+    z.innerHTML = m;
+    z.style.borderLeft = "3px solid " + (err ? "var(--rouge)" : "var(--vert)");
+  };
+  /* UN SEUL input, permanent, hors du HTML redessine. C est ce qui manquait :
+     un input recree a chaque rendu et cache dans un label n ouvrait pas le
+     selecteur sur telephone. */
+  let inp = document.getElementById("papFich");
+  if (!inp){
+    inp = document.createElement("input");
+    inp.type = "file"; inp.id = "papFich";
+    inp.style.cssText = "position:fixed;left:-9999px;width:1px;height:1px;opacity:0";
+    document.body.appendChild(inp);
+  }
+  cont.querySelectorAll("[data-pap]").forEach(b => b.addEventListener("click", async () => {
+    const [quoi, id] = b.dataset.pap.split(":");
+
+    if (quoi === "charge"){
+      inp.value = "";
+      inp.onchange = () => {
+        const f = inp.files && inp.files[0];
+        if (!f){ dire("Aucun fichier choisi."); return; }
+        if (f.size > 20 * 1024 * 1024){
+          dire("<b>" + poidsLisible(f.size) + ", c'est trop.</b> Au-delà de 20 Mo, garde le " +
+            "fichier dans ton Drive et mets ici une version allégée.", 1); return; }
+        let vrai = id, nom = f.name;
+        if (id === "@libre"){
+          vrai = "libre_" + Date.now();
+        } else {
+          const p = PAPIERS.filter(x => x.id === id)[0];
+          nom = p ? p.nm : f.name;
+        }
+        docMet({id: vrai, nm: nom, fichier: f, type: f.type || "application/octet-stream",
+                taille: f.size, nomFichier: f.name, ajoute: auj()})
+          .then(() => { dire("<b>" + esc(nom) + "</b> est enregistré sur ce téléphone."); renderDocs(); })
+          .catch(e => dire("<b>Enregistrement impossible.</b> " + esc(String(e).slice(0, 80)), 1));
+      };
+      inp.click();
+      return;
+    }
+
+    const d = PAPIERS_EN_MEMOIRE.filter(x => x.id === id)[0];
+    if (!d) return;
+    if (quoi === "ote"){ await docOte(id); renderDocs(); return; }
+
+    const blob = d.fichier instanceof Blob ? d.fichier : new Blob([d.fichier], {type: d.type});
+    if (quoi === "envoie" && navigator.canShare){
+      const f = new File([blob], d.nomFichier || (d.nm + ".pdf"), {type: d.type});
+      if (navigator.canShare({files: [f]})){
+        try { await navigator.share({files: [f], title: d.nm}); return; }
+        catch(e){ if (e && e.name === "AbortError") return; }
+      }
+    }
+    const u = URL.createObjectURL(blob);
+    if (quoi === "ouvre"){ window.open(u, "_blank"); }
+    else {
+      const a = document.createElement("a");
+      a.href = u; a.download = d.nomFichier || (d.nm + ".pdf");
+      document.body.appendChild(a); a.click(); a.remove();
+      dire("Ton appareil ne sait pas partager un fichier depuis le navigateur. Il vient d'être " +
+        "téléchargé, joins-le depuis tes téléchargements.");
+    }
+    setTimeout(() => URL.revokeObjectURL(u), 8000);
+  }));
+}
+
 /* ---------- TES DOCUMENTS, DANS TA POCHE ----------
    Steve, le 21/09 : « un bouton où je peux telecharger directement mon CV
    neutre dans l app, au cas ou, anglais comme francais ».
@@ -2382,7 +2624,6 @@ function renderPartir(){
     '</div></div>';
 
   h += htmlRecherche();
-  h += htmlDocs();
 
   /* Et tout le detail : ce que le marche demande, les certifications une par une
      avec leur cout et leurs liens, et les competences de fond avec leur niveau.
@@ -2430,7 +2671,6 @@ function renderPartir(){
     if (q === "boite-vider"){ delete S.boite; save(); renderPartir(); return; }
     save(); renderPartir();
   }));
-  brancherDocs(el("partir"));
   const f = el("boiteFich");
   if (f) f.addEventListener("change", () => {
     const fi = f.files && f.files[0];
@@ -4972,7 +5212,7 @@ function dscgBranche(){
   });
 }
 
-const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, partir:renderPartir, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg};
+const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, partir:renderPartir, docs:renderDocs, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg};
 /* La barre de l'en-tete se redessine a chaque rendu : elle suit ce qu'on coche
    dans n'importe quel onglet, sans qu'on ait a la prevenir. */
 /* Steve, le 21/09 : « la barre en haut je ne comprends rien ». Il avait
