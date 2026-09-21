@@ -207,8 +207,19 @@ body.dark .ftip{background:var(--surface2)}.tab.act{display:block}
 .avl span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .avl i{width:8px;height:8px;border-radius:50%;flex:none}
 .avl b{font-variant-numeric:tabular-nums}
-/* La barre fine de l'en-tete, visible sur tous les onglets. */
-.avtop{padding:0 14px 9px}
+/* La barre fine de l'en-tete, visible sur tous les onglets. Elle porte son
+   nom a gauche et son pourcentage a droite : sans eux, personne ne sait ce
+   qu'il regarde. */
+.avtop{padding:0 14px 10px}
+.avtop-in{display:flex;align-items:center;gap:10px}
+.avtop-in .avb{flex:1;min-width:0}
+.avtop-t{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;
+  text-transform:uppercase;letter-spacing:.09em;color:rgba(255,255,255,.55);
+  white-space:nowrap;flex:none;transition:color .2s}
+.avtop-t.vif{color:var(--accent);text-transform:none;letter-spacing:0;font-size:10.5px}
+.avtop-p{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;
+  font-weight:600;color:#fff;font-variant-numeric:tabular-nums;flex:none}
+.avtop .avs{background:rgba(255,255,255,.14)}
 @media (prefers-reduced-motion: reduce){ .avs i{transition:none} .avs:hover{transform:none} }
 
 /* ================= LA VERSION ORDINATEUR =================
@@ -489,11 +500,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=59"></script>
-<script src="entrainement.js?v=59"></script>
-<script src="actu.js?v=59"></script>
-<script src="dscg.js?v=59"></script>
-<script src="signaux.js?v=59"></script>
+<script src="fiches.js?v=60"></script>
+<script src="entrainement.js?v=60"></script>
+<script src="actu.js?v=60"></script>
+<script src="dscg.js?v=60"></script>
+<script src="signaux.js?v=60"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1834,13 +1845,19 @@ function avChantiers(){
 
 /* La barre elle-meme. Un segment par chantier, largeur proportionnelle au
    nombre d'items, remplissage a sa couleur, coins arrondis des deux cotes. */
-function barreAv(segs, haut){
+/* `egal` met tous les segments a la MEME largeur. C est indispensable des que
+   les chantiers n ont pas des tailles comparables : dans la barre du haut, les
+   606 fiches ecrasaient les cinq autres a rien du tout, et la barre devenait
+   illisible. Dans une carte ou les chantiers se comparent (quatre taches contre
+   six), la largeur proportionnelle reste la plus parlante. */
+function barreAv(segs, haut, egal){
   const h = haut || 10;
   let o = '<div class="avb" style="height:' + h + 'px">';
   segs.forEach(s => {
     const pc = s.total ? Math.round(100 * s.fait / s.total) : 0;
     o += '<div class="avs" title="' + esc(s.nm) + ' : ' + s.fait + ' sur ' + s.total + '"' +
-      (s.cle ? ' data-av="' + s.cle + '"' : '') + ' style="flex:' + Math.max(1, s.total) + '">' +
+      (s.cle ? ' data-av="' + s.cle + '"' : '') +
+      ' style="flex:' + (egal ? 1 : Math.max(1, s.total)) + '">' +
       '<i style="width:' + pc + '%;background:' + s.coul + '"></i></div>';
   });
   return o + '</div>';
@@ -1849,10 +1866,14 @@ function barreAv(segs, haut){
 /* La carte posee en tete de chaque onglet. Meme dessin partout. */
 function carteAv(titre, segs, sous){
   const f = segs.reduce((a, s) => a + s.fait, 0), t = segs.reduce((a, s) => a + s.total, 0);
+  /* Si un chantier pese plus de dix fois le plus petit, le proportionnel
+     ecrase tout : on passe alors a des segments egaux. */
+  const mx = Math.max.apply(null, segs.map(s => s.total)), mn = Math.min.apply(null, segs.map(s => s.total));
+  const egal = segs.length > 1 && mx > mn * 10;
   const pc = t ? Math.round(100 * f / t) : 0;
   let h = '<div class="card avc"><div class="avt"><h2>' + esc(titre) + '</h2>' +
     '<div class="avp">' + pc + '<span>%</span></div></div>' +
-    barreAv(segs, 12) + '<div class="avl">';
+    barreAv(segs, 12, egal) + '<div class="avl">';
   segs.forEach(s => {
     h += '<span><i style="background:' + s.coul + '"></i>' + esc(s.nm) + ' ' +
       '<b>' + s.fait + '/' + s.total + '</b></span>';
@@ -4458,11 +4479,27 @@ function dscgBranche(){
 const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, partir:renderPartir, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg};
 /* La barre de l'en-tete se redessine a chaque rendu : elle suit ce qu'on coche
    dans n'importe quel onglet, sans qu'on ait a la prevenir. */
+/* Steve, le 21/09 : « la barre en haut je ne comprends rien ». Il avait
+   raison : six segments colores sans un mot ne disent rien. Elle porte
+   maintenant son nom, son pourcentage, et elle ANNONCE le chantier touche
+   avant d y aller, au lieu de changer d onglet sans explication. */
 function renderAvTop(){
   const c = el("avtop");
   if (!c) return;
-  c.innerHTML = barreAv(avChantiers(), 7);
+  const segs = avChantiers();
+  const f = segs.reduce((a, s) => a + s.fait, 0), t = segs.reduce((a, s) => a + s.total, 0);
+  const pc = t ? Math.round(100 * f / t) : 0;
+  c.innerHTML = '<div class="avtop-in">' +
+    '<span class="avtop-t" id="avtopT">Avancement</span>' +
+    barreAv(segs, 9, true) +
+    '<span class="avtop-p">' + pc + ' %</span></div>';
+
   brancherAv(c);
+  /* Toucher un segment dit d abord CE QUE C EST, puis ouvre le module. */
+  c.querySelectorAll("[data-av]").forEach((d, i) => d.addEventListener("click", () => {
+    const s = segs[i], z = c.querySelector("#avtopT");
+    if (z){ z.textContent = s.nm + " " + s.fait + "/" + s.total; z.classList.add("vif"); }
+  }, true));
 }
 function renderAll(){ Object.keys(RENDUS).forEach(k => RENDUS[k]()); renderAvTop(); }
 document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => {
