@@ -500,11 +500,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=60"></script>
-<script src="entrainement.js?v=60"></script>
-<script src="actu.js?v=60"></script>
-<script src="dscg.js?v=60"></script>
-<script src="signaux.js?v=60"></script>
+<script src="fiches.js?v=61"></script>
+<script src="entrainement.js?v=61"></script>
+<script src="actu.js?v=61"></script>
+<script src="dscg.js?v=61"></script>
+<script src="signaux.js?v=61"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -747,35 +747,35 @@ const PARTIR = {
 };
 
 const SKILLS = [
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"Power BI", cible:"Un tableau de bord qui se met à jour tout seul",
+  {cat:"Ce que je te conseille de faire, dans l'ordre", nm:"Power BI", ordre:1, quand:"à finir avant le 31 janvier 2027", cible:"Un tableau de bord qui se met à jour tout seul",
    why:"Recompté le 21/09 sur les vraies annonces : Power BI 19 sur 206, SQL 14. Power BI passe donc DEVANT le SQL, l'inverse de ce qui était écrit ici. Et c'est le seul outil qui prend de la valeur à l'étranger : 52 % des annonces de Montréal, contre 9 % en France.",
    faire:"Reprends ton reporting mensuel Astridsen et refais-le dans Power BI, en te connectant directement à l'export Pennylane. Deux heures le dimanche pendant six semaines.",
    liens:[["Parcours Power BI, gratuit","https://learn.microsoft.com/fr-fr/training/browse/?products=power-bi"],
           ["Kenji Explains, chaîne YouTube finance et data","https://www.youtube.com/@KenjiExplains"]],
    lire:"La certification PL-300 vaut le coup une fois que tu sais faire. Elle se voit sur un CV."},
 
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"Modélisation financière", cible:"Un modèle à trois états qui tourne, sans référence circulaire",
+  {cat:"Ce que je te conseille de faire, dans l'ordre", nm:"Modélisation financière", ordre:5, quand:"quand les quatre premiers sont faits", cible:"Un modèle à trois états qui tourne, sans référence circulaire",
    why:"C'est ce qui sépare un contrôleur de gestion d'un analyste financier. Ça ne s'apprend qu'en construisant.",
    faire:"Refais le business plan du groupe depuis une feuille vide : compte de résultat, bilan et trésorerie liés entre eux, avec une zone d'hypothèses. Puis casse-le et répare-le.",
    liens:[["Corporate Finance Institute, cours et modèles","https://corporatefinanceinstitute.com/"],
           ["La Lettre Vernimmen, gratuite tous les mois","https://www.vernimmen.net/Lire/Lettre_Vernimmen.php"]],
    lire:"Le Vernimmen, Finance d'entreprise. C'est la référence en France, tu peux le lire par chapitres."},
 
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"SQL", cible:"Sortir une donnée d'une base sans demander à personne",
-   why:"Dès qu'une entreprise a un ERP ou un entrepôt de données, savoir écrire une requête te rend autonome. C'est aussi ce qui te permettra d'alimenter Power BI proprement.",
+  {cat:"Ce que je te conseille de faire, dans l'ordre", nm:"SQL", ordre:2, quand:"à trancher avant dimanche, le mot est déjà sur ton CV", cible:"Sortir une donnée d'une base sans demander à personne",
+   why:"Il y a plus urgent que son utilité : TON CV L'ANNONCE DÉJÀ, ligne Outils, entre Python et Boond Manager. Tant que le mot y est, il faut qu'il soit vrai. Un recruteur peut poser une question dessus ou envoyer un test, et être pris en défaut sur une ligne de son propre CV coûte plus cher que de ne pas l'avoir écrite. Sur le fond : 14 mentions sur 206 annonces, moins que Power BI, mais c'est le socle qui alimente Power BI proprement.",
    faire:"Une demi-heure le soir, trois fois par semaine, jusqu'à finir SQLBolt. Puis rejoue les mêmes requêtes sur tes propres données.",
    liens:[["SQLBolt, exercices interactifs","https://sqlbolt.com/"],
           ["Le tutoriel SQL de Mode, plus poussé","https://mode.com/sql-tutorial/"]],
    lire:"Après SQLBolt, vise les jointures et les fonctions de fenêtrage. C'est ce qu'on demande en entretien."},
 
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"Anglais financier", cible:"Tenir une réunion de clôture en anglais sans la préparer",
-   why:"Tu es à l'aise à l'écrit. C'est l'oral en contexte technique qui se travaille : le vocabulaire comptable, les chiffres, le reporting.",
+  {cat:"Ce que je te conseille de faire, dans l'ordre", nm:"Anglais financier", ordre:3, quand:"test reconnu à passer avant le 31 mai 2027", cible:"Tenir une réunion de clôture en anglais sans la préparer",
+   why:"Cité dans 80 annonces sur 206 en France, 83 % au Luxembourg, 79 % à Montréal. Tu es à l'aise à l'écrit et tu as 955 au TOEIC. Deux choses restent : l'oral en contexte technique, et un piège administratif. TON TOEIC NE COMPTE PAS pour l'immigration canadienne, qui n'accepte que l'IELTS General, le CELPIP ou le PTE Core. Si le Canada est dans ton plan, il faut en repasser un.",
    faire:"Écris les commentaires de ton reporting en anglais une fois par mois. Et vingt minutes d'écoute par jour dans les transports.",
    liens:[["BBC Learning English, gratuit","https://www.bbc.co.uk/learningenglish/"],
           ["Toastmasters Paris bilingue, on y parle les deux langues","https://toastmasters-paris-bilingue.org/"]],
    lire:"Apprends par cœur les vingt termes de ton quotidien : accruals, deferred income, trial balance, write-off, headcount."},
 
-  {cat:"Ce qui fait la différence sur un CV finance", nm:"IFRS et consolidation", cible:"Lire un jeu de comptes consolidés sans aide",
+  {cat:"Ce que je te conseille de faire, dans l'ordre", nm:"IFRS et consolidation", ordre:4, quand:"en continu, tu le pratiques déjà", cible:"Lire un jeu de comptes consolidés sans aide",
    why:"Tu consolides déjà huit entités. Mettre la théorie derrière ta pratique transforme une tâche en argument d'entretien.",
    faire:"Prends le rapport annuel d'un groupe coté que tu connais, LVMH ou Hermès, et lis les annexes en entier. Une fois. C'est long et ça change tout.",
    liens:[["Focus IFRS, la référence française","https://www.focusifrs.com/"],
@@ -1732,16 +1732,31 @@ function htmlParcours(){
   h += '<div class="hint">Les compétences ci-dessous sont le travail de fond. Une certification ' +
     'prouve, elle n\'apprend pas. Touche les barres pour marquer où tu en es.</div>';
 
+  /* Les entrees gardent leur index d origine pour les pastilles de niveau,
+     mais s affichent dans l ORDRE CONSEILLE quand elles en portent un. */
   let catCourante = "";
-  SKILLS.forEach((sk, i) => {
+  const ordonnees = SKILLS.map((sk, i) => ({sk: sk, i: i}));
+  const rangCat = [];
+  ordonnees.forEach(o => { if (rangCat.indexOf(o.sk.cat) < 0) rangCat.push(o.sk.cat); });
+  ordonnees.sort((a, b) =>
+    (rangCat.indexOf(a.sk.cat) - rangCat.indexOf(b.sk.cat)) ||
+    ((a.sk.ordre || 99) - (b.sk.ordre || 99)) || (a.i - b.i));
+
+  ordonnees.forEach(o => {
+    const sk = o.sk, i = o.i;
     if (sk.cat !== catCourante) {
       catCourante = sk.cat;
-      h += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--or);' +
-           'font-weight:700;margin:16px 0 8px">' + sk.cat + '</div>';
+      h += '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;' +
+           'text-transform:uppercase;letter-spacing:.09em;color:var(--or);' +
+           'font-weight:600;margin:18px 0 9px">' + sk.cat + '</div>';
     }
     const st = S.skills[sk.nm] || {n:0, note:""};
-    h += '<div class="skill"><div class="top"><span class="nm">' + sk.nm + '</span>' +
+    h += '<div class="skill"><div class="top"><span class="nm">' +
+         (sk.ordre ? '<span style="color:var(--accent);font-weight:800;margin-right:6px">' +
+           sk.ordre + '.</span>' : '') + sk.nm + '</span>' +
          '<span class="lvl">' + st.n + ' sur 5</span></div>' +
+         (sk.quand ? '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;' +
+           'color:var(--or);margin:1px 0 5px">' + esc(sk.quand) + '</div>' : '') +
          '<div class="why">' + sk.why + '</div>' +
          '<div class="dots">' + [1,2,3,4,5].map(n =>
            '<span class="' + (st.n >= n ? "on" : "") + '" data-sk="' + i + '" data-n="' + n + '"></span>').join("") + '</div>' +
