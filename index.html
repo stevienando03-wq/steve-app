@@ -502,11 +502,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=64"></script>
-<script src="entrainement.js?v=64"></script>
-<script src="actu.js?v=64"></script>
-<script src="dscg.js?v=64"></script>
-<script src="signaux.js?v=64"></script>
+<script src="fiches.js?v=65"></script>
+<script src="entrainement.js?v=65"></script>
+<script src="actu.js?v=65"></script>
+<script src="dscg.js?v=65"></script>
+<script src="signaux.js?v=65"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -587,7 +587,7 @@ const MARCHE = {
 /* ---------- Les certifications, dans l'ordre de ce qu'elles t'apportent ---------- */
 /* Chiffres verifies a la source le 13/09/2026. Aucun repris de memoire. */
 const CERTIFS = [
-{nm:"TOEIC", etat:"tu l'as déjà", coul:"vert",
+{ordre:1, nm:"TOEIC", etat:"tu l'as déjà", coul:"vert",
  score:"955 sur 990, à confirmer sur ton attestation",
  pourquoi:"L'anglais est cité dans 80 annonces sur 206, recompté le 21/09. Et à l'étranger ça explose : 83 % au Luxembourg, 79 % à Montréal. Un score chiffré vaut mieux que « anglais courant », que tout le monde écrit. Attention : ton TOEIC ne compte PAS pour l'immigration canadienne, qui n'accepte que l'IELTS General, le CELPIP ou le PTE Core.",
  cout:"zéro, c'est déjà fait", duree:"zéro",
@@ -595,7 +595,7 @@ const CERTIFS = [
  reserve:"Vérifie le chiffre exact sur ton attestation avant d'envoyer quoi que ce soit. Un recruteur peut demander le justificatif, et un score faux sur un CV ne se rattrape pas. Le TOEIC est valable deux ans pour certains employeurs, regarde la date de passage.",
  lien:["Retrouver son score TOEIC", "https://www.etsglobal.org/fr/fr"]},
 
-{nm:"Certification AMF", etat:"tu la passes le 22 septembre", coul:"or",
+{ordre:2, nm:"Certification AMF", etat:"tu la passes le 22 septembre", coul:"or",
  score:"examen le mardi 22 à 11h30",
  pourquoi:"Recompté le 21/09 : aucune des 206 annonces ne la demande, et aucune des 203 annonces étrangères non plus. Elle ne sert donc pas à décrocher les postes que tu vises aujourd'hui : elle ÉLARGIT ton périmètre vers la banque, l'assurance et la gestion d'actifs, où elle est obligatoire pour certaines fonctions. Elle est déjà payée, passe-la, mais ne compte pas dessus.",
  cout:"déjà engagé", duree:"l'examen du 22",
@@ -603,7 +603,52 @@ const CERTIFS = [
  reserve:"Ne la présente pas comme ton atout principal face à une direction financière. Elle parle marchés, eux parlent clôture et reporting.",
  lien:["AMF, l'examen certifié", "https://www.amf-france.org/"]},
 
-{nm:"DipIFR, le diplôme IFRS de l'ACCA", etat:"RETIRÉ le 21/09, je m'étais trompé", coul:"gris",
+{ordre:4, nm:"Examen civique", etat:"obligatoire, et daté", coul:"or",
+ score:"40 questions, 45 minutes, 32 bonnes réponses exigées",
+ pourquoi:"Ce n'est pas une certification de métier, c'est la condition qui bloque tout le reste. Depuis le 1er janvier 2026, l'attestation de réussite est exigée pour toute demande de naturalisation. Et la naturalisation, pour toi, n'est pas à cinq ans : l'article 21-20 du code civil dispense de tout stage de résidence le ressortissant d'un État dont le français est langue officielle quand c'est sa langue maternelle, et le Tchad figure nommément dans l'annexe officielle du ministère.",
+ cout:"tarif à l'inscription chez l'organisme agréé",
+ duree:"45 minutes d'examen, trente minutes par jour sur quatre semaines pour le préparer",
+ ouvre:"Le dépôt du dossier de naturalisation. Et derrière, le passeport qui ouvre le Luxembourg, la Belgique, l'Irlande et la Suisse, où tu ne peux pas entrer sans.",
+ reserve:"Vise 36 sur 40, pas 32. Quatre points de marge, parce qu'un mauvais jour coûte trois mois d'attente. Et n'achète RIEN : le ministère prévient lui-même que les sites payants de préparation ne lui sont pas affiliés, les questions officielles sont gratuites.",
+ lien:["Préparation gratuite, ministère de l'Intérieur", "https://formation-civique.interieur.gouv.fr/examen-civique/informations-g%C3%A9n%C3%A9rales-sur-lexamen-civique/"]},
+
+{ordre:5, nm:"IELTS General ou CELPIP", etat:"la clé du Canada", coul:"bleu",
+ score:"quatre épreuves, résultats valables deux ans",
+ pourquoi:"TON TOEIC 955 NE COMPTE PAS pour l'immigration canadienne. Elle n'accepte que l'IELTS General, le CELPIP ou le PTE Core. Et le Canada est ton marché le plus accessible : en 2026, sa catégorie francophone a délivré 35 500 invitations, 37 % du total, à un score moyen de 405 quand les tirages généraux exigeaient 520 à 550. Sans test reconnu, tu ne peux pas déposer de profil.",
+ cout:"environ 240 à 285 euros en France, vérifié en septembre 2026",
+ duree:"une journée d'examen, aucune préparation nécessaire à ton niveau",
+ ouvre:"Le profil Entrée Express, et avec lui neuf annonces sur vingt-neuf à Montréal qui acceptent trois ans d'expérience ou moins, avec tes intitulés mot pour mot.",
+ reserve:"Il te faut AUSSI le TEF ou le TCF Canada pour le français, NCLC 7 dans les quatre compétences. Pour un francophone de langue maternelle c'est une formalité administrative, mais c'est une formalité obligatoire.",
+ lien:["TEF Canada, le test de français", "https://www.lefrancaisdesaffaires.fr/tests-diplomes/test-evaluation-francais-tef/tef-canada/"]},
+
+{ordre:7, nm:"CMA, l'Institute of Management Accountants", etat:"celle qui colle le mieux à ton métier", coul:"bleu",
+ score:"DEUX examens seulement, quatre heures chacun",
+ pourquoi:"C'est la certification du CONTRÔLE DE GESTION, pas de la comptabilité : planification, budget, prévision, mesure de la performance. Exactement ce que tu fais déjà chez Astridsen. Et c'est la moins coûteuse en temps de toutes celles qui voyagent : deux examens contre treize pour l'ACCA. Citée dans 38 % des annonces de Dubaï.",
+ cout:"environ 850 à 1 500 dollars au total, adhésion et droits d'entrée compris",
+ duree:"douze à dix-huit mois pour la plupart, trois ans au maximum autorisé",
+ ouvre:"Les directions financières internationales et le Golfe. En France elle est peu connue, c'est sa limite. Son intérêt est ailleurs : elle transforme ton expérience en titre reconnu sans te faire repasser par la comptabilité.",
+ reserve:"Il faut deux ans d'expérience en contrôle de gestion ou en gestion financière pour être certifié. Tu peux passer les examens avant et fournir la validation ensuite. Ne l'engage pas avant d'avoir fini Power BI.",
+ lien:["IMA, la page de la certification", "https://www.imanet.org/cma-certification"]},
+
+{ordre:8, nm:"ACCA", etat:"la seule qui ouvre plusieurs pays", coul:"bleu",
+ score:"treize examens au total, moins selon tes dispenses",
+ pourquoi:"C'est le seul sigle cité dans plusieurs de tes marchés à la fois : 86 % des annonces de Dublin, 69 % de Dubaï, 24 % du Luxembourg, 14 % de Genève. Et zéro en France. C'est donc une décision de DESTINATION, pas de CV : elle ne te sert à rien ici, et elle est indispensable là-bas.",
+ cout:"environ 2 750 à 4 500 livres pour le parcours complet",
+ duree:"trois à quatre ans, plus 36 mois d'expérience professionnelle validée",
+ ouvre:"Dublin, Dubaï, le Luxembourg, et une grande partie du Commonwealth et de l'Afrique anglophone. C'est le passeport professionnel le plus large de cette liste.",
+ reserve:"Commence par le calculateur de dispenses : tes deux M2 français peuvent t'éviter plusieurs examens, et le chiffre change tout le calcul. Fais-le AVANT de décider quoi que ce soit, ça prend cinq minutes. Et ne l'engage que si tu as vraiment choisi un de ces pays.",
+ lien:["Calculateur de dispenses ACCA", "https://www.accaglobal.com/gb/en/help/exemptions-calculator.html"]},
+
+{ordre:9, nm:"CFA, niveau 1", etat:"seulement si tu changes de métier", coul:"gris",
+ score:"un examen par niveau, quatre sessions par an",
+ pourquoi:"Cité dans 31 % des annonces de Montréal, et à peine ailleurs sur des postes de contrôle de gestion. Tu as un M2 finance de marché, donc le niveau 1 te coûterait moins d'effort qu'à un autre. Mais il sert à la gestion d'actifs et à l'investissement, pas au pilotage d'une direction financière.",
+ cout:"environ 1 140 dollars en inscription anticipée, 1 490 en tarif normal. Les droits d'entrée uniques de 350 dollars sont supprimés depuis février 2026",
+ duree:"comptez trois cents heures par niveau, et trois niveaux pour le titre",
+ ouvre:"La gestion d'actifs, l'analyse buy side et sell side, les sociétés de gestion. Un autre métier que celui que tu vises aujourd'hui.",
+ reserve:"Ne le fais que si tu décides de basculer vers les marchés. Pour un poste de contrôle de gestion ou de FP&A, il ne te rapportera presque rien et il coûte trois cents heures.",
+ lien:["CFA Institute, le programme", "https://www.cfainstitute.org/programs/cfa-program"]},
+
+{ordre:10, nm:"DipIFR, le diplôme IFRS de l'ACCA", etat:"RETIRÉ le 21/09, je m'étais trompé", coul:"gris",
  score:"un seul examen, en anglais",
  pourquoi:"Je te l'avais mis en tête de liste sur « consolidation, 152 mentions sur 468 ». Ce chiffre venait d'une source fausse. Recompté sur les vraies annonces : la consolidation est citée 31 fois sur 206, et surtout le DipIFR lui-même apparaît ZÉRO fois. Zéro sur 206 annonces françaises et zéro sur 203 annonces étrangères de Luxembourg, Dublin, Dubaï, Genève, Bruxelles, Montréal et Abidjan. Un diplôme que personne ne nomme ne se cherche pas dans un CV : il ne te fait passer aucun filtre.",
  cout:"236 livres au total, 89 d'inscription et 147 d'examen",
@@ -612,7 +657,7 @@ const CERTIFS = [
  reserve:"Si un jour tu vises Dublin, Dubaï ou le Luxembourg, ce n'est pas le DipIFR qu'il faut mais l'ACCA entière : 86 % des annonces de Dublin, 69 % de Dubaï, 24 % du Luxembourg. Treize examens, trois à quatre ans, et 36 mois d'expérience validée. Décide-le en fonction du pays, pas avant.",
  lien:["Calculateur de dispenses ACCA, à faire avant tout", "https://www.accaglobal.com/gb/en/help/exemptions-calculator.html"]},
 
-{nm:"PL-300, Power BI", etat:"la plus rentable en temps", coul:"bleu",
+{ordre:3, nm:"PL-300, Power BI", etat:"la plus rentable en temps", coul:"bleu",
  score:"100 minutes, 700 sur 1000 minimum",
  pourquoi:"Recompté le 21/09 : Power BI 19 mentions sur 206, SQL 14. C'est l'INVERSE de ce qui était écrit ici, et ça change l'ordre : Power BI d'abord, SQL après. Et surtout, Power BI est le seul outil qui prend de la valeur quand tu sors de France : 52 % des annonces de Montréal, 31 % de Bruxelles, 28 % de Dublin, 24 % du Luxembourg. Une certification Microsoft rend vérifiable ce que tu écris sur ton CV.",
  cout:"126 à 165 euros l'examen, éligible CPF sous le code RS5445",
@@ -621,7 +666,7 @@ const CERTIFS = [
  reserve:"Elle expire au bout de 12 mois et se renouvelle par une évaluation en ligne gratuite. C'est simple mais il faut y penser, sinon elle tombe. Et elle ne remplace pas de savoir faire : commence par refaire ton reporting Astridsen dans Power BI.",
  lien:["PL-300, page officielle Microsoft", "https://learn.microsoft.com/fr-fr/credentials/certifications/data-analyst-associate/"]},
 
-{nm:"TOSA Excel, niveau expert", etat:"la moins chère", coul:"bleu",
+{ordre:6, nm:"TOSA Excel, niveau expert", etat:"la moins chère", coul:"bleu",
  score:"35 questions adaptatives en 60 minutes, expert au-delà de 875 sur 1000",
  pourquoi:"Excel, 118 mentions, troisième mot le plus demandé. C'est la certification Excel la plus connue des recruteurs français, et elle est inscrite au Répertoire Spécifique de France Compétences, donc vérifiable.",
  cout:"60 à 120 euros l'examen seul, éligible CPF avec un reste à charge légal de 150 euros depuis avril 2026",
@@ -630,7 +675,7 @@ const CERTIFS = [
  reserve:"Un score TOSA ne prouve pas que tu sais construire un modèle. Vise l'expert, au-dessous de 875 ce n'est pas la peine de l'écrire.",
  lien:["TOSA, le site officiel", "https://www.tosa.org/"]},
 
-{nm:"DSCG", etat:"à écarter pour l'instant", coul:"gris",
+{ordre:11, nm:"DSCG", etat:"à écarter pour l'instant", coul:"gris",
  score:"diplôme d'État, grade master, sept épreuves",
  pourquoi:"Recompté le 21/09 : 18 mentions sur 206, soit 9 %, et non quatre sur 468 comme c'était écrit ici. Il est donc PLUS demandé qu'on le croyait. Mais regarde où : 27 % des annonces ouvertes aux profils à deux ans ou moins le citent, contre 10 % de celles qui exigent trois ans et plus. C'est un diplôme d'ENTRÉE, sur des postes comptables, et tu es déjà au-delà de l'entrée. Ajoute qu'il ne se transporte pas hors de France, et ce n'est pas ton meilleur emploi du temps.",
  cout:"de gratuit en candidat libre à plusieurs milliers d'euros en école",
@@ -1719,7 +1764,9 @@ function htmlParcours(){
   h += '<div class="note" style="margin-top:11px"><b>Ce que ça dit.</b> ' + MARCHE.lecon + '</div></div>';
 
   h += '<div class="card"><h2>Les certifications <span class="tag">dans l\'ordre qui te sert</span></h2>';
-  CERTIFS.forEach((c, i) => {
+  /* On classe a l affichage, pas dans le tableau : ajouter une
+     certification ne bouscule plus le classement. */
+  CERTIFS.slice().sort((x, y) => (x.ordre || 99) - (y.ordre || 99)).forEach((c, i) => {
     const coul = c.coul === "vert" ? "var(--vert)" : c.coul === "or" ? "var(--or)" :
                  c.coul === "gris" ? "var(--anthr)" : "var(--bleu)";
     h += '<div class="acc"><div class="h"><span class="nm">' + (i + 1) + '. ' + esc(c.nm) + '</span>' +
