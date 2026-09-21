@@ -339,10 +339,11 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=54"></script>
-<script src="entrainement.js?v=54"></script>
-<script src="actu.js?v=54"></script>
-<script src="dscg.js?v=54"></script>
+<script src="fiches.js?v=55"></script>
+<script src="entrainement.js?v=55"></script>
+<script src="actu.js?v=55"></script>
+<script src="dscg.js?v=55"></script>
+<script src="signaux.js?v=55"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1119,6 +1120,51 @@ function prochainsRdv(n){
 /* ================= RENDU ================= */
 function el(id){ return document.getElementById(id); }
 
+/* ---------- Les signaux ----------
+   Steve, le 21/09 : « signale-moi dans l'app une opportunite ou une nouvelle
+   chose qui peut etre interessante ». Ils s'affichent en tete d'Aujourd'hui,
+   les non lus d'abord, et ne disparaissent que quand il les a ouverts. */
+function htmlSignaux(){
+  if (typeof SIGNAUX === "undefined" || !SIGNAUX.items || !SIGNAUX.items.length) return "";
+  S.sigVus = S.sigVus || {};
+  const items = SIGNAUX.items.slice().sort((a, b) =>
+    (S.sigVus[a.id] ? 1 : 0) - (S.sigVus[b.id] ? 1 : 0) || (a.d < b.d ? 1 : -1));
+  const neufs = items.filter(s => !S.sigVus[s.id]).length;
+  const PICTO = {opportunite:"↗", risque:"⚠", info:"ℹ"};
+  const COUL  = {opportunite:"var(--vert)", risque:"var(--rouge)", info:"var(--bleu)"};
+  const MOT   = {opportunite:"opportunité", risque:"à couper", info:"bon à savoir"};
+
+  let h = '<div class="card"><h2>Ce que la veille a trouvé' +
+    (neufs ? ' <span class="tag" style="background:var(--vert);color:#fff">' + neufs +
+      ' nouveau' + (neufs > 1 ? "x" : "") + '</span>' : '') + '</h2>' +
+    '<div class="sub" style="margin-bottom:6px">Seulement ce qui te concerne toi, ' +
+    'et ce qu\'il y a à faire. Mis à jour le ' + esc(SIGNAUX.maj) + '.</div>';
+
+  items.forEach(s => {
+    const vu = !!S.sigVus[s.id], c = COUL[s.ty] || "var(--bleu)";
+    h += '<div class="acc" data-sig="' + s.id + '"' + (vu ? ' style="opacity:.62"' : '') + '>' +
+      '<div class="h"><span class="nm">' + (vu ? "" : '<span style="color:' + c +
+        ';font-weight:800;margin-right:6px">' + (PICTO[s.ty] || "") + '</span>') +
+      esc(s.t) + '</span>' +
+      '<span class="meta" style="color:' + c + '">' + (MOT[s.ty] || "") + '</span></div>' +
+      '<div class="b"><div style="font-size:13px;line-height:1.6">' + esc(s.q) + '</div>' +
+      '<div class="alerte" style="margin-top:9px;border-left:3px solid ' + c +
+        '"><b>Ce que tu fais.</b> ' + esc(s.faire) + '</div>' +
+      (s.lien ? '<a class="gcal" href="' + s.lien[1] + '" target="_blank" rel="noopener" ' +
+        'style="margin-top:10px">' + esc(s.lien[0]) + '</a>' : '') +
+      '</div></div>';
+  });
+  return h + '</div>';
+}
+/* Ouvrir un signal vaut lecture : il passe en gris et sort du compteur. */
+function brancherSignaux(cont){
+  cont.querySelectorAll("[data-sig]").forEach(d => d.addEventListener("click", () => {
+    const k = d.dataset.sig;
+    S.sigVus = S.sigVus || {};
+    if (!S.sigVus[k]) { S.sigVus[k] = 1; save(); }
+  }));
+}
+
 function renderJour(){
   const t = auj(), s = seanceDu(t), st = S.track[t] || (S.track[t] = {seance:false, eau:0});
   const rdvs = rdvDu(t), prochains = prochainsRdv(3);
@@ -1131,6 +1177,8 @@ function renderJour(){
          : "Ta séance se cale " + creneauSport(t) + ". Le détail est dans l'onglet Sport.") +
        (estTravail(t) ? "<br>Travail de " + TRAVAIL.debut + " à " + TRAVAIL.fin + "." : "") +
        '</div></div>';
+
+  h += htmlSignaux();
 
   const pr = repasDu(t);
   if (pr) {
@@ -1188,6 +1236,7 @@ function renderJour(){
     h += '</div>';
   }
   el("jour").innerHTML = h;
+  brancherSignaux(el("jour"));
 
   el("jour").querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
     const a = b.dataset.act, s2 = S.track[auj()];
@@ -3571,12 +3620,73 @@ function finValide(){
 function finSuivant(){ fPos++; fRep = false; renderFin(); window.scrollTo(0, 0); }
 
 /* ---------- fiches ---------- */
+/* ---------- Une illustration par theme de fiche ----------
+   Steve, le 21/09 : « ajoute des images fun dans le truc finance pour donner
+   envie de lire ». Dessinees en SVG DANS la page, pas en fichiers : aucune
+   requete reseau, ca marche hors connexion, et les couleurs suivent le mode
+   sombre parce qu'elles sortent des variables de l'app. */
+function illus(t){
+  const A = "var(--bleu)", B = "var(--or)", V = "var(--vert)", L = "var(--ligne)";
+  const d = {
+    cdg:  '<rect x="8" y="24" width="9" height="14" rx="2" fill="'+A+'"/>' +
+          '<rect x="21" y="16" width="9" height="22" rx="2" fill="'+A+'" opacity=".62"/>' +
+          '<rect x="34" y="9" width="9" height="29" rx="2" fill="'+A+'"/>' +
+          '<path d="M6 13h56" stroke="'+B+'" stroke-width="2.4" stroke-dasharray="5 4" stroke-linecap="round"/>' +
+          '<circle cx="56" cy="13" r="4" fill="'+B+'"/>',
+    cpt:  '<rect x="12" y="8" width="34" height="28" rx="3" fill="'+L+'"/>' +
+          '<rect x="17" y="12" width="34" height="28" rx="3" fill="'+A+'" opacity=".22"/>' +
+          '<path d="M23 20h22M23 26h22M23 32h14" stroke="'+A+'" stroke-width="2.4" stroke-linecap="round"/>' +
+          '<circle cx="55" cy="33" r="7" fill="'+V+'"/><path d="M52 33l2.4 2.4L58 30.6" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+    audit:'<path d="M14 12h30M14 20h30M14 28h18" stroke="'+L+'" stroke-width="3" stroke-linecap="round"/>' +
+          '<circle cx="42" cy="26" r="12" fill="none" stroke="'+A+'" stroke-width="3"/>' +
+          '<path d="M51 35l8 7" stroke="'+A+'" stroke-width="3.4" stroke-linecap="round"/>' +
+          '<circle cx="42" cy="26" r="5" fill="'+B+'" opacity=".5"/>',
+    af:   '<path d="M8 36l13-11 10 7 12-16 11 8" fill="none" stroke="'+A+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<path d="M8 36l13-11 10 7 12-16 11 8V40H8z" fill="'+A+'" opacity=".16"/>' +
+          '<circle cx="54" cy="24" r="4.6" fill="'+B+'"/>',
+    cf:   '<circle cx="27" cy="22" r="14" fill="'+A+'" opacity=".45"/>' +
+          '<circle cx="45" cy="22" r="14" fill="'+B+'" opacity=".45"/>' +
+          '<path d="M36 12v20" stroke="'+A+'" stroke-width="2.4" stroke-linecap="round"/>',
+    tres: '<path d="M6 28q9-11 18 0t18 0 18 0" fill="none" stroke="'+A+'" stroke-width="3" stroke-linecap="round"/>' +
+          '<path d="M6 34q9-11 18 0t18 0 18 0" fill="none" stroke="'+A+'" stroke-width="3" opacity=".4" stroke-linecap="round"/>' +
+          '<circle cx="36" cy="14" r="8" fill="'+B+'"/><path d="M36 9v10M33 12h6M33 16h6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>',
+    conso:'<rect x="6" y="8" width="13" height="11" rx="2" fill="'+A+'" opacity=".5"/>' +
+          '<rect x="6" y="24" width="13" height="11" rx="2" fill="'+A+'" opacity=".5"/>' +
+          '<path d="M21 14h8v8h6M21 30h8v-8" fill="none" stroke="'+L+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<rect x="40" y="12" width="24" height="20" rx="4" fill="'+V+'"/>',
+    fisc: '<rect x="16" y="6" width="32" height="34" rx="4" fill="'+A+'" opacity=".2"/>' +
+          '<path d="M23 15h18M23 22h18M23 29h10" stroke="'+A+'" stroke-width="2.4" stroke-linecap="round"/>' +
+          '<circle cx="52" cy="32" r="9" fill="'+B+'"/><path d="M48 36l8-8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>' +
+          '<circle cx="49.4" cy="29.4" r="1.7" fill="#fff"/><circle cx="54.6" cy="34.6" r="1.7" fill="#fff"/>',
+    mkt:  '<path d="M14 10v28M26 6v32M38 14v24M50 9v29" stroke="'+L+'" stroke-width="2"/>' +
+          '<rect x="10" y="16" width="8" height="14" rx="2" fill="'+V+'"/>' +
+          '<rect x="22" y="12" width="8" height="12" rx="2" fill="'+A+'"/>' +
+          '<rect x="34" y="20" width="8" height="13" rx="2" fill="'+B+'"/>' +
+          '<rect x="46" y="14" width="8" height="16" rx="2" fill="'+V+'"/>',
+    macro:'<circle cx="30" cy="22" r="15" fill="none" stroke="'+A+'" stroke-width="2.6"/>' +
+          '<path d="M15 22h30M30 7q8 15 0 30M30 7q-8 15 0 30" fill="none" stroke="'+A+'" stroke-width="2" opacity=".55"/>' +
+          '<path d="M48 30l10-10M58 20h-7M58 20v7" fill="none" stroke="'+B+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
+    reg:  '<path d="M34 5l17 7v10c0 10-7 17-17 21-10-4-17-11-17-21V12z" fill="'+A+'" opacity=".22"/>' +
+          '<path d="M25 20v9M31 20v9M37 20v9M43 20v9" stroke="'+A+'" stroke-width="2.6" stroke-linecap="round"/>' +
+          '<path d="M22 17h24" stroke="'+B+'" stroke-width="2.6" stroke-linecap="round"/>',
+    data: '<ellipse cx="30" cy="12" rx="16" ry="5.5" fill="'+A+'" opacity=".5"/>' +
+          '<path d="M14 12v19c0 3 7 5.5 16 5.5s16-2.5 16-5.5V12" fill="'+A+'" opacity=".22"/>' +
+          '<path d="M14 22c0 3 7 5.5 16 5.5s16-2.5 16-5.5" fill="none" stroke="'+A+'" stroke-width="2"/>' +
+          '<path d="M53 8l2.6 6.4L62 17l-6.4 2.6L53 26l-2.6-6.4L44 17l6.4-2.6z" fill="'+B+'"/>',
+    meta: '<path d="M10 9h40a4 4 0 014 4v15a4 4 0 01-4 4H26l-9 8v-8h-7a4 4 0 01-4-4V13a4 4 0 014-4z" fill="'+A+'" opacity=".22"/>' +
+          '<circle cx="22" cy="20" r="3.2" fill="'+A+'"/><circle cx="32" cy="20" r="3.2" fill="'+A+'"/><circle cx="42" cy="20" r="3.2" fill="'+B+'"/>'
+  };
+  return '<svg viewBox="0 0 72 44" width="72" height="44" aria-hidden="true" ' +
+    'style="flex:none">' + (d[t] || d.meta) + '</svg>';
+}
+
 function finEcranFiches(){
   if (!fLot.length){ finQuitter(); return; }
   if (fPos >= fLot.length) return finBilan("Fiches");
   const f = fLot[fPos];
   let h = '<div class="card">' + finBarre() +
-    '<div class="fmeta">' + esc(FT[f.t] || "") + '</div>' +
+    '<div style="display:flex;align-items:center;gap:12px;margin:2px 0 6px">' +
+    illus(f.t) + '<div class="fmeta" style="margin:0">' + esc(FT[f.t] || "") + '</div></div>' +
     '<div class="fq">' + esc(f.q) + '</div>';
   if (!fRep){
     h += '<button class="btn" onclick="finMontre()">Voir la réponse</button>' +
