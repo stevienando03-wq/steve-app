@@ -500,11 +500,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=61"></script>
-<script src="entrainement.js?v=61"></script>
-<script src="actu.js?v=61"></script>
-<script src="dscg.js?v=61"></script>
-<script src="signaux.js?v=61"></script>
+<script src="fiches.js?v=62"></script>
+<script src="entrainement.js?v=62"></script>
+<script src="actu.js?v=62"></script>
+<script src="dscg.js?v=62"></script>
+<script src="signaux.js?v=62"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -5412,18 +5412,46 @@ setTimeout(rappelsDeuxJours, 1200);
    Desormais : un bandeau apparait des qu une version attend, et un seul
    geste l installe. Et le numero de version est ecrit dans l app, pour qu on
    sache toujours ce qu on regarde. */
-function bandeauMaj(sw){
+function bandeauMaj(sw, num){
   if (document.getElementById("majBar")) return;
   const d = document.createElement("div");
   d.id = "majBar";
-  d.innerHTML = '<span>Une nouvelle version est prête.</span>' +
+  d.innerHTML = '<span>Nouvelle version' + (num ? " v" + num : "") + ' prête.</span>' +
                 '<button id="majGo">Installer</button>';
   document.body.appendChild(d);
   document.getElementById("majGo").addEventListener("click", () => {
-    if (sw) sw.postMessage({type:"SAUTER"});
+    if (sw) { try { sw.postMessage({type:"SAUTER"}); } catch(e) {} }
     setTimeout(() => location.reload(), 200);
   });
 }
+
+/* ---------- Le controle qui rattrape tout ----------
+   Une app installee ne RECHARGE pas sa page quand on la rouvre : elle la
+   reprend en memoire, telle qu elle etait. Steve pouvait donc rester des
+   heures sur une version d avant sans que rien ne l en avertisse, et c est
+   exactement ce qui s est passe le 21/09.
+   On compare donc, a chaque retour sur l app, le numero de version de la PAGE
+   (l estampille ?v= que patch_version_scripts.py pose sur les scripts) a celui
+   du serveur. S ils different, le bandeau apparait. */
+function versionPage(){
+  const s = document.querySelector('script[src*="?v="]');
+  const m = s && (s.getAttribute("src") || "").match(/\?v=(\d+)/);
+  return m ? m[1] : null;
+}
+function verifieVersion(){
+  const mienne = versionPage();
+  if (!mienne) return;
+  fetch("sw.js?x=" + Date.now(), {cache:"no-store"})
+    .then(r => r.text())
+    .then(t => {
+      const m = t.match(/steve-v(\d+)/);
+      if (m && m[1] !== mienne) bandeauMaj(null, m[1]);
+    })
+    .catch(() => {});
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden) verifieVersion(); });
+window.addEventListener("focus", verifieVersion);
+setTimeout(verifieVersion, 1500);
 if ("serviceWorker" in navigator) window.addEventListener("load", () => {
   navigator.serviceWorker.register("sw.js").then(reg => {
     if (!reg) return;
