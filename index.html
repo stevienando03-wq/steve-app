@@ -33,6 +33,7 @@
   --vert:#2F6A47; --vertbg:#E1EEE6; --rouge:#9E3524; --rougebg:#F8E4DF;
   --ligne:#D9E0DD; --bleuclair:#7E8F8B;
   --surface:#FFFFFF; --surface2:#EDF1EF; --accent:#0E5B51;
+  --hintbg:#FCF8EC; --surBadge:#FFFFFF;
   /* Une teinte par chantier, la meme grammaire que dans Parcours. */
   --h-agenda:#5C6B68; --h-sante:#8F6318; --h-cv:#0E5B51; --h-nat:#39539E;
   --h-civ:#6B3F9E; --h-bi:#15687F; --h-sql:#54761C; --h-can:#A84360;
@@ -68,11 +69,11 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .note{font-size:12.5px;color:var(--anthr);line-height:1.55}
 .pill{border:1px solid var(--ligne);background:#fff;border-radius:20px;padding:8px 15px;font-size:13px;
   font-weight:600;color:var(--anthr);cursor:pointer;display:inline-block}
-.pill.on{background:var(--vertbg);border-color:#9BC6A4;color:var(--vert)}
+.pill.on{background:var(--vert);border-color:var(--vert);color:var(--surBadge)}
 .pills{display:flex;gap:8px;flex-wrap:wrap}
-.btn{display:block;width:100%;text-align:center;background:var(--bleu);color:#fff;border:0;padding:13px;
+.btn{display:block;width:100%;text-align:center;background:var(--accent);color:var(--surBadge);border:0;padding:13px;
   border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;margin-top:10px}
-.btn.light{background:#fff;color:var(--bleu);border:1px solid var(--ligne)}
+.btn.light{background:var(--surface);color:var(--bleu);border:1px solid var(--ligne)}
 .btn.or{background:var(--or)}
 .step{display:flex;align-items:center;gap:12px}
 .step button{width:36px;height:36px;border-radius:9px;border:1px solid var(--ligne);background:#fff;font-size:20px;
@@ -109,7 +110,7 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
   color:var(--or);margin-bottom:6px}
 .fduo{display:flex;gap:9px;margin-top:10px}
 .fduo .btn{margin-top:0}
-.bsec{background:#fff;color:var(--bleu);border:1px solid var(--ligne)}
+.bsec{background:var(--surface);color:var(--bleu);border:1px solid var(--ligne)}
 body.dark .fin-in,body.dark .fq{color:var(--accent)}
 body.dark .ftip{background:var(--surface2)}.tab.act{display:block}
 .rdv{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #F0ECE2;align-items:flex-start}
@@ -138,7 +139,7 @@ body.dark .ftip{background:var(--surface2)}.tab.act{display:block}
 .mvt .amt.out{color:var(--rouge)}
 .mvt .del{background:none;border:0;color:#C9C2B4;font-size:15px;cursor:pointer;padding:0 2px}
 .form{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.form input,.form select{flex:1;min-width:88px;padding:11px;border:1px solid var(--ligne);border-radius:10px;
+.form input,.form select{flex:1;min-width:88px;padding:11px;border:1px solid var(--ligne);border-radius:10px;background:var(--surface);color:var(--bleu);
   font-size:14px;font-family:inherit;background:#fff;color:var(--bleu)}
 .kpi{display:flex;gap:10px}
 .kpi .box{flex:1;background:var(--creme);border-radius:12px;padding:11px 8px;text-align:center}
@@ -198,7 +199,7 @@ body.dark .ftip{background:var(--surface2)}.tab.act{display:block}
 .avs:hover{transform:translateY(-1px)}
 .avs i{position:absolute;top:0;bottom:0;left:0;display:block;border-radius:99px;width:0;
   transition:width .45s cubic-bezier(.22,.9,.3,1)}
-.avc{background:linear-gradient(180deg,var(--carte,#fff) 0%,var(--carte,#fff) 100%)}
+
 .avt{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:9px}
 .avt h2{margin:0}
 .avp{font-size:26px;font-weight:800;line-height:1;color:var(--bleu);font-variant-numeric:tabular-nums}
@@ -322,6 +323,7 @@ body.dark{
   --creme:#0E1413; --bleu:#E7EEEB; --anthr:#9BABA7; --ligne:#293533;
   --or:#D7A34E; --vert:#6DBE8B; --rouge:#E58573; --accent:#54BCA7;
   --surface:#171F1E; --surface2:#1E2827; --bleuclair:#75847F;
+  --hintbg:#2E2617; --surBadge:#0E1413;
   --vertbg:#172C20; --rougebg:#33201C;
   --h-agenda:#9FB5B1; --h-sante:#E3B04B; --h-cv:#54BCA7; --h-nat:#8AA8F0;
   --h-civ:#B58AE0; --h-bi:#4FB8D9; --h-sql:#A6CC63; --h-can:#EF8FA8;
@@ -500,11 +502,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=63"></script>
-<script src="entrainement.js?v=63"></script>
-<script src="actu.js?v=63"></script>
-<script src="dscg.js?v=63"></script>
-<script src="signaux.js?v=63"></script>
+<script src="fiches.js?v=64"></script>
+<script src="entrainement.js?v=64"></script>
+<script src="actu.js?v=64"></script>
+<script src="dscg.js?v=64"></script>
+<script src="signaux.js?v=64"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1340,7 +1342,7 @@ function htmlSignaux(){
   const MOT   = {opportunite:"opportunité", risque:"à couper", info:"bon à savoir"};
 
   let h = '<div class="card"><h2>Ce que la veille a trouvé' +
-    (neufs ? ' <span class="tag" style="background:var(--vert);color:#fff">' + neufs +
+    (neufs ? ' <span class="tag" style="background:var(--vert);color:var(--surBadge)">' + neufs +
       ' nouveau' + (neufs > 1 ? "x" : "") + '</span>' : '') + '</h2>' +
     '<div class="sub" style="margin-bottom:6px">Seulement ce qui te concerne toi, ' +
     'et ce qu\'il y a à faire. Mis à jour le ' + esc(SIGNAUX.maj) + '.</div>';
@@ -1381,7 +1383,7 @@ function htmlSauvegarde(){
   const der = S.derSauv || "";
   const vieux = !der || (Date.now() - Date.parse(der)) > 30 * 86400000;
   let h = '<div class="card"><h2>Ta sauvegarde' +
-    (vieux ? ' <span class="tag" style="background:var(--rouge);color:#fff">à faire</span>' : '') +
+    (vieux ? ' <span class="tag" style="background:var(--rouge);color:var(--surBadge)">à faire</span>' : '') +
     '</h2>' +
     '<div class="sub" style="margin-bottom:9px">Tes données ne vivent que dans ce ' +
     'navigateur. Ni sur GitHub, ni ailleurs. ' +
@@ -1507,7 +1509,7 @@ function renderJour(){
     if (t === PERIODE.courses.d) {
       const nbc = PERIODE.courses.lignes.length;
       const prisc = PERIODE.courses.lignes.filter((l, i) => S.shop[cleShop(i)]).length;
-      h += '<div class="alerte" style="background:#FCF8EC;color:var(--bleu)"><b>Courses ' + PERIODE.courses.quand +
+      h += '<div class="alerte" style="background:var(--hintbg);color:var(--bleu);border-left:3px solid var(--or)"><b>Courses ' + PERIODE.courses.quand +
            ', vers ' + PERIODE.courses.h.replace(":", "h") + '.</b> ' + nbc + ' articles pour environ ' +
            PERIODE.courses.attendu + ' \u20ac. ' +
            (prisc ? prisc + ' sur ' + nbc + ' déjà dans le panier.' : 'La liste cochable est dans l\'onglet Bouffe.') + '</div>';
