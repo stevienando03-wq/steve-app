@@ -500,11 +500,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=62"></script>
-<script src="entrainement.js?v=62"></script>
-<script src="actu.js?v=62"></script>
-<script src="dscg.js?v=62"></script>
-<script src="signaux.js?v=62"></script>
+<script src="fiches.js?v=63"></script>
+<script src="entrainement.js?v=63"></script>
+<script src="actu.js?v=63"></script>
+<script src="dscg.js?v=63"></script>
+<script src="signaux.js?v=63"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -514,8 +514,15 @@ const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
    ensuite. Sur neuf jours, PUSH, PULL et LEGS reviennent chacun trois fois.
    Pour recaler après une coupure, il suffit de changer CYCLE_DEBUT et de faire tourner le
    tableau pour que l'indice 0 soit la séance de ce jour-là. */
-const CYCLE_DEBUT = "2026-09-13";
-const CYCLE = ["PULL","LEGS","REPOS","PUSH","PULL","REPOS","LEGS","PUSH","REPOS"];
+/* RECALE LE 21/09/2026. Steve reprend le sport le mardi 22 septembre, et il
+   reprend par PUSH. On deplace donc CYCLE_DEBUT sur le 22 et on fait tourner
+   le tableau de trois crans pour que l indice 0 soit PUSH, exactement comme
+   le mode d emploi ci-dessus le decrit. Le rythme deux jours de salle, un
+   jour de repos est conserve a l identique, seul le point de depart bouge.
+   Consequence voulue : le lundi 21 retombe sur l avant-dernier indice, donc
+   repos, ce qui est bien la journee d aujourd hui. */
+const CYCLE_DEBUT = "2026-09-22";
+const CYCLE = ["PUSH","PULL","REPOS","LEGS","PUSH","REPOS","PULL","LEGS","REPOS"];
 
 const RECURRENT = [
   {jour:4, h:"20:30", dur:90, t:"Réunion hebdomadaire", note:"Tous les jeudis soir. Séance de sport le matin ce jour-là si c'est un jour ON."}
