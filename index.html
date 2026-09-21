@@ -510,11 +510,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=68"></script>
-<script src="entrainement.js?v=68"></script>
-<script src="actu.js?v=68"></script>
-<script src="dscg.js?v=68"></script>
-<script src="signaux.js?v=68"></script>
+<script src="fiches.js?v=69"></script>
+<script src="entrainement.js?v=69"></script>
+<script src="actu.js?v=69"></script>
+<script src="dscg.js?v=69"></script>
+<script src="signaux.js?v=69"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2172,6 +2172,114 @@ function htmlBoite(){
   return h;
 }
 
+/* ---------- TES DOCUMENTS, DANS TA POCHE ----------
+   Steve, le 21/09 : « un bouton où je peux telecharger directement mon CV
+   neutre dans l app, au cas ou, anglais comme francais ».
+
+   🚨 Ils ne sont PAS dans le depot. Le depot de l app est PUBLIC : y mettre
+   son CV publierait son nom, son adresse, son telephone et tout son parcours.
+   Les documents sont donc importes UNE FOIS depuis son telephone ou son
+   ordinateur et gardes dans ce navigateur, hors de l etat S, chacun sous sa
+   propre cle : si le stockage sature, un document echoue tout seul et ne
+   corrompt jamais son budget ni ses taches. */
+const DOCS = [
+  {k:"cvfr",     nm:"CV, version française",        fich:"CV_Steve_NANDOGONGAR.pdf"},
+  {k:"cven",     nm:"CV, version anglaise",         fich:"CV_Steve_NANDOGONGAR_EN.pdf"},
+  {k:"cvennp",   nm:"CV anglais SANS photo",        fich:"CV_Steve_NANDOGONGAR_EN_sans_photo.pdf",
+   note:"Celui à envoyer au Royaume-Uni, en Irlande, aux États-Unis et au Canada, où une photo fait écarter un dossier."},
+  {k:"lettrefr", nm:"Lettre, version française",    fich:"Lettre_Steve_NANDOGONGAR.pdf"},
+  {k:"lettreen", nm:"Lettre, version anglaise",     fich:"Lettre_Steve_NANDOGONGAR_EN.pdf"}
+];
+function docCle(k){ return "steve_doc_" + k; }
+function docLu(k){ try { return localStorage.getItem(docCle(k)); } catch(e){ return null; } }
+function docPoids(s){ return Math.round((s.length * 3 / 4) / 1024); }
+
+function htmlDocs(){
+  let h = '<div class="card"><h2>Tes documents <span class="tag">hors connexion</span></h2>' +
+    '<div class="sub" style="margin-bottom:10px">Importe-les une fois, ils restent dans ce ' +
+    'téléphone. Tu peux les envoyer depuis n\'importe où, même sans réseau. Ils ne sont ' +
+    '<b>pas</b> dans le dépôt de l\'app, qui est public.</div>';
+  DOCS.forEach(d => {
+    const v = docLu(d.k);
+    h += '<div class="row"><div class="lab"><b>' + d.nm + '</b>' +
+      (d.note ? '<br><span style="font-size:12px">' + d.note + '</span>' : '') +
+      (v ? '<br><span style="font-size:11.5px;color:var(--vert);font-family:\'IBM Plex Mono\',monospace">' +
+        docPoids(v) + ' Ko en mémoire</span>' : '') +
+      '</div><div class="pills" style="justify-content:flex-end;flex:none">' +
+      (v ? '<span class="pill" data-doc="ouvre:' + d.k + '">Ouvrir</span>' +
+           '<span class="pill" data-doc="envoie:' + d.k + '">Envoyer</span>' +
+           '<span class="pill" data-doc="retire:' + d.k + '">&times;</span>'
+         : '<label class="pill" style="cursor:pointer">Importer' +
+           '<input type="file" accept="application/pdf,.pdf,.docx" data-docin="' + d.k +
+           '" style="display:none"></label>') +
+      '</div></div>';
+  });
+  return h + '<div id="docMsg" class="note" style="display:none;margin-top:9px"></div>' +
+    '<div class="note" style="margin-top:9px">Ils sont dans <b>Music\\Recherche-Emploi\\' +
+    '01 - Mon CV et ma lettre</b>. Mets-les aussi dans ton Drive : ce téléphone est une copie, ' +
+    'pas une sauvegarde.</div></div>';
+}
+
+function brancherDocs(cont){
+  const dire = (m, err) => {
+    const z = cont.querySelector("#docMsg"); if (!z) return;
+    z.style.display = "block"; z.innerHTML = m;
+    z.style.borderLeft = "3px solid " + (err ? "var(--rouge)" : "var(--vert)");
+  };
+  cont.querySelectorAll("[data-docin]").forEach(inp => inp.addEventListener("change", () => {
+    const f = inp.files && inp.files[0];
+    if (!f) return;
+    if (f.size > 4 * 1024 * 1024){
+      dire("<b>Ce fichier fait " + Math.round(f.size / 1024) + " Ko.</b> Au-delà de 4 Mo le " +
+        "navigateur refuse de le garder. Exporte un PDF plus léger.", 1); return;
+    }
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        localStorage.setItem(docCle(inp.dataset.docin), String(r.result));
+        renderPartir();
+      } catch(e){
+        dire("<b>Le stockage du navigateur est plein.</b> Retire un document déjà importé, " +
+          "ou garde seulement les deux CV.", 1);
+      }
+    };
+    r.onerror = () => dire("<b>Lecture impossible.</b> Réessaie depuis le fichier d'origine.", 1);
+    r.readAsDataURL(f);
+  }));
+
+  cont.querySelectorAll("[data-doc]").forEach(b => b.addEventListener("click", async () => {
+    const [quoi, k] = b.dataset.doc.split(":");
+    const d = DOCS.filter(x => x.k === k)[0], v = docLu(k);
+    if (!v) return;
+    if (quoi === "retire"){
+      try { localStorage.removeItem(docCle(k)); } catch(e){}
+      renderPartir(); return;
+    }
+    /* On refabrique un vrai fichier depuis la donnee gardee. */
+    const bin = atob(v.split(",")[1] || "");
+    const oct = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) oct[i] = bin.charCodeAt(i);
+    const type = (v.match(/^data:([^;]+)/) || [])[1] || "application/pdf";
+    const blob = new Blob([oct], {type: type});
+
+    if (quoi === "envoie" && navigator.canShare){
+      const fich = new File([blob], d.fich, {type: type});
+      if (navigator.canShare({files: [fich]})){
+        try { await navigator.share({files: [fich], title: d.nm}); return; }
+        catch(e){ if (e && e.name === "AbortError") return; }
+      }
+    }
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = u; a.download = d.fich; a.target = "_blank";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(u), 3000);
+    if (quoi === "envoie")
+      dire("Ton appareil ne sait pas partager un fichier depuis le navigateur. Il vient d\'être " +
+        "téléchargé, joins-le à ton mail depuis tes téléchargements.");
+  }));
+}
+
 /* On n accepte QUE la forme attendue : un fichier etranger colle par erreur ne
    doit rien ecraser, et un message clair vaut mieux qu un plantage muet. */
 function importeBoite(txt){
@@ -2261,6 +2369,7 @@ function renderPartir(){
     '</div></div>';
 
   h += htmlRecherche();
+  h += htmlDocs();
 
   /* Et tout le detail : ce que le marche demande, les certifications une par une
      avec leur cout et leurs liens, et les competences de fond avec leur niveau.
@@ -2308,6 +2417,7 @@ function renderPartir(){
     if (q === "boite-vider"){ delete S.boite; save(); renderPartir(); return; }
     save(); renderPartir();
   }));
+  brancherDocs(el("partir"));
   const f = el("boiteFich");
   if (f) f.addEventListener("change", () => {
     const fi = f.files && f.files[0];
