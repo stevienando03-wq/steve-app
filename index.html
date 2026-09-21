@@ -510,11 +510,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=67"></script>
-<script src="entrainement.js?v=67"></script>
-<script src="actu.js?v=67"></script>
-<script src="dscg.js?v=67"></script>
-<script src="signaux.js?v=67"></script>
+<script src="fiches.js?v=68"></script>
+<script src="entrainement.js?v=68"></script>
+<script src="actu.js?v=68"></script>
+<script src="dscg.js?v=68"></script>
+<script src="signaux.js?v=68"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1597,6 +1597,18 @@ function renderJour(){
        (estTravail(t) ? "<br>Travail de " + TRAVAIL.debut + " à " + TRAVAIL.fin + "." : "") +
        '</div></div>';
 
+  /* Le dimanche soir, le bilan de la semaine passe devant tout le reste, une
+     seule fois. Un bilan qu on doit aller chercher n est jamais lu ; un bilan
+     qui revient tous les jours devient du bruit. */
+  const d0 = parse(t);
+  if (d0.getDay() === 0 && new Date().getHours() >= 18 && S.bilanVu !== t){
+    h += '<div class="card" style="border:1px solid var(--accent)">' +
+      '<h2 style="color:var(--accent)">Dimanche soir</h2>' +
+      '<div class="sub" style="margin-bottom:6px">La semaine est finie. Voilà ce qu\'elle ' +
+      'a donné, avant d\'attaquer la suivante.</div></div>' + htmlBilan() +
+      '<div class="card"><button class="btn bsec" data-bilan="vu">J\'ai vu, masquer</button></div>';
+  }
+
   const avJ = avChantiers();
   h += carteAv("Où tu en es aujourd'hui",
     avJ.filter(x => x.cle === "jour" || x.cle === "sport"),
@@ -1665,6 +1677,9 @@ function renderJour(){
   brancherSignaux(el("jour"));
   brancherAv(el("jour"));
   brancherSauvegarde(el("jour"));
+  el("jour").querySelectorAll("[data-bilan]").forEach(b => b.addEventListener("click", () => {
+    S.bilanVu = auj(); save(); renderJour();
+  }));
 
   el("jour").querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
     const a = b.dataset.act, s2 = S.track[auj()];
@@ -2100,8 +2115,90 @@ function htmlRecherche(){
     '<div class="note" style="margin-top:10px"><b>Le geste qui change tout.</b> Le message ' +
     'LinkedIn au recruteur nommé est déjà rédigé dans chacun de tes dossiers. Ne compte une ' +
     'candidature que si tu l\'as envoyé.</div>' +
+
+    htmlBoite() +
+
     '<button class="btn bsec" style="margin-top:10px" onclick="window.print()">' +
     'Imprimer ce parcours</button></div>';
+}
+
+/* ---------- CE QUE TA BOITE MAIL DIT ----------
+   Le tri automatique tourne toutes les heures sur son ordinateur et sait deja
+   compter : accuses de reception, refus, et prises de contact, par semaine.
+   Il ecrit compteurs.json a cote de son journal.
+   Ces chiffres ne sont PAS publies : le depot de l app est public, donc rien
+   de tout cela ne part sur GitHub. Ils sont importes ici, a la main, et
+   restent dans ce navigateur. Le jour ou le depot passera en prive, on pourra
+   automatiser ; d ici la, un import en deux touches vaut mieux qu une fuite. */
+function htmlBoite(){
+  const b = S.boite || null;
+  let h = '<div style="border-top:1px solid var(--ligne);margin-top:12px;padding-top:11px">' +
+    '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10.5px;text-transform:uppercase;' +
+    'letter-spacing:.09em;color:var(--anthr);margin-bottom:7px">Ce que ta boîte mail dit</div>';
+
+  if (!b || !b.semaines){
+    h += '<div class="note">Le tri de tes mails compte déjà tes accusés de réception, tes refus ' +
+      'et les prises de contact. Importe <b>compteurs.json</b>, dans le dossier ' +
+      '« 05 - Tri automatique des mails », pour les voir ici. Rien n\'est envoyé nulle part.</div>';
+  } else {
+    const sem = Object.keys(b.semaines).sort();
+    const derniere = sem[sem.length - 1];
+    const d = b.semaines[derniere] || {accuses:0, refus:0, contacts:0};
+    let tA = 0, tR = 0, tC = 0;
+    sem.forEach(s => { tA += b.semaines[s].accuses; tR += b.semaines[s].refus; tC += b.semaines[s].contacts; });
+    const trio = (nm, a, t, coul) =>
+      '<div style="flex:1;min-width:86px"><div style="font-family:\'IBM Plex Mono\',monospace;' +
+      'font-size:21px;font-weight:600;color:' + coul + '">' + a + '</div>' +
+      '<div style="font-size:11.5px;color:var(--anthr)">' + nm + '<br>' + t + ' au total</div></div>';
+    h += '<div style="display:flex;gap:12px;flex-wrap:wrap">' +
+      trio("accusés reçus", d.accuses, tA, "var(--accent)") +
+      trio("refus", d.refus, tR, "var(--rouge)") +
+      trio("prises de contact", d.contacts, tC, "var(--vert)") +
+      '</div>' +
+      '<div class="note" style="margin-top:9px">Semaine ' + esc(derniere) + '. Relevé du ' +
+      esc(String(b.maj || "").slice(0, 16)) + '. Une prise de contact est ce qui ressemble le ' +
+      'plus à un entretien dans une boîte aux lettres : entretien, rendez-vous, visio, ' +
+      'Calendly, une pièce demandée.</div>';
+  }
+  h += '<div class="pills" style="margin-top:8px">' +
+    '<label class="pill" style="cursor:pointer">Importer un fichier' +
+    '<input type="file" id="boiteFich" accept=".json,application/json" style="display:none"></label>' +
+    '<span class="pill" data-rech="boite-coller">Coller le texte</span>' +
+    (b ? '<span class="pill" data-rech="boite-vider">Oublier</span>' : '') + '</div>' +
+    '<div id="boiteZone" style="display:none;margin-top:8px">' +
+    '<textarea id="boiteTxt" style="min-height:80px" placeholder="Colle ici le contenu de compteurs.json"></textarea>' +
+    '<div class="pills" style="margin-top:6px"><span class="pill" data-rech="boite-ok">Importer</span></div></div>' +
+    '<div id="boiteMsg" class="note" style="display:none;margin-top:8px"></div></div>';
+  return h;
+}
+
+/* On n accepte QUE la forme attendue : un fichier etranger colle par erreur ne
+   doit rien ecraser, et un message clair vaut mieux qu un plantage muet. */
+function importeBoite(txt){
+  const z = () => el("boiteMsg");
+  const dire = (m, err) => {
+    const d = z(); if (!d) return;
+    d.style.display = "block"; d.innerHTML = m;
+    d.style.borderLeft = "3px solid " + (err ? "var(--rouge)" : "var(--vert)");
+  };
+  let o;
+  try { o = JSON.parse(String(txt || "").trim()); }
+  catch(e){ dire("<b>Ce n'est pas un fichier valide.</b> Le texte doit commencer par une accolade.", 1); return; }
+  if (!o || typeof o !== "object" || !o.semaines || typeof o.semaines !== "object"){
+    dire("<b>Ce fichier n'est pas compteurs.json.</b> Rien n'a été touché.", 1); return;
+  }
+  const propre = {maj: String(o.maj || ""), semaines: {}};
+  let n = 0;
+  Object.keys(o.semaines).forEach(k => {
+    const v = o.semaines[k];
+    if (!v || typeof v !== "object") return;
+    propre.semaines[k] = {
+      accuses: +v.accuses || 0, refus: +v.refus || 0, contacts: +v.contacts || 0
+    };
+    n++;
+  });
+  if (!n){ dire("<b>Aucune semaine dans ce fichier.</b>", 1); return; }
+  S.boite = propre; save(); renderPartir();
 }
 
 function renderPartir(){
@@ -2206,8 +2303,19 @@ function renderPartir(){
       for (let i = S.entr.length - 1; i >= 0; i--)
         if (String(S.entr[i]).slice(0, 7) === m){ S.entr.splice(i, 1); break; }
     }
+    if (q === "boite-coller"){ el("boiteZone").style.display = "block"; return; }
+    if (q === "boite-ok"){ importeBoite(el("boiteTxt").value); return; }
+    if (q === "boite-vider"){ delete S.boite; save(); renderPartir(); return; }
     save(); renderPartir();
   }));
+  const f = el("boiteFich");
+  if (f) f.addEventListener("change", () => {
+    const fi = f.files && f.files[0];
+    if (!fi) return;
+    const r = new FileReader();
+    r.onload = () => importeBoite(String(r.result));
+    r.readAsText(fi);
+  });
 }
 
 function renderEuro(){
