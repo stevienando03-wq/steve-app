@@ -136,6 +136,12 @@ body.dark .ftip{background:#2a2f3a}.tab.act{display:block}
 .skill .res{font-size:11.5px;color:var(--anthr);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid #F0ECE2}
 .chk{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;border-bottom:1px solid #F0ECE2;cursor:pointer}
 .chk:last-child{border-bottom:0}
+/* La case a cocher du Parcours, posee DANS le titre d'un accordeon : elle doit
+   pouvoir etre touchee sans ouvrir ni fermer le bloc. */
+.pchk{display:inline-flex;width:19px;height:19px;border:2px solid var(--ligne);border-radius:6px;
+  align-items:center;justify-content:center;font-size:12px;color:#fff;margin-right:8px;
+  vertical-align:-3px;flex:none;cursor:pointer}
+.pchk.on{background:var(--vert);border-color:var(--vert)}
 .chk .bx{width:20px;height:20px;border:2px solid var(--ligne);border-radius:6px;flex:none;display:flex;
   align-items:center;justify-content:center;font-size:13px;color:#fff}
 .chk.on .bx{background:var(--vert);border-color:var(--vert)}
@@ -296,6 +302,7 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
 <div class="tab act" id="t-jour"><div class="wrap" id="jour"></div></div>
 <div class="tab" id="t-semaine"><div class="wrap" id="semaine"></div></div>
 <div class="tab" id="t-sport"><div class="wrap" id="sport"></div></div>
+<div class="tab" id="t-partir"><div class="wrap" id="partir"></div></div>
 <div class="tab" id="t-skills"><div class="wrap" id="skills"></div></div>
 <div class="tab" id="t-euro"><div class="wrap" id="euro"></div></div>
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
@@ -323,17 +330,19 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <button class="act" data-tab="jour"><span class="ic">📌</span>Aujourd'hui</button>
   <button data-tab="semaine"><span class="ic">🗓️</span>Semaine</button>
   <button data-tab="sport"><span class="ic">💪</span>Sport</button>
-  <button data-tab="skills"><span class="ic">🚀</span>Skills</button>
+  <button data-tab="partir"><span class="ic">🚀</span>Parcours</button>
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
   <button data-tab="dscg"><span class="ic">🎓</span>DSCG</button>
 </div>
+<!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
+     rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=53"></script>
-<script src="entrainement.js?v=53"></script>
-<script src="actu.js?v=53"></script>
-<script src="dscg.js?v=53"></script>
+<script src="fiches.js?v=54"></script>
+<script src="entrainement.js?v=54"></script>
+<script src="actu.js?v=54"></script>
+<script src="dscg.js?v=54"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -358,7 +367,12 @@ const RDV = [
   {d:"2026-09-15", h:"11:00", dur:90,  t:"Mémoire",                     note:"Mardi en fin de matinée, déplacé depuis le lundi. Tu es au bureau ce jour-là : pose ta matinée ou décale ton créneau."},
   {d:"2026-09-22", h:"11:30", dur:90,  t:"Examen AMF",                  note:"Mardi. Pose ta matinée. Révise avec l'app AMF le week-end du 19, et refais la veille au soir les séries sur lesquelles tu bloques."},
   {d:"2026-09-17", h:"09:38", dur:195, t:"Train Paris Marseille",       note:"Jeudi, départ Gare de Lyon à 09h38, arrivée Saint-Charles. Journée de bureau, pose-la. Durée bloquée sur le TGV direct standard, 3h15 : corrige si ton billet dit autre chose. Ta réunion du jeudi soir tombe pendant le séjour."},
-  {d:"2026-09-20", h:"17:04", dur:195, t:"Train Marseille Paris",       note:"Dimanche, départ Saint-Charles à 17h04, arrivée Gare de Lyon. Même réserve sur la durée. Tu rentres deux jours avant l'examen AMF."}
+  {d:"2026-09-20", h:"17:04", dur:195, t:"Train Marseille Paris",       note:"Dimanche, départ Saint-Charles à 17h04, arrivée Gare de Lyon. Même réserve sur la durée. Tu rentres deux jours avant l'examen AMF."},
+  {d:"2026-09-26", h:"10:00", dur:60,  t:"Psy",                         note:"Samedi matin, rien à poser."},
+  {d:"2026-09-30", h:"16:20", dur:60,  t:"Dentiste",                    note:"Mercredi en fin d'après-midi. Tu finis à 18h30 : préviens ton manager et pars plus tôt."},
+  {d:"2026-10-02", h:"12:48", dur:12,  t:"Scanner",                     note:"Vendredi. Enchaîne avec l'hôpital de Nanterre à 13h00 : douze minutes entre les deux. Si ce n'est pas le même site, décale le second MAINTENANT, pas le jour même."},
+  {d:"2026-10-02", h:"13:00", dur:60,  t:"Hôpital de Nanterre",         note:"Vendredi, juste après le scanner de 12h48. Pose ton après-midi, ne compte pas revenir au bureau."},
+  {d:"2026-10-22", h:"12:00", dur:0,   t:"RENDU GAI, date limite",      note:"Jeudi midi. Ce n'est pas un rendez-vous, c'est une date limite : rien ne se rattrape après. Elle tombe pendant le parcours Power BI. Si la semaine du 19 est chargée, c'est Power BI qui saute d'une semaine, pas le rendu."}
 ];
 
 /* ---------- Ce que SES offres demandent, RECOMPTE le 21/09/2026 ---------- */
@@ -454,6 +468,121 @@ const CERTIFS = [
  reserve:"Ne l'engage QUE si tu décides de basculer vers le cabinet. Si tu restes en entreprise, les 200 heures du DipIFR t'apportent plus que la première année de DSCG.",
  lien:["Le DSCG expliqué", "https://www.compta-online.com/programme-du-dscg-diplome-superieur-de-comptabilite-et-de-gestion-ao3258"]}
 ];
+
+/* ---------- PARTIR : la nationalite d'abord, l'etranger ensuite ---------- */
+/* Etabli le 21/09/2026. Sept marches etrangers moissonnes sur LinkedIn, 203
+   annonces, face aux 206 annonces francaises. La colonne qui decide n'est ni le
+   salaire ni la langue : c'est la part d'annonces qui acceptent trois ans
+   d'experience ou moins. Partout sauf en France, la porte du bas est fermee. */
+const PARTIR = {
+  base: "203 annonces étrangères sur sept marchés, comptées le 21 septembre 2026",
+  cle: "Tu crois devoir attendre cinq ans pour la nationalité française. C'est faux, " +
+       "et c'est la découverte la plus rentable de cette page. L'article 21-20 du code " +
+       "civil dispense de tout stage de résidence le ressortissant d'un État dont le " +
+       "français est langue officielle, quand le français est sa langue maternelle. " +
+       "Le Tchad figure NOMMÉMENT dans l'annexe officielle du ministère, vérifiée le " +
+       "21/09. Et à défaut, l'article 21-18 ramène le stage à deux ans pour un diplôme " +
+       "du supérieur français : tu en as deux.",
+  chantiers: [
+    {id:"nat", nm:"La nationalité", coul:"var(--vert)",
+     x:"Priorité absolue, tout le reste en dépend. Ton CDI à 27 k porte la condition de " +
+       "ressources stables et suffisantes : ne fais rien qui le fragilise avant le décret.",
+     taches:[
+      {id:"n1", t:"Rendez-vous avocat en droit des étrangers", d:"2026-10-15",
+       x:"Emporte : passeport tchadien, les deux diplômes M2 français, le contrat CDI, trois bulletins de paie, un justificatif de domicile. La question à poser, mot pour mot : « Suis-je dispensé de stage au titre de l'article 21-20, en tant que ressortissant tchadien de langue maternelle française ? Et à défaut, le stage réduit à deux ans du 21-18 s'applique-t-il avec mes deux masters français ? » Note la réponse par écrit le jour même.",
+       lien:["Procédure et pièces, service-public","https://www.service-public.gouv.fr/particuliers/vosdroits/F2213"]},
+      {id:"n2", t:"S'inscrire à l'examen civique", d:"2026-10-31",
+       x:"Obligatoire depuis le 1er janvier 2026. 40 questions à choix multiples, 45 minutes, 32 bonnes réponses exigées. Vise un créneau en novembre, la demande est forte. Le ministère prévient lui-même que les sites payants de préparation ne sont pas affiliés : les questions officielles sont gratuites, n'achète rien.",
+       lien:["Préparation gratuite, ministère","https://formation-civique.interieur.gouv.fr/examen-civique/informations-g%C3%A9n%C3%A9rales-sur-lexamen-civique/"]},
+      {id:"n3", t:"Passer l'examen civique, viser 36 sur 40", d:"2026-11-30",
+       x:"Le minimum légal est 32. On vise 36 pour garder quatre points de marge, parce qu'un mauvais jour coûte trois mois. Trente minutes par jour sur quatre semaines, avec trois blancs à 28, 34 puis 36. Si tu es sous 34 au troisième, décale plutôt que de rater.",
+       lien:["S'inscrire, CCI Paris","https://francais.cci-paris-idf.fr/candidat?produit=21"]},
+      {id:"n4", t:"Déposer le dossier de naturalisation", d:"2027-02-28",
+       x:"Le test de langue n'est PAS à passer : tes diplômes français de niveau 3 ou plus au RNCP t'en dispensent, confirmé par l'arrêté du 22 décembre 2025. Si tu décroches un poste avant, dépose avant de changer d'employeur : la stabilité des ressources se juge sur la durée du contrat.",
+       lien:["Liste officielle des pièces","https://www.service-public.gouv.fr/particuliers/vosdroits/F2213"]}
+     ]},
+
+    {id:"bi", nm:"Power BI, l'outil qui voyage", coul:"var(--bleu)",
+     x:"9 % des annonces françaises, mais 52 % à Montréal, 31 % à Bruxelles, 28 % à Dublin, " +
+       "24 % au Luxembourg. C'est le seul outil qui prend de la valeur quand tu sors de France, " +
+       "et le seul vrai manque de ton CV. Trois heures par semaine, la formation est gratuite.",
+     taches:[
+      {id:"b1", t:"Parcours 1, préparer les données", d:"2026-11-02",
+       x:"Du 5 octobre au 2 novembre. Deux soirs d'une heure trente, ou un bloc le samedi matin.",
+       lien:["Catalogue Power BI en français","https://learn.microsoft.com/fr-fr/training/browse/?products=power-bi"]},
+      {id:"b2", t:"Parcours 2, modéliser et DAX", d:"2026-12-07",
+       x:"Du 9 novembre au 7 décembre. C'est le plus dur des quatre, garde-toi de la marge.", lien:null},
+      {id:"b3", t:"Parcours 3, visualiser et analyser", d:"2027-01-11", x:"Du 14 décembre au 11 janvier.", lien:null},
+      {id:"b4", t:"Parcours 4, gérer et sécuriser", d:"2027-01-31", x:"Du 18 au 31 janvier.", lien:null},
+      {id:"b5", t:"Refaire UN tableau de bord Astridsen sous Power BI", d:"2027-01-31",
+       x:"Un seul. Celui de la rentabilité par consultant, par exemple, sur données anonymisées, jamais les vraies. En entretien, « j'ai la PL-300 » vaut une ligne ; « j'ai refait le reporting de rentabilité par consultant de mon groupe » vaut dix minutes de conversation. C'est le livrable qui compte plus que le certificat.",
+       lien:null},
+      {id:"b6", t:"Passer l'examen PL-300", d:"2027-03-31",
+       x:"En français, 100 minutes. Le tarif dépend du pays et s'affiche à l'inscription.",
+       lien:["La certification et l'inscription","https://learn.microsoft.com/fr-fr/credentials/certifications/data-analyst-associate/"]}
+     ]},
+
+    {id:"sql", nm:"Le SQL, et pourquoi il est urgent", coul:"var(--or)",
+     x:"Ton CV écrit déjà « Python, SQL » ligne Outils. Tant que le mot y est, il faut qu'il " +
+       "soit vrai : être pris en défaut sur une ligne de son propre CV coûte plus cher que de " +
+       "ne pas l'avoir écrite. Soit tu l'apprends, soit on retire le mot.",
+     taches:[
+      {id:"q0", t:"Trancher : apprendre le SQL ou retirer le mot du CV", d:"2026-09-27",
+       x:"Une décision, pas un apprentissage. Dis-le moi et je fais la modification aux trois endroits, les .docx maîtres, le générateur de CV et le générateur de lettres.", lien:null},
+      {id:"q1", t:"Finir les six heures de cours", d:"2027-02-28",
+       x:"Gratuit, en français, libre accès.",
+       lien:["OpenClassrooms, SQL","https://openclassrooms.com/fr/courses/6971126-requetez-une-base-de-donnees-avec-sql"]},
+      {id:"q2", t:"Écrire vingt requêtes sur tes propres données", d:"2027-03-31",
+       x:"Pas des exercices. Prends un export de Boond ou de Pennylane anonymisé et pose-toi de vraies questions. Le jour où tu peux montrer ça, la ligne SQL de ton CV est méritée.", lien:null}
+     ]},
+
+    {id:"ca", nm:"Le Canada", coul:"var(--bleu)",
+     x:"En 2026, la catégorie francophone de l'Entrée Express a délivré 35 500 invitations, " +
+       "soit 37 % du total, à un score moyen de 405, quand les tirages généraux exigeaient 520 " +
+       "à 550. Le Canada ne regarde pas ta nationalité, il regarde tes points : tu n'as rien " +
+       "à attendre. Et sur 29 annonces de Montréal, 9 acceptent trois ans ou moins, avec tes " +
+       "intitulés mot pour mot, en français.",
+     taches:[
+      {id:"c1", t:"S'inscrire au TEF Canada", d:"2027-03-31",
+       x:"Les quatre épreuves se passent le même jour, les résultats valent deux ans. Il faut NCLC 7 dans les quatre. Tu es francophone de langue maternelle : c'est une formalité administrative, pas un examen.",
+       lien:["TEF Canada","https://www.lefrancaisdesaffaires.fr/tests-diplomes/test-evaluation-francais-tef/tef-canada/"]},
+      {id:"c2", t:"Passer le TEF Canada", d:"2027-04-30", x:"Vise NCLC 7 dans les quatre compétences.", lien:null},
+      {id:"c3", t:"Faire évaluer tes deux M2", d:"2027-04-30",
+       x:"Sans cette évaluation, tes diplômes ne rapportent AUCUN point. Compte deux à trois mois de délai, donc ne traîne pas.",
+       lien:["Organismes agréés, canada.ca","https://www.canada.ca/en/immigration-refugees-citizenship/corporate/partners-service-providers/foreign-educational-credential-assessment.html"]},
+      {id:"c4", t:"Passer un test d'anglais reconnu", d:"2027-05-31",
+       x:"TON TOEIC 955 NE COMPTE PAS. L'immigration canadienne n'accepte que l'IELTS General, le CELPIP ou le PTE Core. Pour toi c'est une formalité, mais il faut le passer et le budgéter.", lien:null},
+      {id:"c5", t:"Créer le profil Entrée Express", d:"2027-06-30",
+       x:"Gratuit et sans engagement. Une fois commencé, tu as 60 jours pour soumettre. Objectif : un score CRS supérieur à 400.",
+       lien:["Créer un profil","https://www.canada.ca/fr/immigration-refugies-citoyennete/services/immigrer-canada/entree-express/creer-profil.html"]}
+     ]},
+
+    {id:"sante", nm:"Santé et présence", coul:"var(--or)",
+     x:"Arriver en entretien dans ta meilleure forme fait partie du plan. Je ne suis pas " +
+       "médecin et je ne te conseille aucun traitement : mon rôle s'arrête à te dire quand " +
+       "prendre le rendez-vous et à quoi t'attendre comme délai.",
+     taches:[
+      {id:"s1", t:"Prendre rendez-vous chez un dermatologue", d:"2026-10-15",
+       x:"À Paris, le délai moyen pour une consultation de dermatologie est d'environ 61 jours. Si tu réserves le 15 octobre, tu consultes vers la mi-décembre. Si tu attends janvier, tu consultes en mars. La date n'est pas là par urgence, elle est là à cause du délai.", lien:null},
+      {id:"s2", t:"Ne pas lâcher le sport de novembre à janvier", d:"2027-01-31",
+       x:"Quatre séances par semaine, tu les fais déjà. Ce n'est pas une habitude à prendre, c'est une habitude à ne pas perdre quand l'examen civique et Power BI tomberont en même temps. Coche fin janvier si tu as tenu.", lien:null}
+     ]}
+  ],
+  /* La part d'annonces acceptant 3 ans ou moins, parmi celles qui chiffrent. */
+  marches: [
+    ["France", 57, "ton marché actuel, médiane 3 ans"],
+    ["Dublin", 47, "8 portes juniors sur 29, mais ACCA ou ACA dans 86 % des annonces"],
+    ["Abidjan", 45, "10 portes, mais des postes comptables, pas du contrôle de gestion"],
+    ["Montréal", 36, "9 portes, tes intitulés mot pour mot, français 76 % et anglais 79 %"],
+    ["Genève", 14, "médiane 8 ans, et la moitié des portes apparentes sont trompeuses"],
+    ["Luxembourg", 9, "le mieux payé, 41 k au premier quartile, mais 3 portes sur 29"],
+    ["Bruxelles", 7, "néerlandais dans 62 % des annonces, c'est ça la vraie barrière"],
+    ["Dubaï", 5, "médiane 7 ans, ACCA 69 %, CPA 69 %, le français n'y sert à rien"]
+  ],
+  lecon: "La France reste le marché le plus ouvert en bas, et nulle part ailleurs ça ne dépasse " +
+         "47 %. Les deux ou trois ans qui viennent se jouent donc ICI. Le départ se prépare " +
+         "pendant, il ne le remplace pas. Aucun diplôme ne raccourcit le compteur d'années."
+};
 
 const SKILLS = [
   {cat:"Ce qui fait la différence sur un CV finance", nm:"Power BI", cible:"Un tableau de bord qui se met à jour tout seul",
@@ -899,6 +1028,7 @@ S.shop    = S.shop    || {};
 S.skills  = S.skills  || {};
 S.budget  = S.budget  || {};
 S.rdv     = S.rdv     || [];
+S.partir  = S.partir  || {};   /* les taches cochees du parcours */
 if (S.budget.soldeDebut === undefined) S.budget.soldeDebut = null;
 S.budget.mvts = S.budget.mvts || [];
 S.budget.mois = S.budget.mois || moisCourant();
@@ -1199,7 +1329,9 @@ function renderSport(){
   }));
 }
 
-function renderSkills(){
+/* Rend le bloc marche + certifications + competences. Il sert DEUX fois :
+   dans l'onglet Parcours, et dans l'ancien onglet Skills qui reste en place. */
+function htmlParcours(){
   /* La donnee d'abord : l'ordre des certifications decoule de ce tableau, pas d'un avis. */
   let h = '<div class="card hero"><h2>Ce que tes offres demandent</h2>' +
     '<div class="sub">Compté sur ' + MARCHE.base + '. Les mentions, pas les impressions.</div></div>';
@@ -1262,18 +1394,27 @@ function renderSkills(){
     if (sk.lire) h += '<div class="res" style="border-top:0;padding-top:6px;font-style:italic">' + sk.lire + '</div>';
     h += '<textarea style="margin-top:9px;min-height:44px" data-sknote="' + i + '" placeholder="Ce que tu as fait, ce que tu as compris.">' + (st.note || "") + '</textarea></div>';
   });
-  el("skills").innerHTML = h;
-  el("skills").querySelectorAll("[data-sk]").forEach(d => d.addEventListener("click", () => {
+  return h;
+}
+/* Branche les pastilles de niveau et les notes dans N'IMPORTE QUEL conteneur.
+   Le meme bloc vit dans Parcours et dans l'ancien onglet Skills : un seul code,
+   donc pas de divergence possible entre les deux. */
+function brancherCompetences(cont, redessine){
+  cont.querySelectorAll("[data-sk]").forEach(d => d.addEventListener("click", () => {
     const sk = SKILLS[+d.dataset.sk].nm, n = +d.dataset.n;
     const cur = S.skills[sk] || {n:0, note:""};
     cur.n = (cur.n === n) ? n - 1 : n;
-    S.skills[sk] = cur; save(); renderSkills();
+    S.skills[sk] = cur; save(); redessine();
   }));
-  el("skills").querySelectorAll("[data-sknote]").forEach(t => t.addEventListener("change", () => {
+  cont.querySelectorAll("[data-sknote]").forEach(t => t.addEventListener("change", () => {
     const sk = SKILLS[+t.dataset.sknote].nm;
     const cur = S.skills[sk] || {n:0, note:""};
     cur.note = t.value; S.skills[sk] = cur; save();
   }));
+}
+function renderSkills(){
+  el("skills").innerHTML = htmlParcours();
+  brancherCompetences(el("skills"), renderSkills);
 }
 
 /* Les abonnements alimentent le prévisionnel. Une ligne prévue issue d'un abonnement porte
@@ -1286,6 +1427,122 @@ function injecteRecurrents(){
     if (presents[r.rid]) return;
     S.budget.prev.push({type:r.type, montant:r.montant, cat:r.cat, lib:r.lib, rid:r.rid});
   });
+}
+
+/* ---------- L'onglet PARTIR ----------
+   Le format vient de ce que Steve a aime le 21/09 : une barre d'avancement
+   DECOUPEE PAR CHANTIER, chaque segment large comme son nombre de taches et
+   rempli de sa couleur. D'un coup d'oeil on voit lequel avance et lequel n'a
+   pas commence, au lieu d'un seul pourcentage global qui ne dit rien. */
+function joursAvant(d){
+  const t = new Date(); t.setHours(0,0,0,0);
+  const p = d.split("-");
+  return Math.round((new Date(+p[0], +p[1]-1, +p[2]) - t) / 86400000);
+}
+function dateCourte(d){
+  const p = d.split("-"), x = new Date(+p[0], +p[1]-1, +p[2]);
+  return JOURS_C[x.getDay()] + ". " + x.getDate() + " " + MOIS_C[x.getMonth()] + " " + x.getFullYear();
+}
+/* Rend la barre segmentee. segs = [{n, fait, coul, nm}] */
+function barreChantiers(segs){
+  const tot = segs.reduce((a, s) => a + s.n, 0) || 1;
+  let h = '<div style="display:flex;gap:3px;height:10px;margin:10px 0 4px">';
+  segs.forEach(s => {
+    const pc = s.n ? Math.round(100 * s.fait / s.n) : 0;
+    h += '<div title="' + esc(s.nm) + ' : ' + s.fait + ' sur ' + s.n + '" style="flex:' + s.n +
+      ';position:relative;border-radius:99px;overflow:hidden;background:var(--ligne)">' +
+      '<i style="position:absolute;top:0;bottom:0;left:0;width:' + pc + '%;background:' + s.coul +
+      ';border-radius:99px"></i></div>';
+  });
+  return h + '</div>';
+}
+function renderPartir(){
+  const tot = PARTIR.chantiers.reduce((a, c) => a + c.taches.length, 0);
+  const fait = PARTIR.chantiers.reduce((a, c) =>
+    a + c.taches.filter(t => S.partir[t.id]).length, 0);
+  const pc = tot ? Math.round(100 * fait / tot) : 0;
+
+  let h = '<div class="card hero"><h2>Partir, et quand</h2>' +
+    '<div class="sub">' + fait + ' sur ' + tot + ', soit ' + pc + ' %. ' + PARTIR.base + '.</div>' +
+    barreChantiers(PARTIR.chantiers.map(c => ({
+      n: c.taches.length, fait: c.taches.filter(t => S.partir[t.id]).length,
+      coul: c.coul, nm: c.nm
+    }))) + '</div>';
+
+  h += '<div class="card"><h2>Ce qui change ton calendrier</h2>' +
+    '<div style="font-size:13px;line-height:1.6">' + esc(PARTIR.cle) + '</div>' +
+    '<div class="alerte" style="margin-top:10px"><b>La réserve.</b> Je ne suis pas avocat et la ' +
+    'naturalisation reste discrétionnaire. Fais vérifier ton dossier avant de déposer. Mais ne ' +
+    'construis pas ton plan sur cinq ans d\'attente : ce n\'est pas ta situation.</div></div>';
+
+  /* Les chantiers, avec leurs taches cochables et leurs echeances. */
+  PARTIR.chantiers.forEach(c => {
+    const n = c.taches.length, f = c.taches.filter(t => S.partir[t.id]).length;
+    h += '<div class="card"><h2>' + esc(c.nm) +
+      ' <span class="tag">' + f + ' sur ' + n + '</span></h2>' +
+      '<div style="height:5px;background:var(--ligne);border-radius:3px;margin:6px 0 10px">' +
+      '<i style="display:block;height:5px;border-radius:3px;background:' + c.coul +
+      ';width:' + (n ? Math.round(100 * f / n) : 0) + '%"></i></div>' +
+      '<div class="note" style="margin-bottom:10px">' + esc(c.x) + '</div>';
+    c.taches.forEach(t => {
+      const on = !!S.partir[t.id], j = joursAvant(t.d);
+      const coul = on ? "var(--vert)" : j < 0 ? "var(--rouge)" : j <= 14 ? "var(--or)" : "var(--anthr)";
+      const quand = on ? "fait" : dateCourte(t.d) + (j < 0 ? "  ·  passé de " + (-j) + " j"
+        : j === 0 ? "  ·  aujourd'hui" : "  ·  dans " + j + " j");
+      h += '<div class="acc"><div class="h">' +
+        '<span class="nm"><span class="pchk' + (on ? " on" : "") + '" data-partir="' + t.id + '">' +
+        (on ? "✓" : "") + '</span>' + esc(t.t) + '</span>' +
+        '<span class="meta" style="color:' + coul + '">' + quand + '</span></div>' +
+        '<div class="b"><div style="font-size:13px;line-height:1.6">' + esc(t.x) + '</div>' +
+        (t.lien ? '<a class="gcal" href="' + t.lien[1] + '" target="_blank" rel="noopener" ' +
+          'style="margin-top:10px">' + esc(t.lien[0]) + '</a>' : '') +
+        '</div></div>';
+    });
+    h += '</div>';
+  });
+
+  /* Les huit marches, classes par la seule colonne qui te concerne. */
+  h += '<div class="card"><h2>Les huit marchés <span class="tag">porte junior</span></h2>' +
+    '<div class="sub" style="margin-bottom:8px">Part des annonces qui acceptent trois ans ' +
+    'd\'expérience ou moins, parmi celles qui chiffrent une exigence.</div>';
+  PARTIR.marches.forEach(m => {
+    h += '<div class="row"><div class="lab"><b>' + m[0] + '</b><br>' +
+      '<span style="font-size:12px">' + m[2] + '</span></div>' +
+      '<div style="text-align:right;min-width:74px"><b style="font-size:15px">' + m[1] + ' %</b>' +
+      '<div style="height:4px;background:var(--ligne);border-radius:3px;margin-top:4px">' +
+      '<i style="display:block;height:4px;border-radius:3px;background:' +
+      (m[1] >= 40 ? "var(--vert)" : m[1] >= 15 ? "var(--or)" : "var(--rouge)") +
+      ';width:' + Math.round(m[1] / 57 * 100) + '%"></i></div></div></div>';
+  });
+  h += '<div class="note" style="margin-top:11px"><b>Ce que ça dit.</b> ' + esc(PARTIR.lecon) +
+    '</div></div>';
+
+  /* Et tout le detail : ce que le marche demande, les certifications une par une
+     avec leur cout et leurs liens, et les competences de fond avec leur niveau.
+     C'est le meme code que l'ancien onglet Skills, pas une copie. */
+  h += htmlParcours();
+
+  /* Le DSCG en resume, avec le renvoi vers son onglet detaille. */
+  h += '<div class="card"><h2>Le DSCG <span class="tag">écarté, mais pas oublié</span></h2>' +
+    '<div style="font-size:13px;line-height:1.6">Recompté le 21/09 : 18 mentions sur 206 annonces, ' +
+    'et non quatre sur 468 comme c\'était écrit. Il est donc plus demandé qu\'on le croyait. Mais ' +
+    'regarde OÙ : 27 % des annonces ouvertes aux profils à deux ans ou moins le citent, contre 10 % ' +
+    'de celles qui exigent trois ans et plus. C\'est un diplôme d\'ENTRÉE, sur des postes comptables, ' +
+    'et tu es déjà au-delà de l\'entrée. Ajoute qu\'il ne se transporte pas hors de France : 3 % à ' +
+    'Bruxelles, 7 % au Luxembourg, zéro ailleurs. Si ton objectif est l\'étranger, c\'est le pire ' +
+    'rapport effort sur rendement de toute la liste.</div>' +
+    '<div class="note" style="margin-top:10px">Le calendrier, les dispenses et le programme réformé ' +
+    'restent disponibles en entier : ils sont vérifiés à la source et toujours dans l\'app.</div>' +
+    '<a class="gcal" href="https://siec.education.fr/candidats/agenda/examens/DSCG" target="_blank" ' +
+    'rel="noopener" style="margin-top:10px">Calendrier officiel du DSCG, SIEC</a></div>';
+
+  el("partir").innerHTML = h;
+  el("partir").querySelectorAll("[data-partir]").forEach(x => x.addEventListener("click", () => {
+    const k = x.dataset.partir;
+    if (S.partir[k]) delete S.partir[k]; else S.partir[k] = 1;
+    save(); renderPartir();
+  }));
+  brancherCompetences(el("partir"), renderPartir);
 }
 
 function renderEuro(){
@@ -3692,7 +3949,7 @@ function dscgBranche(){
   });
 }
 
-const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg};
+const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, partir:renderPartir, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg};
 function renderAll(){ Object.keys(RENDUS).forEach(k => RENDUS[k]()); }
 document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".nav button").forEach(x => x.classList.remove("act"));
