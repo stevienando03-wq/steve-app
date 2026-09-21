@@ -512,11 +512,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=71"></script>
-<script src="entrainement.js?v=71"></script>
-<script src="actu.js?v=71"></script>
-<script src="dscg.js?v=71"></script>
-<script src="signaux.js?v=71"></script>
+<script src="fiches.js?v=72"></script>
+<script src="entrainement.js?v=72"></script>
+<script src="actu.js?v=72"></script>
+<script src="dscg.js?v=72"></script>
+<script src="signaux.js?v=72"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -726,8 +726,8 @@ const PARTIR = {
       {id:"n0c", t:"Décider du déménagement avec Inès : avant le dépôt, ou après le récépissé", d:"2026-10-18",
        x:"Ton justificatif de domicile doit correspondre à ton adresse sur le dossier. Déménager ENTRE le dépôt et la réponse t'oblige à signaler le changement et peut faire traîner l'instruction. Deux fenêtres propres : soit vous emménagez et tu déposes avec la nouvelle adresse, soit tu déposes d'abord et vous bougez une fois le récépissé obtenu. Ce qu'il faut éviter, c'est le milieu.",
        but:"Une date de déménagement choisie, pas subie", lien:null},
-      {id:"n1", t:"Rendez-vous avocat en droit des étrangers", d:"2026-10-15",
-       x:"Emporte : passeport tchadien, titre de séjour, les deux diplômes M2 français, le contrat CDI, tous tes bulletins de paie depuis l'alternance, un justificatif de domicile. TROIS questions, dans cet ordre. Un, mon titre expire le 18 février 2027 : quel titre demander au renouvellement, et quelles pièces exactement dans ma situation ? Deux, suis-je dispensé de stage au titre de l'article 21-20, en tant que ressortissant tchadien de langue maternelle française, et à défaut le stage réduit à deux ans du 21-18 s'applique-t-il avec mes deux masters ? Trois, combien de bulletins de paie faut-il pour que la condition de ressources ne soit pas discutée ? Note les réponses par écrit le jour même.",
+      {id:"n1", t:"Poser les trois questions à Inès, et noter ses réponses", d:"2026-10-15",
+       x:"Inès fait du droit des étrangers : tu as le conseil à la maison, pas besoin d'avocat. Sors tes pièces devant elle, elles sont toutes dans l'onglet Papiers : passeport, titre de séjour, les deux M2, le contrat CDI, les bulletins depuis l'alternance, le justificatif de domicile. TROIS questions, dans cet ordre. Un, mon titre expire le 18 février 2027 : quel titre demander au renouvellement, et quelles pièces exactement dans ma situation ? Deux, suis-je dispensé de stage au titre de l'article 21-20, en tant que ressortissant tchadien de langue maternelle française, et à défaut le stage réduit à deux ans du 21-18 s'applique-t-il avec mes deux masters ? Trois, combien de bulletins de paie faut-il pour que la condition de ressources ne soit pas discutée ? Note les réponses par écrit le jour même.",
        lien:["Procédure et pièces, service-public","https://www.service-public.gouv.fr/particuliers/vosdroits/F2213"]},
       {id:"n2", t:"S'inscrire à l'examen civique", d:"2026-10-31",
        x:"Obligatoire depuis le 1er janvier 2026. 40 questions à choix multiples, 45 minutes, 32 bonnes réponses exigées. Vise un créneau en novembre, la demande est forte. Le ministère prévient lui-même que les sites payants de préparation ne sont pas affiliés : les questions officielles sont gratuites, n'achète rien.",
@@ -2577,9 +2577,10 @@ function renderPartir(){
 
   h += '<div class="card"><h2>Ce qui change ton calendrier</h2>' +
     '<div style="font-size:13px;line-height:1.6">' + esc(PARTIR.cle) + '</div>' +
-    '<div class="alerte" style="margin-top:10px"><b>La réserve.</b> Je ne suis pas avocat et la ' +
-    'naturalisation reste discrétionnaire. Fais vérifier ton dossier avant de déposer. Mais ne ' +
-    'construis pas ton plan sur cinq ans d\'attente : ce n\'est pas ta situation.</div></div>';
+    '<div class="alerte" style="margin-top:10px"><b>La réserve.</b> Je ne suis pas juriste et la ' +
+    'naturalisation reste discrétionnaire. Fais relire ton dossier par Inès avant de déposer, ' +
+    'c\'est son métier et c\'est elle qui a déjà corrigé ma date de dépôt. Mais ne construis pas ' +
+    'ton plan sur cinq ans d\'attente : ce n\'est pas ta situation.</div></div>';
 
   /* Les chantiers, avec leurs taches cochables et leurs echeances. */
   PARTIR.chantiers.forEach(c => {

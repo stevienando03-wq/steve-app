@@ -23,7 +23,7 @@ const SIGNAUX = {"maj":"2026-09-21","items":[
  {"id":"nat2120","d":"2026-09-21","ty":"opportunite",
   "t":"Tu n'as probablement pas cinq ans à attendre pour la nationalité française",
   "q":"L'article 21-20 du code civil dispense de TOUT stage de résidence le ressortissant d'un État dont le français est langue officielle, quand le français est sa langue maternelle. Le Tchad figure nommément dans l'annexe officielle du ministère, téléchargée et lue le 21/09/2026. Et à défaut, l'article 21-18 ramène le stage à deux ans pour un diplôme du supérieur français : tu en as deux.",
-  "faire":"Prendre rendez-vous avec un avocat en droit des étrangers avant le 15 octobre. La question à poser est écrite mot pour mot dans l'onglet Parcours.",
+  "faire":"Poser les trois questions à Inès avant le 15 octobre, c'est son métier. Elles sont écrites mot pour mot dans l'onglet Parcours, avec les pièces à sortir.",
   "lien":["La procédure et les pièces","https://www.service-public.gouv.fr/particuliers/vosdroits/F2213"]},
 
  {"id":"can2126","d":"2026-09-21","ty":"opportunite",
