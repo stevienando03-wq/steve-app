@@ -510,11 +510,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=69"></script>
-<script src="entrainement.js?v=69"></script>
-<script src="actu.js?v=69"></script>
-<script src="dscg.js?v=69"></script>
-<script src="signaux.js?v=69"></script>
+<script src="fiches.js?v=70"></script>
+<script src="entrainement.js?v=70"></script>
+<script src="actu.js?v=70"></script>
+<script src="dscg.js?v=70"></script>
+<script src="signaux.js?v=70"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -709,11 +709,23 @@ const PARTIR = {
        "du supérieur français : tu en as deux.",
   chantiers: [
     {id:"nat", nm:"La nationalité", coul:"var(--vert)",
-     x:"Priorité absolue, tout le reste en dépend. Ton CDI à 27 k porte la condition de " +
-       "ressources stables et suffisantes : ne fais rien qui le fragilise avant le décret.",
+     x:"Priorité absolue, et dans CET ordre. Le renouvellement du titre passe AVANT la " +
+       "naturalisation : un séjour irrégulier ne fragilise pas un dossier de naturalisation, " +
+       "il le rend impossible. Ton titre expire le 18 février 2027, la fenêtre de dépôt va du " +
+       "18 octobre au 18 décembre 2026. Ton CDI à 27 k porte la condition de ressources " +
+       "stables et suffisantes : ne fais rien qui le fragilise avant le décret.",
      taches:[
+      {id:"n0", t:"Réunir le dossier de renouvellement du titre de séjour", d:"2026-10-18",
+       x:"Ton titre expire le 18 février 2027. La demande se dépose au plus tôt QUATRE mois et au plus tard DEUX mois avant, donc entre le 18 octobre et le 18 décembre 2026. La fenêtre s'ouvre le 18 octobre : prépare les pièces avant, pour déposer dès l'ouverture et non à la fin.",
+       but:"Pièces prêtes le jour où la fenêtre s'ouvre", lien:null},
+      {id:"n0b", t:"DÉPOSER le renouvellement du titre de séjour", d:"2026-12-18",
+       x:"C'est la seule date de tout ce plan qui ne se négocie pas. Après le 18 décembre, c'est 180 euros de droit de visa de régularisation, et surtout un risque sur la régularité de ton séjour. Or un séjour irrégulier ne fragilise pas ta naturalisation, il la rend impossible. Vise fin octobre, pas la mi-décembre : tu auras le temps de compléter si une pièce manque.",
+       but:"Récépissé en main", lien:null},
+      {id:"n0c", t:"Décider du déménagement avec Inès : avant le dépôt, ou après le récépissé", d:"2026-10-18",
+       x:"Ton justificatif de domicile doit correspondre à ton adresse sur le dossier. Déménager ENTRE le dépôt et la réponse t'oblige à signaler le changement et peut faire traîner l'instruction. Deux fenêtres propres : soit vous emménagez et tu déposes avec la nouvelle adresse, soit tu déposes d'abord et vous bougez une fois le récépissé obtenu. Ce qu'il faut éviter, c'est le milieu.",
+       but:"Une date de déménagement choisie, pas subie", lien:null},
       {id:"n1", t:"Rendez-vous avocat en droit des étrangers", d:"2026-10-15",
-       x:"Emporte : passeport tchadien, les deux diplômes M2 français, le contrat CDI, trois bulletins de paie, un justificatif de domicile. La question à poser, mot pour mot : « Suis-je dispensé de stage au titre de l'article 21-20, en tant que ressortissant tchadien de langue maternelle française ? Et à défaut, le stage réduit à deux ans du 21-18 s'applique-t-il avec mes deux masters français ? » Note la réponse par écrit le jour même.",
+       x:"Emporte : passeport tchadien, titre de séjour, les deux diplômes M2 français, le contrat CDI, tous tes bulletins de paie depuis l'alternance, un justificatif de domicile. TROIS questions, dans cet ordre. Un, mon titre expire le 18 février 2027 : quel titre demander au renouvellement, et quelles pièces exactement dans ma situation ? Deux, suis-je dispensé de stage au titre de l'article 21-20, en tant que ressortissant tchadien de langue maternelle française, et à défaut le stage réduit à deux ans du 21-18 s'applique-t-il avec mes deux masters ? Trois, combien de bulletins de paie faut-il pour que la condition de ressources ne soit pas discutée ? Note les réponses par écrit le jour même.",
        lien:["Procédure et pièces, service-public","https://www.service-public.gouv.fr/particuliers/vosdroits/F2213"]},
       {id:"n2", t:"S'inscrire à l'examen civique", d:"2026-10-31",
        x:"Obligatoire depuis le 1er janvier 2026. 40 questions à choix multiples, 45 minutes, 32 bonnes réponses exigées. Vise un créneau en novembre, la demande est forte. Le ministère prévient lui-même que les sites payants de préparation ne sont pas affiliés : les questions officielles sont gratuites, n'achète rien.",
@@ -721,8 +733,9 @@ const PARTIR = {
       {id:"n3", t:"Passer l'examen civique, viser 36 sur 40", d:"2026-11-30",
        x:"Le minimum légal est 32. On vise 36 pour garder quatre points de marge, parce qu'un mauvais jour coûte trois mois. Trente minutes par jour sur quatre semaines, avec trois blancs à 28, 34 puis 36. Si tu es sous 34 au troisième, décale plutôt que de rater.",
        lien:["S'inscrire, CCI Paris","https://francais.cci-paris-idf.fr/candidat?produit=21"]},
-      {id:"n4", t:"Déposer le dossier de naturalisation", d:"2027-02-28",
-       x:"Le test de langue n'est PAS à passer : tes diplômes français de niveau 3 ou plus au RNCP t'en dispensent, confirmé par l'arrêté du 22 décembre 2025. Si tu décroches un poste avant, dépose avant de changer d'employeur : la stabilité des ressources se juge sur la durée du contrat.",
+      {id:"n4", t:"Déposer le dossier de naturalisation", d:"2027-11-15",
+       x:"DATE DÉPLACÉE le 21/09, sur le conseil d'Inès, qui travaille le droit des étrangers. Je visais février 2027. Elle conseille d'avoir un à deux ans de bulletins de paie, et elle a raison : l'article 21-20 te dispense du stage de résidence, mais PAS de la condition de ressources stables et suffisantes. Un CDI de trois mois est légalement suffisant et pratiquement fragile ; douze bulletins ne se discutent pas. Ton titre de séjour renouvelé en décembre te couvre jusque-là, donc attendre ne coûte rien et ne fait que solidifier le dossier. Le test de langue n'est pas à passer : tes diplômes français t'en dispensent, arrêté du 22 décembre 2025.",
+       but:"Douze bulletins de paie au dossier",
        lien:["Liste officielle des pièces","https://www.service-public.gouv.fr/particuliers/vosdroits/F2213"]}
      ]},
 
