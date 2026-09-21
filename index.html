@@ -142,6 +142,26 @@ body.dark .ftip{background:#2a2f3a}.tab.act{display:block}
   align-items:center;justify-content:center;font-size:12px;color:#fff;margin-right:8px;
   vertical-align:-3px;flex:none;cursor:pointer}
 .pchk.on{background:var(--vert);border-color:var(--vert)}
+
+/* ---------- L'avancement : un seul dessin, sur tous les onglets ---------- */
+.avb{display:flex;gap:3px;border-radius:99px;overflow:hidden}
+.avs{position:relative;border-radius:99px;overflow:hidden;background:var(--ligne);cursor:pointer;
+  transition:transform .12s ease}
+.avs:hover{transform:translateY(-1px)}
+.avs i{position:absolute;top:0;bottom:0;left:0;display:block;border-radius:99px;width:0;
+  transition:width .45s cubic-bezier(.22,.9,.3,1)}
+.avc{background:linear-gradient(180deg,var(--carte,#fff) 0%,var(--carte,#fff) 100%)}
+.avt{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:9px}
+.avt h2{margin:0}
+.avp{font-size:26px;font-weight:800;line-height:1;color:var(--bleu);font-variant-numeric:tabular-nums}
+.avp span{font-size:14px;font-weight:700;margin-left:1px;opacity:.7}
+.avl{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:11.5px;color:var(--anthr)}
+.avl span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.avl i{width:8px;height:8px;border-radius:50%;flex:none}
+.avl b{font-variant-numeric:tabular-nums}
+/* La barre fine de l'en-tete, visible sur tous les onglets. */
+.avtop{padding:0 14px 9px}
+@media (prefers-reduced-motion: reduce){ .avs i{transition:none} .avs:hover{transform:none} }
 .chk .bx{width:20px;height:20px;border:2px solid var(--ligne);border-radius:6px;flex:none;display:flex;
   align-items:center;justify-content:center;font-size:13px;color:#fff}
 .chk.on .bx{background:var(--vert);border-color:var(--vert)}
@@ -298,6 +318,9 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <div class="date" id="hdate"></div>
   <button id="darkBtn" title="Mode sombre">🌙</button>
 </div>
+<!-- La barre d'avancement de l'en-tete : les memes segments que les cartes,
+     visible sur tous les onglets, et chaque segment mene a son module. -->
+<div class="avtop" id="avtop"></div>
 
 <div class="tab act" id="t-jour"><div class="wrap" id="jour"></div></div>
 <div class="tab" id="t-semaine"><div class="wrap" id="semaine"></div></div>
@@ -334,16 +357,17 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
-  <button data-tab="dscg"><span class="ic">🎓</span>DSCG</button>
+  <!-- DSCG sorti de la barre le 21/09 : son resume et son calendrier sont dans
+       Parcours. Le code et les donnees restent en place, remettre ce bouton suffit. -->
 </div>
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=55"></script>
-<script src="entrainement.js?v=55"></script>
-<script src="actu.js?v=55"></script>
-<script src="dscg.js?v=55"></script>
-<script src="signaux.js?v=55"></script>
+<script src="fiches.js?v=56"></script>
+<script src="entrainement.js?v=56"></script>
+<script src="actu.js?v=56"></script>
+<script src="dscg.js?v=56"></script>
+<script src="signaux.js?v=56"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1036,7 +1060,12 @@ S.budget.mois = S.budget.mois || moisCourant();
 S.budget.histo = S.budget.histo || [];   // les mois cloturés, pour comparer
 S.budget.prev  = S.budget.prev  || [];   // le prévisionnel : ce qui n'est pas encore arrivé
 S.budget.recur = S.budget.recur || [];   // les abonnements et charges qui reviennent chaque mois
-function save(){ localStorage.setItem(LS, JSON.stringify(S)); }
+/* Tout changement d'etat passe par ici, donc la barre de l'en-tete se remet a
+   jour toute seule, quel que soit l'onglet ou l'on a coche quelque chose. */
+function save(){
+  localStorage.setItem(LS, JSON.stringify(S));
+  try { renderAvTop(); } catch(e) {}
+}
 /* les cases cochees d'une periode passee ne servent plus */
 (function(){
   const pref = "p" + PERIODE.du + "_";
@@ -1178,6 +1207,11 @@ function renderJour(){
        (estTravail(t) ? "<br>Travail de " + TRAVAIL.debut + " à " + TRAVAIL.fin + "." : "") +
        '</div></div>';
 
+  const avJ = avChantiers();
+  h += carteAv("Où tu en es aujourd'hui",
+    avJ.filter(x => x.cle === "jour" || x.cle === "sport"),
+    "Touche un segment pour aller au module. La barre de l'en-tête suit les six chantiers.");
+
   h += htmlSignaux();
 
   const pr = repasDu(t);
@@ -1237,6 +1271,7 @@ function renderJour(){
   }
   el("jour").innerHTML = h;
   brancherSignaux(el("jour"));
+  brancherAv(el("jour"));
 
   el("jour").querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
     const a = b.dataset.act, s2 = S.track[auj()];
@@ -1249,7 +1284,9 @@ function renderJour(){
 }
 
 function renderSemaine(){
-  let h = '<div class="card"><h2>Tes sept prochains jours</h2>';
+  let h = carteAv("Ta semaine", avChantiers().filter(x => x.cle === "sport" || x.cle === "bouffe"),
+    "Les séances de la semaine en cours, et le panier de la période.");
+  h += '<div class="card"><h2>Tes sept prochains jours</h2>';
   for (let i = 0; i < 7; i++) {
     const d = plusJours(auj(), i), s = seanceDu(d), rdvs = rdvDu(d);
     const tag = s === "REPOS" ? "repos" : s;
@@ -1310,6 +1347,7 @@ function renderSemaine(){
        'réglage du dessus. Une raison de plus de le faire.</div></div>';
 
   el("semaine").innerHTML = h;
+  brancherAv(el("semaine"));
 
   el("semaine").querySelectorAll("[data-oublie]").forEach(b => {
     b.addEventListener("click", () => oublieRdv(+b.getAttribute("data-oublie")));
@@ -1338,7 +1376,9 @@ function renderSemaine(){
 
 function renderSport(){
   const s = seanceDu(auj());
-  let h = '<div class="card hero"><h2>Aujourd\'hui</h2><div class="big">' +
+  let h = carteAv("Tes séances", avChantiers().filter(x => x.cle === "sport" || x.cle === "jour"),
+    "Une séance cochée dans l'onglet Aujourd'hui remonte ici, et dans la barre du haut.");
+  h += '<div class="card hero"><h2>Aujourd\'hui</h2><div class="big">' +
           (s === "REPOS" ? "Repos" : s) + '</div><div class="sub">' +
           (s === "REPOS" ? "Pas de salle. Marche, étirements, et au lit tôt." : "Séance " + creneauSport(auj()) + ".") +
           '</div></div>';
@@ -1354,6 +1394,7 @@ function renderSport(){
        '<span class="pill" data-rest="60">60 s</span><span class="pill" data-rest="90">90 s</span>' +
        '<span class="pill" data-rest="120">2 min</span><span class="pill" data-rest="0">Stop</span></div></div>';
   el("sport").innerHTML = h;
+  brancherAv(el("sport"));
   el("sport").querySelectorAll(".acc").forEach(a =>
     a.querySelector(".h").addEventListener("click", () => a.classList.toggle("open")));
   el("sport").querySelectorAll("[data-rest]").forEach(b => b.addEventListener("click", () => {
@@ -1478,6 +1519,98 @@ function injecteRecurrents(){
   });
 }
 
+/* ================= L'AVANCEMENT, PARTOUT ET PAREIL =================
+   Steve, le 21/09 : « le format partout, partout, partout, plus beau ».
+   Un seul composant, une seule facon de lire : chaque segment est un
+   chantier, large comme son nombre d'items, rempli de sa couleur. Jamais un
+   pourcentage global tout seul, parce qu'un pourcentage ne dit pas OU ca
+   coince. La barre de l'en-tete reprend les memes segments et se touche pour
+   aller au module. */
+
+/* Les chantiers du jour, calcules sur l'etat reel, jamais ecrits en dur. */
+function avChantiers(){
+  const t = auj();
+  const st = S.track[t] || {seance:false, eau:0};
+
+  /* La semaine en cours, du lundi au dimanche. */
+  const d0 = parse(t), dec = (d0.getDay() + 6) % 7;
+  const sem = [];
+  for (let i = 0; i < 7; i++){
+    const x = new Date(d0); x.setDate(d0.getDate() - dec + i); sem.push(iso(x));
+  }
+  const prevues = sem.filter(j => seanceDu(j) !== "REPOS").length;
+  const faites  = sem.filter(j => seanceDu(j) !== "REPOS" && (S.track[j] || {}).seance).length;
+
+  const lignes = (typeof PERIODE !== "undefined" && PERIODE.courses && PERIODE.courses.lignes)
+    ? PERIODE.courses.lignes : [];
+  const prisesC = lignes.filter((l, i) => S.shop[cleShop(i)]).length;
+
+  const nivMax = (typeof SKILLS !== "undefined" ? SKILLS.length : 0) * 5;
+  const niv = (typeof SKILLS !== "undefined" ? SKILLS : [])
+    .reduce((a, sk) => a + ((S.skills[sk.nm] || {}).n || 0), 0);
+
+  const tachesP = (typeof PARTIR !== "undefined")
+    ? PARTIR.chantiers.reduce((a, c) => a + c.taches.length, 0) : 0;
+  const faitesP = (typeof PARTIR !== "undefined")
+    ? PARTIR.chantiers.reduce((a, c) => a + c.taches.filter(x => S.partir[x.id]).length, 0) : 0;
+
+  const vues = Object.keys(S.fin && S.fin.vus || {}).length;
+
+  return [
+    {cle:"jour",   nm:"Ta journée",   coul:"var(--vert)", fait:(st.seance ? 1 : 0) + Math.min(8, st.eau || 0), total:9,
+     mot:(st.seance ? "séance cochée" : "séance pas encore cochée") + ", " + Math.min(8, st.eau || 0) + " verres sur 8"},
+    {cle:"sport",  nm:"Tes séances",  coul:"var(--bleu)", fait:faites, total:Math.max(1, prevues),
+     mot:faites + " séance" + (faites > 1 ? "s" : "") + " sur " + prevues + " cette semaine"},
+    {cle:"bouffe", nm:"Tes courses",  coul:"var(--or)",   fait:prisesC, total:Math.max(1, lignes.length),
+     mot:prisesC + " article" + (prisesC > 1 ? "s" : "") + " sur " + lignes.length},
+    {cle:"partir", nm:"Ton parcours", coul:"var(--bleu)", fait:faitesP, total:Math.max(1, tachesP),
+     mot:faitesP + " tâche" + (faitesP > 1 ? "s" : "") + " sur " + tachesP},
+    {cle:"partir", nm:"Tes compétences", coul:"var(--or)", fait:niv, total:Math.max(1, nivMax),
+     mot:niv + " niveaux sur " + nivMax},
+    {cle:"fin",    nm:"Tes fiches",   coul:"var(--vert)", fait:vues, total:Math.max(1, (typeof FI !== "undefined" ? FI.length : 1)),
+     mot:vues + " fiche" + (vues > 1 ? "s" : "") + " vue" + (vues > 1 ? "s" : "") + " sur " + (typeof FI !== "undefined" ? FI.length : 0)}
+  ];
+}
+
+/* La barre elle-meme. Un segment par chantier, largeur proportionnelle au
+   nombre d'items, remplissage a sa couleur, coins arrondis des deux cotes. */
+function barreAv(segs, haut){
+  const h = haut || 10;
+  let o = '<div class="avb" style="height:' + h + 'px">';
+  segs.forEach(s => {
+    const pc = s.total ? Math.round(100 * s.fait / s.total) : 0;
+    o += '<div class="avs" title="' + esc(s.nm) + ' : ' + s.fait + ' sur ' + s.total + '"' +
+      (s.cle ? ' data-av="' + s.cle + '"' : '') + ' style="flex:' + Math.max(1, s.total) + '">' +
+      '<i style="width:' + pc + '%;background:' + s.coul + '"></i></div>';
+  });
+  return o + '</div>';
+}
+
+/* La carte posee en tete de chaque onglet. Meme dessin partout. */
+function carteAv(titre, segs, sous){
+  const f = segs.reduce((a, s) => a + s.fait, 0), t = segs.reduce((a, s) => a + s.total, 0);
+  const pc = t ? Math.round(100 * f / t) : 0;
+  let h = '<div class="card avc"><div class="avt"><h2>' + esc(titre) + '</h2>' +
+    '<div class="avp">' + pc + '<span>%</span></div></div>' +
+    barreAv(segs, 12) + '<div class="avl">';
+  segs.forEach(s => {
+    h += '<span><i style="background:' + s.coul + '"></i>' + esc(s.nm) + ' ' +
+      '<b>' + s.fait + '/' + s.total + '</b></span>';
+  });
+  h += '</div>' + (sous ? '<div class="sub" style="margin-top:8px">' + esc(sous) + '</div>' : '') +
+    '</div>';
+  return h;
+}
+
+/* Les segments se touchent pour aller au module concerne. */
+function brancherAv(cont){
+  cont.querySelectorAll("[data-av]").forEach(d => d.addEventListener("click", e => {
+    e.stopPropagation();
+    const b = document.querySelector('.nav button[data-tab="' + d.dataset.av + '"]');
+    if (b) b.click();
+  }));
+}
+
 /* ---------- L'onglet PARTIR ----------
    Le format vient de ce que Steve a aime le 21/09 : une barre d'avancement
    DECOUPEE PAR CHANTIER, chaque segment large comme son nombre de taches et
@@ -1511,12 +1644,10 @@ function renderPartir(){
     a + c.taches.filter(t => S.partir[t.id]).length, 0);
   const pc = tot ? Math.round(100 * fait / tot) : 0;
 
-  let h = '<div class="card hero"><h2>Partir, et quand</h2>' +
-    '<div class="sub">' + fait + ' sur ' + tot + ', soit ' + pc + ' %. ' + PARTIR.base + '.</div>' +
-    barreChantiers(PARTIR.chantiers.map(c => ({
-      n: c.taches.length, fait: c.taches.filter(t => S.partir[t.id]).length,
-      coul: c.coul, nm: c.nm
-    }))) + '</div>';
+  let h = carteAv("Partir, et quand", PARTIR.chantiers.map(c => ({
+      nm: c.nm, coul: c.coul, total: c.taches.length,
+      fait: c.taches.filter(t => S.partir[t.id]).length
+    })), PARTIR.base + ". Chaque segment est un chantier : tu vois lequel avance et lequel n'a pas commencé.");
 
   h += '<div class="card"><h2>Ce qui change ton calendrier</h2>' +
     '<div style="font-size:13px;line-height:1.6">' + esc(PARTIR.cle) + '</div>' +
@@ -3018,7 +3149,8 @@ function blocJourRepas(d, avecRecette){
 
 function renderBouffe(){
   const t = auj(), C = PERIODE.courses;
-  let h = "";
+  let h = carteAv("Tes courses", avChantiers().filter(x => x.cle === "bouffe"),
+    "Coche un article plus bas : la barre du haut suit.");
 
   h += '<div class="card hero"><h2>Ta période</h2><div class="big">' + PERIODE.titre + '</div>' +
        '<div class="sub">Du ' + libelleLong(PERIODE.du) + ' au ' + libelleLong(PERIODE.au) + '.<br>' + PERIODE.intro + '</div></div>';
@@ -3111,6 +3243,7 @@ function renderBouffe(){
   h += '</div>';
 
   el("bouffe").innerHTML = h;
+  brancherAv(el("bouffe"));
   bBranche();
   el("bouffe").querySelectorAll(".acc").forEach(a =>
     a.querySelector(".h").addEventListener("click", () => a.classList.toggle("open")));
@@ -3510,7 +3643,9 @@ function renderFinInterne(){
 function finAccueil(){
   const vus = Object.keys(S.fin.vus).length, rev = Object.keys(S.fin.revoir).length;
   const lot = finLotSemaine();
-  let h = '<div class="card hero"><h2>Muscler la finance</h2>' +
+  let h = carteAv("Ta finance", avChantiers().filter(x => x.cle === "fin"),
+    "606 fiches en banque. Ce n'est pas une course : dix cartes par jour suffisent.");
+  h += '<div class="card hero"><h2>Muscler la finance</h2>' +
     '<p class="note">Deux exercices courts. Le calcul mental pour les tests de recrutement, les fiches pour l\'intelligence financière.</p>' +
     '<div class="kpi" style="margin-top:12px">' +
     finKpi(S.fin.serie || 0, "jours de suite") +
@@ -3551,6 +3686,7 @@ function finAccueil(){
     ', actualité du ' + (typeof ACTU !== "undefined" ? ACTU.maj : "?") + ', ' +
     EXO.length + ' exercices et ' + FI.length + ' fiches.</p>';
   el("fin").innerHTML = h;
+  brancherAv(el("fin"));
 }
 function finKpi(v, l){
   return '<div class="card" style="flex:1;text-align:center;margin:0;padding:11px 6px">' +
@@ -4060,7 +4196,15 @@ function dscgBranche(){
 }
 
 const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, partir:renderPartir, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg};
-function renderAll(){ Object.keys(RENDUS).forEach(k => RENDUS[k]()); }
+/* La barre de l'en-tete se redessine a chaque rendu : elle suit ce qu'on coche
+   dans n'importe quel onglet, sans qu'on ait a la prevenir. */
+function renderAvTop(){
+  const c = el("avtop");
+  if (!c) return;
+  c.innerHTML = barreAv(avChantiers(), 7);
+  brancherAv(c);
+}
+function renderAll(){ Object.keys(RENDUS).forEach(k => RENDUS[k]()); renderAvTop(); }
 document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".nav button").forEach(x => x.classList.remove("act"));
   document.querySelectorAll(".tab").forEach(x => x.classList.remove("act"));
