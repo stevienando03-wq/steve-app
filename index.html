@@ -330,10 +330,10 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <button data-tab="dscg"><span class="ic">🎓</span>DSCG</button>
 </div>
 
-<script src="fiches.js?v=52"></script>
-<script src="entrainement.js?v=52"></script>
-<script src="actu.js?v=52"></script>
-<script src="dscg.js?v=46"></script>
+<script src="fiches.js?v=53"></script>
+<script src="entrainement.js?v=53"></script>
+<script src="actu.js?v=53"></script>
+<script src="dscg.js?v=53"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -556,23 +556,23 @@ const RECETTES = [
    courses. Ecrite en JSON, qui est du JavaScript valide, pour ne pas avoir a
    echapper a la main les apostrophes du francais. */
 const PERIODE = {
- "du": "2026-09-13",
- "au": "2026-09-16",
- "titre": "À deux, de dimanche à mercredi",
- "intro": "Quatre jours, quatre sessions de cuisine, la plus longue fait 40 minutes. Aucun four dans cette cuisine, donc tout se fait à la poêle ou à la casserole. Chaque plat donne quatre portions : deux assiettes le soir, une chacun, et deux gamelles pour le lendemain midi, une chacun. Inès travaille du lundi au vendredi, elle a donc ses cinq déjeuners. Mercredi soir vide le frigo avant ton départ de jeudi matin, et il ne demande aucun achat.",
+ "du": "2026-09-21",
+ "au": "2026-09-24",
+ "titre": "À deux, de lundi à jeudi",
+ "intro": "Quatre jours, quatre sessions de cuisine, la plus longue fait 35 minutes. Aucun four dans cette cuisine, donc tout se fait à la poêle ou à la casserole. Chaque plat donne quatre portions : deux assiettes le soir, une chacun, et deux gamelles pour le lendemain midi, une chacun. Inès a ses quatre déjeuners, mardi à vendredi. Tu rentres de Marseille et le frigo est vide, donc la course de ce soir repart de zéro.",
  "courses": {
-  "d": "2026-09-13",
-  "h": "15:00",
+  "d": "2026-09-21",
+  "h": "18:45",
   "dur": 40,
-  "quand": "cet après-midi",
-  "attendu": 27,
-  "verite": "Aucun prix n'est vérifié au catalogue. Ce sont des fourchettes Lidl, à corriger en rayon. Le brocoli est sorti de la liste, tu n'en as pas trouvé. Le total réel tombera entre 21 et 33 €, soit 2,61 à 4,12 € par personne et par jour.",
+  "quand": "en rentrant du bureau",
+  "attendu": 36,
+  "verite": "Aucun prix n'est vérifié au catalogue. Ce sont des fourchettes Lidl, à corriger en rayon. Le panier est plus lourd que d'habitude parce que le frigo est vide et qu'il faut 1,8 kg de viande. Le total réel tombera entre 28 et 44 €, soit 3,49 à 5,53 € par personne et par jour. Les lignes à vérifier plus bas ne sont comptées nulle part : elles ne s'achètent que si ton placard est vide.",
   "lignes": [
    {
-    "n": "Galettes de wrap",
-    "q": "1 paquet de 8",
-    "bas": 1.2,
-    "haut": 1.8
+    "n": "Viande hachée 15 %",
+    "q": "1 kg",
+    "bas": 7.0,
+    "haut": 11.0
    },
    {
     "n": "Filets de poulet",
@@ -581,16 +581,16 @@ const PERIODE = {
     "haut": 8.0
    },
    {
-    "n": "Viande hachée",
-    "q": "500 g",
-    "bas": 3.5,
-    "haut": 5.5
+    "n": "Œufs",
+    "q": "12",
+    "bas": 2.2,
+    "haut": 3.5
    },
    {
-    "n": "Crème de coco",
-    "q": "1 brique de 20 cl",
-    "bas": 0.9,
-    "haut": 1.5
+    "n": "Courgettes",
+    "q": "3",
+    "bas": 1.8,
+    "haut": 3.3
    },
    {
     "n": "Poivrons",
@@ -599,10 +599,16 @@ const PERIODE = {
     "haut": 3.0
    },
    {
-    "n": "Courgettes",
-    "q": "2",
+    "n": "Champignons de Paris",
+    "q": "250 g",
     "bas": 1.2,
-    "haut": 2.2
+    "haut": 2.0
+   },
+   {
+    "n": "Épinards frais",
+    "q": "200 g",
+    "bas": 1.2,
+    "haut": 2.0
    },
    {
     "n": "Oignons",
@@ -611,10 +617,10 @@ const PERIODE = {
     "haut": 1.9
    },
    {
-    "n": "Pommes de terre",
-    "q": "1 kg",
-    "bas": 1.0,
-    "haut": 1.8
+    "n": "Crème légère",
+    "q": "1 brique de 20 cl",
+    "bas": 0.6,
+    "haut": 1.1
    },
    {
     "n": "Skyr ou fromage blanc",
@@ -623,47 +629,84 @@ const PERIODE = {
     "haut": 3.5
    },
    {
-    "n": "Épinards frais",
-    "q": "300 g",
-    "bas": 1.5,
-    "haut": 2.5
-   },
-   {
     "n": "Lait",
     "q": "1 litre",
     "bas": 0.9,
     "haut": 1.3
-   }
-  ],
-  "dejaLa": "Bananes, pommes, yaourts, 6 œufs, des pommes de terre, du lait entamé. Riz, fusilli, farfalle, couscous, purée en flocons, flocons d'avoine, quinoa, haricots rouges, tomates pelées, Golden Curry, pâte miso, wakame, beurre de cacahuète, graines de chia. Courgette, aubergine, tomate, carottes, salade, emmental râpé, fromage frais aux herbes, crevettes, limande du Nord. Huiles, paprika, poivre, herbes, ail, thé, matcha.",
-  "verifier": [
-   {
-    "n": "Maïs",
-    "besoin": "1 boîte pour le wrap de lundi. La grande conserve jaune ouverte dans ton frigo y ressemble, mais l'étiquette n'est pas lisible sur la photo.",
-    "si": "0,60 à 1,00 €"
    },
    {
+    "n": "Bananes",
+    "q": "6",
+    "bas": 1.3,
+    "haut": 2.0
+   },
+   {
+    "n": "Pommes",
+    "q": "4",
+    "bas": 1.0,
+    "haut": 1.6
+   }
+  ],
+  "dejaLa": "À confirmer, tu es parti quatre jours et Inès a mangé pendant ce temps. Ce qui devrait rester : riz, pâtes, semoule ou couscous, quinoa, purée en flocons, flocons d'avoine, conserves, beurre de cacahuète, graines de chia, huiles et épices. Regarde avant de partir, la liste ci-dessous te dit quoi prendre si un sachet est vide.",
+  "verifier": [
+   {
     "n": "Riz",
-    "besoin": "450 g sur les trois jours. Ton sachet est au repère 625 g, ça passe.",
+    "besoin": "650 g sur la période, 300 pour le chili de lundi et 350 pour le riz sauté de jeudi.",
     "si": "1,30 à 2,20 €"
    },
    {
-    "n": "Carottes",
-    "besoin": "3 pour le curry de mardi",
-    "si": "1,00 à 1,60 €"
+    "n": "Semoule ou couscous",
+    "besoin": "620 g, dont 300 pour les boulettes de mardi et 80 g par gamelle.",
+    "si": "1,00 à 1,80 €"
    },
    {
-    "n": "Pommes de terre",
-    "besoin": "500 g crues pour le curry. Tu en as, mais pas un kilo : regarde avant de prendre le sac.",
+    "n": "Pâtes",
+    "besoin": "450 g pour la poêlée de mercredi.",
+    "si": "0,80 à 1,50 €"
+   },
+   {
+    "n": "Tomates pelées",
+    "besoin": "2 boîtes, une pour le chili et une pour les boulettes.",
+    "si": "1,20 à 2,00 €"
+   },
+   {
+    "n": "Haricots rouges",
+    "besoin": "1 boîte pour le chili de lundi.",
+    "si": "0,70 à 1,20 €"
+   },
+   {
+    "n": "Maïs",
+    "besoin": "1 boîte pour le chili.",
+    "si": "0,60 à 1,00 €"
+   },
+   {
+    "n": "Petits pois",
+    "besoin": "200 g pour le riz sauté, en boîte ou surgelés.",
+    "si": "0,60 à 1,10 €"
+   },
+   {
+    "n": "Flocons d'avoine",
+    "besoin": "440 g, 100 g par petit-déjeuner et 40 g pour lier les boulettes.",
+    "si": "0,90 à 1,60 €"
+   },
+   {
+    "n": "Beurre de cacahuète",
+    "besoin": "environ 350 g sur la période, c'est lui qui porte ton surplus.",
+    "si": "1,50 à 2,80 €"
+   },
+   {
+    "n": "Sauce soja",
+    "besoin": "pour le riz sauté de jeudi. Sans elle le plat est fade.",
     "si": "1,00 à 1,80 €"
    }
   ],
   "rayon": [
-   "Viande hachée, prends la 15 % et pas la 5 %. Elle coûte moins cher, elle a plus de goût, et la graisse rendue sert à cuire les poivrons derrière.",
-   "Poulet, si le kilo de filets dépasse 9 €, prends des hauts de cuisse désossés. Ils sont meilleurs en curry et deux fois moins chers.",
-   "Crème de coco et pas lait de coco. Le lait est trop liquide, il ne nappera jamais.",
+   "Viande hachée, prends la 15 % et pas la 5 %. Elle coûte moins cher, elle a plus de goût, et la graisse rendue sert à cuire les légumes derrière.",
+   "Poulet, si le kilo de filets dépasse 9 €, prends des hauts de cuisse désossés. Ils sont meilleurs sautés et deux fois moins chers.",
+   "Champignons entiers et fermes, jamais les tranchés en barquette. Les tranchés ont déjà rendu leur eau et ils ne doreront pas.",
+   "Épinards frais en sachet, pas en boîte. Ils tombent en une minute dans la poêlée.",
    "Skyr plutôt que fromage blanc si l'écart de prix est faible : deux fois plus de protéines pour les mêmes calories, c'est ce que tu cherches en prise de masse.",
-   "Épinards frais en sachet, pas en boîte. Ils fondent dans les wraps sans rendre d'eau, et ce sont eux qui remplacent le brocoli dans le curry de mardi."
+   "Prends la viande hachée EN DERNIER, juste avant la caisse, et range-la au plus froid en rentrant. Elle se mange lundi et mardi, pas plus tard."
   ]
  },
  "fixes": [
@@ -721,114 +764,113 @@ const PERIODE = {
   }
  ],
  "diners": {
-  "2026-09-13": {
-   "nm": "Wrap poulet, courgette, riz et crème coco",
+  "2026-09-21": {
+   "nm": "Chili con carne et riz",
+   "portions": 4,
+   "temps": "35 min",
+   "h": "19:30",
+   "dur": 45,
+   "ing": "500 g de viande hachée 15 %, 1 boîte de haricots rouges, 1 boîte de tomates pelées, 1 boîte de maïs, 2 poivrons, 2 oignons, 2 gousses d'ail, 300 g de riz cru, cumin, paprika, piment, 1 cuillère à soupe d'huile",
+   "etapes": [
+    "Riz : 300 g dans 60 cl d'eau salée, couvercle, feu doux 11 min, puis 5 min hors du feu sans ouvrir. Il finit de gonfler tout seul.",
+    "Oignons en dés, poivrons en lanières. Grande casserole, huile, feu moyen, 6 min. Ail écrasé à la fin, 30 secondes, jamais au début : il brûle et devient amer.",
+    "Viande hachée, feu vif, 5 min en l'écrasant à la cuillère pour qu'elle ne fasse pas de blocs. Elle doit colorer, pas bouillir.",
+    "Cumin, paprika et piment jetés sur la viande, 1 minute à sec. Les épices s'ouvrent dans le gras et pas dans l'eau : c'est cette minute qui fait la différence entre un chili et de la viande à la tomate.",
+    "Tomates pelées écrasées à la cuillère, haricots rouges RINCÉS, maïs égoutté. 15 min à feu doux, à découvert, en remuant de temps en temps.",
+    "Sel et poivre à la toute fin. Il doit napper la cuillère, pas couler. Trop liquide, 5 min de plus à découvert et c'est réglé."
+   ],
+   "alerte": "Rince les haricots rouges sous l'eau. Le jus de la boîte est épais, salé et amer, et il colore tout en marron. Et ne sale qu'à la fin : les conserves sont déjà salées, tu ne peux plus revenir en arrière.",
+   "batch": "Deux assiettes ce soir avec le riz, une pour toi, une pour Inès. Les deux autres portions en tupperware pour mardi midi, un chacun. Monte-les CE SOIR, riz au fond et chili par-dessus : demain tu passes ton examen AMF à 11h30, tu n'auras ni le temps ni la tête à ça."
+  },
+  "2026-09-22": {
+   "nm": "Boulettes de bœuf, semoule et courgettes",
    "portions": 4,
    "temps": "30 min",
-   "h": "19:30",
+   "h": "19:00",
    "dur": 40,
-   "ing": "400 g de poulet, 1 courgette, 150 g de riz cru, 10 cl de crème de coco, 80 g d'emmental râpé, 4 galettes, 1 oignon, 1 gousse d'ail, une poignée d'épinards, paprika, sel, poivre, 2 cuillères à soupe d'huile",
+   "ing": "500 g de viande hachée 15 %, 1 œuf, 40 g de flocons d'avoine mixés, 1 boîte de tomates pelées, 2 courgettes, 1 oignon, 2 gousses d'ail, 300 g de semoule crue, herbes, paprika, 2 cuillères à soupe d'huile",
    "etapes": [
-    "Riz d'abord, il tient au chaud tout seul. 150 g dans 30 cl d'eau salée. Ébullition, puis feu très doux, couvert, 11 min sans soulever le couvercle. 5 min de repos hors du feu.",
-    "Poulet en lanières de 1 cm. Poêle bien chaude, 1 cuillère à soupe d'huile. Les lanières en une seule couche, sans les entasser. 3 min sans y toucher, puis 2 min en remuant. Sel, poivre, paprika. Réserver dans une assiette.",
-    "Même poêle, 1 cuillère d'huile. Oignon émincé 3 min. Courgette en demi-rondelles fines, feu vif, 6 min. Elle doit dorer, pas rendre son eau : feu vif et on ne couvre pas. Ail écrasé, 30 secondes.",
-    "Remettre le poulet et son jus. Crème de coco, feu moyen, 2 min. Elle doit napper la garniture, pas l'inonder. Épinards jetés dedans à la fin, ils fondent en 40 secondes.",
-    "Riz mélangé dans la poêle, hors du feu. Goûter et resaler : une garniture de wrap doit être plus salée qu'un plat en assiette, la galette dilue tout.",
-    "Galettes 20 secondes par face dans une poêle sèche, une par une. Garnir au tiers bas, emmental par-dessus la garniture encore chaude pour qu'il fonde, replier les deux côtés puis rouler serré."
+    "Mixe 40 g de flocons d'avoine au Kenwood, quelques secondes, jusqu'à obtenir une poudre. Ça remplace la chapelure, ça tient mieux, et tu en as déjà.",
+    "Dans un saladier : viande, œuf, avoine mixée, ail écrasé, herbes, paprika, sel, poivre. Mélange à la main sans pétrir. Trop travaillée, la boulette devient caoutchouteuse.",
+    "Forme 16 boulettes de la taille d'une balle de golf, quatre par personne. Mains mouillées, elles ne collent plus.",
+    "Poêle, huile, feu moyen vif. Les boulettes 6 min en les roulant pour qu'elles dorent sur toutes les faces. Réserve-les, elles finiront de cuire dans la sauce.",
+    "Même poêle sans la laver : oignon en dés 4 min, courgettes en demi-rondelles 5 min. Tomates pelées écrasées, herbes, sel, 5 min.",
+    "Boulettes remises dans la sauce, feu doux, couvert, 8 min. Pendant ce temps la semoule : 300 g, autant d'eau bouillante salée, un filet d'huile, couvercle, 5 min, puis on égraine à la fourchette."
    ],
-   "alerte": "La crème de coco tranche si elle bout fort. Feu moyen, jamais plus. Si elle tranche quand même, une cuillère d'eau froide et on remue hors du feu.",
-   "batch": "Deux wraps ce soir, un pour toi, un pour Inès. Les deux autres partent en tupperware pour lundi midi, un chacun. Garniture d'un côté et galettes à part : un wrap roulé la veille rend son eau et la galette devient molle. Vous les roulez en trente secondes au bureau."
+   "alerte": "Ne sale pas la viande longtemps à l'avance. Le sel la fait rendre son eau et les boulettes se défont dans la poêle. Sel au moment de mélanger, pas avant.",
+   "batch": "Deux assiettes ce soir, une chacun, quatre boulettes par personne. Les deux autres portions en tupperware pour mercredi midi, un pour toi, un pour Inès. Semoule au fond, boulettes et sauce par-dessus."
   },
-  "2026-09-14": {
-   "nm": "Wrap haricots rouges, maïs, poivrons et viande hachée",
+  "2026-09-23": {
+   "nm": "Poêlée de poulet, pâtes, champignons et épinards",
    "portions": 4,
    "temps": "25 min",
-   "h": "19:30",
-   "dur": 30,
-   "ing": "500 g de viande hachée, 1 boîte de haricots rouges, 1 boîte de maïs, 2 poivrons, 1 oignon, 2 gousses d'ail, 4 cuillères à soupe de tomates pelées écrasées, paprika, 4 galettes, emmental, sel, poivre",
-   "etapes": [
-    "Poêle très chaude, SANS huile si ta hachée est à 15 %. Viande étalée en une couche, 3 min sans la toucher pour qu'elle attrape une croûte brune. C'est cette croûte qui fait tout le goût. Ensuite seulement, écraser à la cuillère en bois, 3 min de plus. Réserver.",
-    "Dans la graisse rendue, oignon et poivrons en dés de 1 cm, feu moyen-vif, 7 min. Ail écrasé, 30 secondes.",
-    "Haricots rouges rincés à l'eau claire et bien égouttés, maïs égoutté, viande remise, tomates pelées écrasées, paprika, sel, poivre. 6 min à feu moyen et à découvert, pour que ça réduise et que ça ne détrempe pas la galette.",
-    "Goûter, resaler franchement.",
-    "Galettes 20 secondes par face à sec. Garnir, emmental par-dessus, rouler serré."
-   ],
-   "alerte": "Rince les haricots rouges sous l'eau. Le jus de la boîte est épais, salé et amer, et il colore tout en marron.",
-   "batch": "Deux wraps ce soir, un chacun. Les deux autres en tupperware pour mardi midi, un pour toi, un pour Inès. Prévois-le : mardi tu soutiens ton mémoire à 11h, tu ne cuisineras pas."
-  },
-  "2026-09-15": {
-   "nm": "Curry japonais poulet, carottes et pommes de terre",
-   "portions": 4,
-   "temps": "10 min actif, 30 en tout",
-   "h": "20:00",
+   "h": "19:00",
    "dur": 35,
-   "ing": "400 g de poulet, 3 carottes, 500 g de pommes de terre, 2 oignons, la moitié d'une plaquette de Golden Curry, 70 cl d'eau, 300 g de riz, 1 courgette, 100 g d'épinards, 1 cuillère à soupe d'huile",
+   "ing": "400 g de filets de poulet, 450 g de pâtes crues, 250 g de champignons de Paris, 200 g d'épinards frais, 20 cl de crème légère, 1 oignon, 2 gousses d'ail, paprika, 2 cuillères à soupe d'huile",
    "etapes": [
-    "Riz : 300 g dans 60 cl d'eau salée, même méthode que dimanche.",
-    "Poulet en morceaux de 3 cm. Casserole, huile, feu vif, 4 min pour colorer. Réserver.",
-    "Oignons en lamelles épaisses, 5 min. Carottes en rondelles de 1 cm et pommes de terre en cubes de 3 cm, 3 min en remuant.",
-    "Poulet remis, 70 cl d'eau pour couvrir. Ébullition, puis feu doux, couvert, 15 min. Une pomme de terre doit s'écraser sous une fourchette.",
-    "COUPER LE FEU. Casser les carrés de roux dans la casserole et les faire fondre en remuant. Remettre 3 min à feu doux, ça épaissit d'un coup.",
-    "Le vert va ici, et pas de brocoli cette semaine. Courgette en demi-rondelles, 6 min à la poêle avec un filet d'huile, elle doit rester ferme. Épinards jetés dessus 1 min, juste le temps qu'ils tombent. Servi À CÔTÉ et pas dedans : le curry est doux et nourrissant, il lui faut quelque chose de vert et de ferme en face. C'est le légume de la semaine pour Inès."
+    "Mets l'eau des pâtes à chauffer tout de suite, c'est elle qui commande le reste.",
+    "Poulet en lanières de 2 cm. Poêle, huile, feu vif, 5 min sans y toucher la première minute pour qu'il colore. Sel, paprika. Réserve.",
+    "Champignons coupés en quatre dans la même poêle, feu VIF, 6 min et SANS SEL. Ils rendent leur eau, elle s'évapore, ils dorent. Salés trop tôt ils bouillent et restent mous.",
+    "Oignon en dés 3 min, ail 30 secondes. Crème, sel, poivre, 2 min à feu doux.",
+    "Épinards jetés dedans, ils tombent en 1 minute. Poulet remis avec son jus.",
+    "Pâtes égouttées UNE MINUTE avant le temps du paquet, versées dans la poêle avec une louche d'eau de cuisson. 1 min en remuant hors du feu, la sauce s'accroche."
    ],
-   "alerte": "Le roux jeté dans un liquide bouillant fait des grumeaux et brûle au fond. On coupe le feu avant de l'ajouter, toujours. C'est la seule erreur qui rate ce plat.",
-   "batch": "Deux assiettes ce soir avec le riz. Deux tupperwares montés ce soir et pas demain matin, riz au fond, curry par-dessus, un pour toi, un pour Inès. Ils couvrent votre mercredi midi. Le plat de soutenance : aucune décision à prendre en rentrant."
+   "alerte": "Garde une louche d'eau de cuisson avant d'égoutter. C'est l'amidon qui lie la sauce aux pâtes, la crème seule glisse et reste au fond de l'assiette.",
+   "batch": "Deux assiettes ce soir, une chacun. Les deux autres en tupperware pour jeudi midi, un pour toi, un pour Inès. Ajoute une cuillère d'eau de cuisson dans chaque boîte : les pâtes boivent la sauce pendant la nuit et repartent sèches sinon."
   },
-  "2026-09-16": {
-   "nm": "Pâtes crevettes, courgette et aubergine",
+  "2026-09-24": {
+   "nm": "Riz sauté au poulet, œufs et légumes",
    "portions": 4,
-   "temps": "30 min",
-   "h": "19:30",
-   "dur": 30,
-   "ing": "500 g de pâtes, les fusilli plus les farfalle pour compléter, 370 g de crevettes, 1 courgette, 1 aubergine, 1 poivron, le reste des épinards, le reste de la boîte de tomates pelées, 2 gousses d'ail, huile d'olive, herbes, paprika. Aucun achat, tout est déjà chez toi.",
+   "temps": "25 min",
+   "h": "18:45",
+   "dur": 35,
+   "ing": "400 g de filets de poulet, 350 g de riz cru, 4 œufs, 1 courgette, 1 poivron, 200 g de petits pois, 2 oignons, 2 gousses d'ail, sauce soja, 2 cuillères à soupe d'huile",
    "etapes": [
-    "Aubergine en cubes de 2 cm. Poêle, 3 cuillères à soupe d'huile d'olive, feu moyen-vif, 8 min. Elle boit toute l'huile dans la première minute puis la rend : n'en rajoute pas, attends.",
-    "Courgette en demi-rondelles, 5 min.",
-    "Ail 30 secondes. Tomates pelées écrasées à la cuillère, herbes, paprika, sel. 6 min à découvert.",
-    "Pâtes dans l'eau bouillante salée, 1 minute de MOINS que le paquet. Garde une louche d'eau de cuisson avant d'égoutter.",
-    "Crevettes dans la sauce 2 min, pas une de plus, elles deviennent caoutchouteuses. Pâtes égouttées versées dans la poêle avec la louche d'eau de cuisson, 1 min en remuant hors du feu."
+    "Le riz cuit EN PREMIER et part refroidir étalé sur une grande assiette. Du riz chaud colle et fait de la bouillie, du riz tiède saute. Vingt minutes suffisent, fais le reste pendant ce temps.",
+    "Poulet en dés de 2 cm. Poêle très chaude, huile, 5 min. Sel. Réserve.",
+    "Œufs battus versés dans la poêle, brouillés grossièrement 1 min, réservés avec le poulet.",
+    "Oignons, poivron et courgette en petits dés, feu vif, 5 min. Ils doivent rester croquants, c'est tout l'intérêt du plat. Petits pois 2 min, ail 30 secondes.",
+    "Riz versé dessus, feu vif, 3 min en remuant sans arrêt pour le réchauffer et le détacher.",
+    "Poulet et œufs remis, sauce soja au filet, poivre. Une minute et c'est fini. Goûte avant de saler, la sauce soja sale déjà beaucoup."
    ],
-   "alerte": "Regarde la date des crevettes DÈS AUJOURD'HUI. Si elle tombe avant mercredi, inverse : ce plat passe lundi soir et le wrap haricots rouges passe mercredi, les conserves attendent sans problème. Et la portion du vendredi part au congélateur mercredi soir, pas au frigo : des crevettes cuites ne tiennent pas deux jours. Sans congélateur, elle mange celle de jeudi et se fait un couscous aux conserves le vendredi.",
-   "batch": "Quatre portions et pas deux. Deux assiettes ce soir, un chacun. Les deux autres sont les gamelles d'Inès pour jeudi et vendredi, pendant que tu es à Marseille. Tu pars jeudi à 9h38 et ce dîner vide le frigo : après lui, plus rien de frais dans cette cuisine."
+   "alerte": "Ta réunion est à 20h30, commence à 18h45. Le riz doit être refroidi avant de sauter, c'est la seule chose qui rate ce plat : cuis-le en rentrant et étale-le tout de suite.",
+   "batch": "Deux assiettes ce soir, une chacun. Les deux autres en tupperware pour vendredi midi, un pour toi, un pour Inès. C'est le dernier plat de la période et il ne reste plus rien de frais après : redonne-moi une liste jeudi soir."
   }
  },
  "planning": {
-  "2026-09-13": {
-   "matin": "",
-   "collation": "",
-   "midi": "Restes : limande, pommes de terre, salade",
-   "soir": "Wrap poulet et crème coco"
+  "2026-09-21": {
+   "soir": "Chili con carne et riz"
   },
-  "2026-09-14": {
+  "2026-09-22": {
    "matin": "Avoine et banane",
    "collation": "Skyr et pomme",
-   "midi": "Wrap poulet en tupperware, plus 100 g de couscous et un œuf dur",
-   "soir": "Wrap haricots rouges"
+   "midi": "Chili en tupperware, plus 80 g de semoule et un œuf dur",
+   "soir": "Boulettes de bœuf et semoule"
   },
-  "2026-09-15": {
+  "2026-09-23": {
    "matin": "Avoine et banane",
    "collation": "Skyr et pomme",
-   "midi": "Wrap haricots en tupperware, plus 100 g de couscous et un œuf dur",
-   "soir": "Curry japonais"
+   "midi": "Boulettes en tupperware, plus 80 g de semoule et un œuf dur",
+   "soir": "Poêlée de poulet et pâtes"
   },
-  "2026-09-16": {
+  "2026-09-24": {
    "matin": "Avoine et banane",
    "collation": "Skyr et pomme",
-   "midi": "Curry en tupperware, plus 100 g de couscous et un œuf dur",
-   "soir": "Pâtes crevettes, on vide le frigo"
+   "midi": "Pâtes en tupperware, plus un œuf dur",
+   "soir": "Riz sauté, on finit le frais"
   }
  },
- "regle": "Tu ne prends plus qu'une gamelle au lieu de deux, l'autre est celle d'Inès. Ce qui te manque se reprend dans ton placard, sans rien acheter : 100 g de couscous à côté de la garniture, un œuf dur, et 20 g de beurre de cacahuète en plus sur la collation. Environ 550 kcal et 25 g de protéines repris, tu restes au-dessus de 3 000 kcal sur la journée. Ce sont des ordres de grandeur, rien n'est pesé. Les cuillères d'huile ne sont pas décoratives, elles portent ton surplus. Mais vous êtes deux et Inès ne cherche pas de surplus : sers-toi l'huile dans TON assiette, pas dans la poêle commune, sauf quand la recette la demande pour cuire. Et c'est toi qui prends le rab de féculents, pas elle.",
+ "regle": "Tu pèses 69 kg et tu vises 80. Ta cible est de 2 600 à 2 900 kcal et 125 à 150 g de protéines par jour, et elle MONTE avec toi : à 75 kg ce sera 2 800 à 3 150. Cette période te met autour de 3 000 kcal et 155 g, donc juste au-dessus. C'est voulu, mais ce sont des ordres de grandeur, rien n'est pesé. Le curseur qui ne coûte aucune course, c'est la semoule de ta gamelle : 50 g si tu montes trop vite, 120 g si la balance ne bouge pas en trois semaines. Un seul chiffre à changer. Les cuillères d'huile ne sont pas décoratives, elles portent ton surplus. Mais vous êtes deux et Inès ne cherche pas de surplus : sers-toi l'huile dans TON assiette, pas dans la poêle commune, sauf quand la recette la demande pour cuire. Et c'est toi qui prends le rab de féculents, pas elle.",
  "bilan": [
-  "Quatre sessions de cuisine, une par soir. La plus longue fait 40 minutes.",
-  "Chaque plat fait quatre portions : deux le soir, une gamelle pour toi, une pour Inès. Elle a ses cinq déjeuners de la semaine, lundi à vendredi.",
-  "Tes trois déjeuners de bureau sont couverts, lundi, mardi et mercredi. Jeudi tu es dans le train de 9h38.",
-  "Mercredi soir fait quatre portions et ne demande aucun achat : deux assiettes, puis les gamelles d'Inès pour jeudi et vendredi pendant ton absence.",
-  "Pas de brocoli cette semaine, tu n'en as pas trouvé. Le vert du curry devient courgette et épinards, à côté et pas dedans.",
-  "Légumes servis sur les quatre jours : courgette, poivrons, maïs, carottes, épinards, aubergine, salade. C'est sa part du contrat.",
-  "Tes 6 œufs : trois partent dans tes gamelles, lundi, mardi et mercredi. Les trois autres restent la réserve du soir quand tu as faim."
+  "Quatre sessions de cuisine, une par soir. La plus longue fait 35 minutes, la plus courte 25.",
+  "Chaque plat fait quatre portions : deux le soir, une gamelle pour toi, une pour Inès. Elle a ses quatre déjeuners, mardi à vendredi.",
+  "L'ordre des plats suit la CONSERVATION, pas l'envie. La viande hachée se mange lundi et mardi, le poulet mercredi et jeudi. Dans un petit frigo, du haché au quatrième jour ne se tente pas.",
+  "Lundi soir tu montes déjà les gamelles du mardi : ton examen AMF est à 11h30 et tu ne cuisineras pas le matin.",
+  "Jeudi tu commences à 18h45, ta réunion est à 20h30. C'est pour ça que le plat le plus rapide est ce jour-là.",
+  "Légumes servis sur les quatre jours : poivrons, maïs, courgettes, champignons, épinards, petits pois, oignons, tomates. C'est sa part du contrat.",
+  "Tes 12 œufs : 4 dans le riz sauté, 1 dans les boulettes, 3 dans tes gamelles, et 4 en réserve pour les soirs de faim."
  ],
- "reste": "Ce que tu laisses en partant jeudi : les deux gamelles d'Inès pour jeudi et vendredi, le reste des pâtes, le couscous, le quinoa, la purée en flocons, le riz, les conserves, tes trois œufs, le skyr et les fruits. Rien de périssable ne traîne dans ce petit frigo. Au retour du 20, redonne-moi une liste."
+ "reste": "Ce que tu auras encore jeudi soir : les deux gamelles du vendredi, le reste des féculents, les conserves non ouvertes, les œufs de réserve, le skyr et les fruits. Plus rien de frais, c'est voulu, le frigo est petit. Redonne-moi une liste jeudi soir pour le vendredi et le week-end."
 };
 
 const CAT_IN  = ["Salaire", "Tickets resto", "Remboursement", "Retrait d'épargne", "Autre"];
@@ -2915,7 +2957,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v52";
+const FINV = "v53";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
