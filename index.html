@@ -502,11 +502,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=65"></script>
-<script src="entrainement.js?v=65"></script>
-<script src="actu.js?v=65"></script>
-<script src="dscg.js?v=65"></script>
-<script src="signaux.js?v=65"></script>
+<script src="fiches.js?v=66"></script>
+<script src="entrainement.js?v=66"></script>
+<script src="actu.js?v=66"></script>
+<script src="dscg.js?v=66"></script>
+<script src="signaux.js?v=66"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -3988,6 +3988,7 @@ function renderFinInterne(){
   if (fVue === "actu") return finActu();
   if (fVue === "memo") return finMemo();
   if (fVue === "calcul") return finEcranCalcul();
+  if (fVue === "cherche") return finEcranCherche();
   if (fVue === "fiches") return finEcranFiches();
   finAccueil();
 }
@@ -4010,6 +4011,7 @@ function finAccueil(){
     '<button class="btn" onclick="exoGo(\'\')">Exercices chiffrés, 6 cas</button>' +
     '<button class="btn bsec" onclick="finGo(\'calcul\')">Calcul mental, 10 questions</button>' +
     '<button class="btn bsec" onclick="finGo(\'fiches\')">Fiches finance, 10 cartes</button>' +
+    '<button class="btn bsec" onclick="finVa(\'cherche\')">Chercher dans les ' + FI.length + ' fiches</button>' +
     '<button class="btn bsec" onclick="finVa(\'actu\')">Le point du jour</button>' +
     '<button class="btn bsec" onclick="finVa(\'memo\')">Mémo, formules et seuils</button>';
   if (rev) h += '<button class="btn bsec" onclick="finGo(\'fiches\',\'@revoir\')">Revoir mes ' + rev + ' fiches de côté</button>';
@@ -4166,6 +4168,65 @@ function illus(t){
   };
   return '<svg viewBox="0 0 72 44" width="72" height="44" aria-hidden="true" ' +
     'style="flex:none">' + (d[t] || d.meta) + '</svg>';
+}
+
+/* ---------- CHERCHER DANS LES FICHES ----------
+   Steve, le 21/09 : « une recherche dans les 606 fiches ». Jusqu ici on ne
+   pouvait que tirer dix cartes au hasard. Chercher « BFR » la veille d un
+   entretien, c etait impossible.
+   La recherche est SANS ACCENTS et par MOTS : « bfr calcul » trouve les
+   fiches qui contiennent les deux, dans n importe quel ordre, question ou
+   reponse. Elle cherche aussi dans le nom du theme. */
+let fCherche = "";
+function finCherche(mots){
+  const m = bNorm(mots).split(" ").filter(x => x.length > 1);
+  if (!m.length) return [];
+  return FI.filter(f => {
+    const t = bNorm(f.q + " " + f.r + " " + (f.x || "") + " " + (FT[f.t] || ""));
+    return m.every(x => t.indexOf(x) >= 0);
+  });
+}
+function finEcranCherche(){
+  const res = finCherche(fCherche);
+  let h = '<div class="card"><h2>Chercher <span class="tag">' + FI.length + ' fiches</span></h2>' +
+    '<input id="fq" class="fin-in" style="text-align:left;font-size:15px;font-weight:500" ' +
+    'placeholder="BFR, consolidation, seuil de rentabilité…" value="' + esc(fCherche) + '">' +
+    '<div class="note" style="margin-top:8px">Plusieurs mots cherchent les fiches qui ' +
+    'contiennent TOUS les mots. Les accents ne comptent pas.</div>' +
+    '<button class="btn bsec" style="margin-top:10px" onclick="finQuitter()">Retour</button></div>';
+
+  if (fCherche && !res.length){
+    h += '<div class="card"><div class="note">Rien pour « ' + esc(fCherche) + ' ». ' +
+      'Essaie un seul mot, ou le terme technique plutôt que la phrase.</div></div>';
+  }
+  res.slice(0, 40).forEach(f => {
+    h += '<div class="acc"><div class="h"><span class="nm">' + esc(f.q) + '</span>' +
+      '<span class="meta">' + esc(FT[f.t] || "") + '</span></div>' +
+      '<div class="b"><div style="display:flex;gap:12px;align-items:flex-start">' +
+      illus(f.t) + '<div><p style="margin:0">' + esc(f.r) + '</p>' +
+      (f.x ? '<div class="ftip" style="margin-top:8px"><b>À retenir.</b> ' + esc(f.x) + '</div>' : '') +
+      '</div></div></div></div>';
+  });
+  if (res.length > 40)
+    h += '<div class="note">' + res.length + ' fiches trouvées, les 40 premières sont affichées. ' +
+      'Ajoute un mot pour resserrer.</div>';
+  else if (res.length)
+    h += '<div class="note">' + res.length + ' fiche' + (res.length > 1 ? 's' : '') + ' trouvée' +
+      (res.length > 1 ? 's' : '') + '.</div>';
+
+  el("fin").innerHTML = h;
+  el("fin").querySelectorAll(".acc").forEach(a =>
+    a.querySelector(".h").addEventListener("click", () => a.classList.toggle("open")));
+  const z = el("fq");
+  if (z){
+    z.addEventListener("input", () => {
+      const pos = z.selectionStart;
+      fCherche = z.value;
+      clearTimeout(z._t);
+      z._t = setTimeout(() => { renderFin(); const n = el("fq"); if (n){ n.focus(); n.setSelectionRange(pos, pos); } }, 220);
+    });
+    if (fCherche) { z.focus(); z.setSelectionRange(fCherche.length, fCherche.length); }
+  }
 }
 
 function finEcranFiches(){
