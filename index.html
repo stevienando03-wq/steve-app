@@ -160,9 +160,13 @@ body.dark .ftip{background:var(--surface2)}.tab.act{display:block}
 /* La case a cocher du Parcours, posee DANS le titre d'un accordeon : elle doit
    pouvoir etre touchee sans ouvrir ni fermer le bloc. */
 .pchk{display:inline-flex;width:19px;height:19px;border:2px solid var(--ligne);border-radius:6px;
-  align-items:center;justify-content:center;font-size:12px;color:#fff;margin-right:8px;
+  align-items:center;justify-content:center;font-size:12px;color:transparent;margin-right:8px;
   vertical-align:-3px;flex:none;cursor:pointer}
-.pchk.on{background:var(--vert);border-color:var(--vert)}
+/* La coche prend --surBadge et non du blanc : en mode sombre le vert
+   s'eclaircit, et un blanc dessus ne se voit plus. */
+.pchk.on{background:var(--vert);border-color:var(--vert);color:var(--surBadge)}
+.chk .bx{color:transparent}
+.chk.on .bx{color:var(--surBadge)}
 
 /* ---------- La typographie de Cap 2027 ----------
    Trois roles, trois polices. Bricolage Grotesque pour les titres, parce qu il
@@ -191,6 +195,10 @@ body.dark .ftip{background:var(--surface2)}.tab.act{display:block}
 #majBar button{margin-left:auto;background:#fff;color:var(--accent);border:0;border-radius:9px;
   padding:7px 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
 @media (min-width:980px){ #majBar{max-width:none;left:238px} }
+#horsBar{position:fixed;left:0;right:0;bottom:0;z-index:55;max-width:520px;margin:0 auto;
+  background:var(--anthr);color:var(--surBadge);text-align:center;font-size:12px;font-weight:600;
+  padding:9px 14px calc(9px + env(safe-area-inset-bottom))}
+@media (min-width:980px){ #horsBar{max-width:none;left:238px} }
 
 /* ---------- L'avancement : un seul dessin, sur tous les onglets ---------- */
 .avb{display:flex;gap:3px;border-radius:99px;overflow:hidden}
@@ -502,11 +510,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=66"></script>
-<script src="entrainement.js?v=66"></script>
-<script src="actu.js?v=66"></script>
-<script src="dscg.js?v=66"></script>
-<script src="signaux.js?v=66"></script>
+<script src="fiches.js?v=67"></script>
+<script src="entrainement.js?v=67"></script>
+<script src="actu.js?v=67"></script>
+<script src="dscg.js?v=67"></script>
+<script src="signaux.js?v=67"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1417,6 +1425,66 @@ function brancherSignaux(cont){
   }));
 }
 
+/* ---------- LA SERIE ET LE BILAN DE LA SEMAINE ----------
+   Une case cochee ne se voit qu une fois. Ce qui tient sur la duree, c est de
+   VOIR le chemin : combien de jours d affilee, et cette semaine comparee a la
+   precedente. Tout est CALCULE sur l etat existant, rien n est tenu a part :
+   un compteur qu on met a jour a la main finit toujours par mentir. */
+function jourActif(d){
+  const t = S.track[d];
+  if (t && (t.seance || (t.eau || 0) > 0)) return true;
+  for (const k in S.partir) if (S.partir[k] === d) return true;
+  return false;
+}
+function serie(){
+  let n = 0, d = auj();
+  if (!jourActif(d)) d = plusJours(d, -1);   /* la journee en cours ne casse rien */
+  while (jourActif(d)) { n++; d = plusJours(d, -1); }
+  return n;
+}
+function semaineDe(dateIso){
+  const d = parse(dateIso), dec = (d.getDay() + 6) % 7, out = [];
+  for (let i = 0; i < 7; i++){ const x = new Date(d); x.setDate(d.getDate() - dec + i); out.push(iso(x)); }
+  return out;
+}
+function bilanSemaine(jours){
+  let seances = 0, prevues = 0, eau = 0, jEau = 0, taches = 0, actifs = 0;
+  jours.forEach(j => {
+    if (seanceDu(j) !== "REPOS") prevues++;
+    const t = S.track[j];
+    if (t && t.seance && seanceDu(j) !== "REPOS") seances++;
+    if (t && (t.eau || 0) > 0){ eau += t.eau; jEau++; }
+    if (jourActif(j)) actifs++;
+  });
+  for (const k in S.partir) if (jours.indexOf(S.partir[k]) >= 0) taches++;
+  return {seances, prevues, eau: jEau ? Math.round(eau / jEau * 10) / 10 : 0, taches, actifs};
+}
+function htmlBilan(){
+  const cette = bilanSemaine(semaineDe(auj()));
+  const avant = bilanSemaine(semaineDe(plusJours(auj(), -7)));
+  const s = serie();
+  const fl = (a, b) => a === b ? '<span style="color:var(--anthr)">=</span>'
+    : a > b ? '<span style="color:var(--vert)">▲ +' + (a - b) + '</span>'
+            : '<span style="color:var(--rouge)">▼ ' + (a - b) + '</span>';
+  const ligne = (nm, a, b, suf) =>
+    '<div class="row"><div class="lab"><b>' + nm + '</b></div>' +
+    '<div style="text-align:right;font-family:\'IBM Plex Mono\',monospace;font-size:13px">' +
+    '<b>' + a + (suf || "") + '</b> <span style="opacity:.6">contre ' + b + (suf || "") + '</span>' +
+    '<br>' + fl(a, b) + '</div></div>';
+
+  return '<div class="card"><h2>Ta semaine <span class="tag">' +
+    (s ? s + ' jour' + (s > 1 ? 's' : '') + ' d\'affilée' : 'série à relancer') + '</span></h2>' +
+    '<div class="sub" style="margin-bottom:8px">Cette semaine, comparée à la précédente. ' +
+    'Tout est calculé sur ce que tu as coché, rien n\'est tenu à part.</div>' +
+    ligne("Séances faites", cette.seances, avant.seances, " sur " + cette.prevues) +
+    ligne("Jours où tu as coché quelque chose", cette.actifs, avant.actifs, " sur 7") +
+    ligne("Verres d'eau par jour", cette.eau, avant.eau, "") +
+    ligne("Tâches du parcours", cette.taches, avant.taches, "") +
+    (s >= 3 ? '<div class="note" style="margin-top:10px"><b>' + s + ' jours d\'affilée.</b> ' +
+      'C\'est la série qui construit, pas la journée parfaite.</div>' : '') +
+    '</div>';
+}
+
 /* ---------- LA SAUVEGARDE ----------
    Tout ce que Steve coche, note et saisit vit dans le localStorage de CE
    navigateur, et nulle part ailleurs. Vider le cache, changer de telephone ou
@@ -1611,6 +1679,7 @@ function renderJour(){
 function renderSemaine(){
   let h = carteAv("Ta semaine", avChantiers().filter(x => x.cle === "sport" || x.cle === "bouffe"),
     "Les séances de la semaine en cours, et le panier de la période.");
+  h += htmlBilan();
   h += '<div class="card"><h2>Tes sept prochains jours</h2>';
   for (let i = 0; i < 7; i++) {
     const d = plusJours(auj(), i), s = seanceDu(d), rdvs = rdvDu(d);
@@ -1990,6 +2059,51 @@ function barreChantiers(segs){
   });
   return h + '</div>';
 }
+/* ---------- LE SUIVI DE LA RECHERCHE ----------
+   Son objectif chiffre n existait nulle part dans l app : quinze candidatures
+   par semaine, et deux entretiens par mois d ici janvier. Mesure au 21/09 sur
+   sa boite mail : environ 144 candidatures, 24 reponses, UN entretien. Moins
+   de 1 %. Le probleme n est pas le nombre, c est le canal.
+   On compte par DATE, donc la semaine et le mois se remettent a zero tout
+   seuls, sans rien avoir a effacer. */
+function htmlRecherche(){
+  S.cand = S.cand || {};
+  S.entr = Array.isArray(S.entr) ? S.entr : [];
+  const sem = semaineDe(auj());
+  const nCand = sem.reduce((a, j) => a + (S.cand[j] || 0), 0);
+  const mois = auj().slice(0, 7);
+  const nEntr = S.entr.filter(d => String(d).slice(0, 7) === mois).length;
+  const barre = (n, but, coul) =>
+    '<div style="height:6px;background:var(--ligne);border-radius:3px;margin-top:5px">' +
+    '<i style="display:block;height:6px;border-radius:3px;background:' + coul +
+    ';width:' + Math.min(100, Math.round(100 * n / but)) + '%"></i></div>';
+
+  return '<div class="card"><h2>Ta recherche <span class="tag">cette semaine</span></h2>' +
+    '<div class="sub" style="margin-bottom:10px">Le nombre n\'est pas le problème. Le canal ' +
+    'l\'est : 15 à 40 % de réponse avec un message au recruteur nommé, contre 2 à 5 % en portail.</div>' +
+
+    '<div class="row"><div class="lab"><b>Candidatures</b><br>' +
+    '<span style="font-size:12px">objectif 15 par semaine</span>' + barre(nCand, 15, "var(--accent)") +
+    '</div><div style="display:flex;align-items:center;gap:8px">' +
+    '<button class="pill" data-rech="cand-">&minus;</button>' +
+    '<b style="font-family:\'IBM Plex Mono\',monospace;font-size:20px;min-width:30px;text-align:center">' +
+    nCand + '</b><button class="pill" data-rech="cand+">+</button></div></div>' +
+
+    '<div class="row"><div class="lab"><b>Entretiens</b><br>' +
+    '<span style="font-size:12px">objectif 2 par mois, ' + libelleMois(mois) + '</span>' +
+    barre(nEntr, 2, "var(--vert)") +
+    '</div><div style="display:flex;align-items:center;gap:8px">' +
+    '<button class="pill" data-rech="entr-">&minus;</button>' +
+    '<b style="font-family:\'IBM Plex Mono\',monospace;font-size:20px;min-width:30px;text-align:center">' +
+    nEntr + '</b><button class="pill" data-rech="entr+">+</button></div></div>' +
+
+    '<div class="note" style="margin-top:10px"><b>Le geste qui change tout.</b> Le message ' +
+    'LinkedIn au recruteur nommé est déjà rédigé dans chacun de tes dossiers. Ne compte une ' +
+    'candidature que si tu l\'as envoyé.</div>' +
+    '<button class="btn bsec" style="margin-top:10px" onclick="window.print()">' +
+    'Imprimer ce parcours</button></div>';
+}
+
 function renderPartir(){
   const tot = PARTIR.chantiers.reduce((a, c) => a + c.taches.length, 0);
   const fait = PARTIR.chantiers.reduce((a, c) =>
@@ -2049,6 +2163,8 @@ function renderPartir(){
   h += '<div class="note" style="margin-top:11px"><b>Ce que ça dit.</b> ' + esc(PARTIR.lecon) +
     '</div></div>';
 
+  h += htmlRecherche();
+
   /* Et tout le detail : ce que le marche demande, les certifications une par une
      avec leur cout et leurs liens, et les competences de fond avec leur niveau.
      C'est le meme code que l'ancien onglet Skills, pas une copie. */
@@ -2071,10 +2187,27 @@ function renderPartir(){
   el("partir").innerHTML = h;
   el("partir").querySelectorAll("[data-partir]").forEach(x => x.addEventListener("click", () => {
     const k = x.dataset.partir;
-    if (S.partir[k]) delete S.partir[k]; else S.partir[k] = 1;
+    /* On enregistre la DATE et non un simple 1 : sans elle, impossible de dire
+       ce qui a ete fait cette semaine. L ancien 1 reste vrai, donc les taches
+       deja cochees ne bougent pas, elles n auront juste pas de date. */
+    if (S.partir[k]) delete S.partir[k]; else S.partir[k] = auj();
     save(); renderPartir();
   }));
   brancherCompetences(el("partir"), renderPartir);
+  el("partir").querySelectorAll("[data-rech]").forEach(b => b.addEventListener("click", () => {
+    const q = b.dataset.rech, t = auj();
+    S.cand = S.cand || {}; S.entr = Array.isArray(S.entr) ? S.entr : [];
+    if (q === "cand+") S.cand[t] = (S.cand[t] || 0) + 1;
+    if (q === "cand-" && (S.cand[t] || 0) > 0) S.cand[t]--;
+    if (q === "entr+") S.entr.push(t);
+    if (q === "entr-"){
+      /* On retire la plus recente du mois en cours, pas n importe laquelle. */
+      const m = t.slice(0, 7);
+      for (let i = S.entr.length - 1; i >= 0; i--)
+        if (String(S.entr[i]).slice(0, 7) === m){ S.entr.splice(i, 1); break; }
+    }
+    save(); renderPartir();
+  }));
 }
 
 function renderEuro(){
@@ -5566,6 +5699,21 @@ function verifieVersion(){
     })
     .catch(() => {});
 }
+/* Hors connexion, l app marche toujours mais elle ne peut plus rien
+   rafraichir. Le dire evite de croire qu elle est cassee ou perimee. */
+function etatReseau(){
+  let b = document.getElementById("horsBar");
+  if (navigator.onLine){ if (b) b.remove(); return; }
+  if (b) return;
+  b = document.createElement("div");
+  b.id = "horsBar";
+  b.textContent = "Hors connexion. Tout fonctionne, rien ne se met à jour.";
+  document.body.appendChild(b);
+}
+window.addEventListener("online", () => { etatReseau(); verifieVersion(); });
+window.addEventListener("offline", etatReseau);
+etatReseau();
+
 document.addEventListener("visibilitychange", () => { if (!document.hidden) verifieVersion(); });
 window.addEventListener("focus", verifieVersion);
 setTimeout(verifieVersion, 1500);
