@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#14213D">
+<meta name="theme-color" content="#0E1413">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ma version">
@@ -11,15 +11,35 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>Meilleure version de moi-même</title>
+<!-- Les polices de Cap 2027, que Steve a retenues. Chargees depuis Google
+     Fonts avec une vraie pile de repli : hors connexion l app tombe sur les
+     polices du systeme et reste parfaitement lisible, elle perd juste son
+     caractere. Rien d autre ne depend du reseau. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
+/* ---------- La palette de Cap 2027, portee dans l app le 21/09/2026 ----------
+   Steve : « l app n est pas du tout a jour comme Cap 2027 sur les couleurs,
+   j ai beaucoup aime, applique dans tous les modules ».
+   Les NOMS de variables ne changent pas, seules leurs VALEURS : tout le reste
+   de la feuille continue de marcher, et l identite change partout d un coup.
+   Roles : --creme est le fond, --bleu l encre, --anthr le texte attenue,
+   --ligne les filets, --or et --accent les deux accents, --vert et --rouge
+   le semantique. --surface et --surface2 sont nouvelles : avant, les fonds de
+   cartes etaient ecrits en dur dans une vingtaine de regles. */
 :root{
-  --bleu:#14213D; --creme:#F5F1E8; --anthr:#4A5568; --or:#C8A24B;
-  --vert:#1E6B33; --vertbg:#DFF0D8; --rouge:#9C2330; --rougebg:#F8D7DA;
-  --ligne:#E3DFD4; --bleuclair:#8FA8C8;
+  --bleu:#15201F; --creme:#F4F6F5; --anthr:#5C6B68; --or:#9A6B1F;
+  --vert:#2F6A47; --vertbg:#E1EEE6; --rouge:#9E3524; --rougebg:#F8E4DF;
+  --ligne:#D9E0DD; --bleuclair:#7E8F8B;
+  --surface:#FFFFFF; --surface2:#EDF1EF; --accent:#0E5B51;
+  /* Une teinte par chantier, la meme grammaire que dans Parcours. */
+  --h-agenda:#5C6B68; --h-sante:#8F6318; --h-cv:#0E5B51; --h-nat:#39539E;
+  --h-civ:#6B3F9E; --h-bi:#15687F; --h-sql:#54761C; --h-can:#A84360;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 html,body{background:var(--creme);color:var(--bleu);
-  font-family:-apple-system,'Segoe UI',Roboto,system-ui,sans-serif;font-size:16px;-webkit-text-size-adjust:100%}
+  font-family:'IBM Plex Sans',-apple-system,'Segoe UI',Roboto,system-ui,sans-serif;font-size:16px;-webkit-text-size-adjust:100%}
 body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .head{background:var(--bleu);color:#fff;padding:16px 18px 13px;position:sticky;top:0;z-index:20}
 .head h1{font-size:17px;font-weight:700}
@@ -27,7 +47,7 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .head button{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.14);border:0;color:#fff;
   width:34px;height:34px;border-radius:9px;font-size:15px;cursor:pointer}
 .wrap{padding:14px;overflow-wrap:break-word}
-.card{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:15px;margin-bottom:12px}
+.card{background:var(--surface);border:1px solid var(--ligne);border-radius:14px;padding:15px;margin-bottom:12px}
 .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--anthr);margin-bottom:10px;font-weight:700}
 .card h2 .tag{float:right;font-size:11px;color:var(--or);text-transform:none;letter-spacing:0}
 .hero{background:var(--bleu);color:#fff;border:0}
@@ -67,7 +87,7 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .acc > .h .meta{font-size:11px;color:var(--or);font-weight:600;white-space:nowrap}
 .acc > .b{display:none;padding:0 15px 14px;font-size:13px;line-height:1.65;color:var(--anthr);white-space:pre-line;border-top:1px solid #F0ECE2}
 .acc.open > .b{display:block}
-.nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#fff;border-top:1px solid var(--ligne);
+.nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:var(--surface);border-top:1px solid var(--ligne);
   display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
 .nav button{flex:1;border:0;background:none;padding:9px 2px 8px;cursor:pointer;color:#A9A293;font-size:10px;font-weight:600}
 .nav button .ic{font-size:19px;display:block;margin-bottom:2px}
@@ -90,8 +110,8 @@ body{padding-bottom:76px;max-width:520px;margin:0 auto;min-height:100vh}
 .fduo{display:flex;gap:9px;margin-top:10px}
 .fduo .btn{margin-top:0}
 .bsec{background:#fff;color:var(--bleu);border:1px solid var(--ligne)}
-body.dark .fin-in,body.dark .fq{color:#e8eaf0}
-body.dark .ftip{background:#2a2f3a}.tab.act{display:block}
+body.dark .fin-in,body.dark .fq{color:var(--accent)}
+body.dark .ftip{background:var(--surface2)}.tab.act{display:block}
 .rdv{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #F0ECE2;align-items:flex-start}
 .rdv:last-child{border-bottom:0}
 .rdv .j{background:var(--creme);border-radius:10px;padding:6px 9px;text-align:center;min-width:52px;flex:none}
@@ -142,6 +162,34 @@ body.dark .ftip{background:#2a2f3a}.tab.act{display:block}
   align-items:center;justify-content:center;font-size:12px;color:#fff;margin-right:8px;
   vertical-align:-3px;flex:none;cursor:pointer}
 .pchk.on{background:var(--vert);border-color:var(--vert)}
+
+/* ---------- La typographie de Cap 2027 ----------
+   Trois roles, trois polices. Bricolage Grotesque pour les titres, parce qu il
+   a du caractere sans etre bavard. IBM Plex Sans pour le corps, qui tient bien
+   les accents francais. IBM Plex Mono partout ou il y a des CHIFFRES ou des
+   etiquettes : des nombres qui ne s alignent pas se comparent mal. */
+.head h1, .card h2, .hero .big, .avt h2, .acquis h2, .fq{
+  font-family:'Bricolage Grotesque', Georgia, serif;
+}
+.head h1{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.card h2{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;font-weight:600}
+.head .date, .avp, .tally, .chip, .lvl, .avl b, .fmeta, .meta, .pill{
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-variant-numeric:tabular-nums;
+}
+.hero .big{font-weight:800;letter-spacing:-.02em}
+.fq{font-weight:800;letter-spacing:-.015em;color:var(--accent)}
+.nav button.act{color:var(--accent)}
+.avp{color:var(--accent)}
+.card h2 .tag{color:var(--accent)}
+
+/* Le bandeau de mise a jour, pose au-dessus de la barre du bas. */
+#majBar{position:fixed;left:0;right:0;bottom:0;z-index:60;max-width:520px;margin:0 auto;
+  background:var(--accent);color:#fff;display:flex;align-items:center;gap:10px;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom));font-size:13px;font-weight:600}
+#majBar button{margin-left:auto;background:#fff;color:var(--accent);border:0;border-radius:9px;
+  padding:7px 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+@media (min-width:980px){ #majBar{max-width:none;left:238px} }
 
 /* ---------- L'avancement : un seul dessin, sur tous les onglets ---------- */
 .avb{display:flex;gap:3px;border-radius:99px;overflow:hidden}
@@ -259,21 +307,28 @@ textarea{width:100%;border:1px solid var(--ligne);border-radius:10px;padding:10p
   display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
 .ing{background:var(--creme);border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.5;color:var(--anthr)}
 .ing b{color:var(--bleu)}
-body.dark{--creme:#161b24;--bleu:#E8EBF1;--anthr:#AEB6C4;--ligne:#2c3543}
+body.dark{
+  --creme:#0E1413; --bleu:#E7EEEB; --anthr:#9BABA7; --ligne:#293533;
+  --or:#D7A34E; --vert:#6DBE8B; --rouge:#E58573; --accent:#54BCA7;
+  --surface:#171F1E; --surface2:#1E2827; --bleuclair:#75847F;
+  --vertbg:#172C20; --rougebg:#33201C;
+  --h-agenda:#9FB5B1; --h-sante:#E3B04B; --h-cv:#54BCA7; --h-nat:#8AA8F0;
+  --h-civ:#B58AE0; --h-bi:#4FB8D9; --h-sql:#A6CC63; --h-can:#EF8FA8;
+}
 body.dark .card,body.dark .acc,body.dark .skill,body.dark .nav,body.dark input,body.dark select,
-body.dark textarea,body.dark .pill,body.dark .step button{background:#1f2733;color:var(--bleu)}
-body.dark .head{background:#0e1729}
-body.dark .hero{background:#26304a}
-body.dark .kpi .box,body.dark .rdv .j{background:#2a3346}
-body.dark .hint{background:#2a2410}
-body.dark .jour-repas{background:#1f2733}
-body.dark .jour-repas.auj{background:#2a2410}
-body.dark .alerte{background:#3a1c22;color:#F0A0AA}
-body.dark .ing{background:#2a3346}
-body.dark .etape .n{background:#3b4763}
-body.dark .bar{background:#2c3543}
-body.dark .nav button{color:#7e879a}
-body.dark .donut-c{fill:#E8EBF1}
+body.dark textarea,body.dark .pill,body.dark .step button{background:var(--surface);color:var(--bleu)}
+body.dark .head{background:#0B100F;border-bottom:1px solid var(--ligne)}
+body.dark .hero{background:#12302C}
+body.dark .kpi .box,body.dark .rdv .j{background:var(--surface2)}
+body.dark .hint{background:#2E2617}
+body.dark .jour-repas{background:var(--surface2)}
+body.dark .jour-repas.auj{background:#2E2617}
+body.dark .alerte{background:var(--rougebg);color:#F0B5A8}
+body.dark .ing{background:var(--surface2)}
+body.dark .etape .n{background:#2A3A36}
+body.dark .bar{background:var(--ligne)}
+body.dark .nav button{color:var(--bleuclair)}
+body.dark .donut-c{fill:var(--bleu)}
 /* ---------- L'assistant global, ajoute le 13/09/2026 ---------- */
 .asFab{position:fixed;left:12px;bottom:72px;z-index:60;width:54px;height:54px;border-radius:50%;
   background:var(--bleu);color:#fff;font-size:21px;cursor:pointer;
@@ -361,9 +416,9 @@ body.dark .donut-c{fill:#E8EBF1}
   line-height:1.55;color:var(--anthr);margin-top:8px}
 .asIco{background:var(--creme);border:1px solid var(--ligne);border-radius:50%;width:44px;
   height:44px;font-size:17px;cursor:pointer;flex:0 0 auto;line-height:1}
-body.dark .asPan,body.dark .asBas{background:#1B2233}
-body.dark .asR,body.dark .asTape{background:#222B40;box-shadow:none}
-body.dark .asChip,body.dark .asBasBtn{background:#222B40;border-color:#33405C;color:#C6CEDC}
+body.dark .asPan,body.dark .asBas{background:var(--surface)}
+body.dark .asR,body.dark .asTape{background:var(--surface2);box-shadow:none}
+body.dark .asChip,body.dark .asBasBtn{background:var(--surface2);border-color:var(--ligne);color:var(--anthr)}
 /* ---------- La voix et le mode cuisine, 13/09/2026 ---------- */
 .asIco{background:var(--creme);border:1px solid var(--ligne);border-radius:12px;width:42px;
   height:38px;font-size:17px;cursor:pointer;flex:0 0 auto;line-height:1}
@@ -379,7 +434,7 @@ body.dark .asChip,body.dark .asBasBtn{background:#222B40;border-color:#33405C;co
 .asMin{background:var(--orbg);border-radius:11px;padding:10px 13px;margin-bottom:11px;
   font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:9px}
 .asMin b{font-size:16px}
-body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
+body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(--bleu)}
 </style>
 </head>
 <body>
@@ -434,11 +489,11 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=58"></script>
-<script src="entrainement.js?v=58"></script>
-<script src="actu.js?v=58"></script>
-<script src="dscg.js?v=58"></script>
-<script src="signaux.js?v=58"></script>
+<script src="fiches.js?v=59"></script>
+<script src="entrainement.js?v=59"></script>
+<script src="actu.js?v=59"></script>
+<script src="dscg.js?v=59"></script>
+<script src="signaux.js?v=59"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1125,6 +1180,10 @@ S.skills  = S.skills  || {};
 S.budget  = S.budget  || {};
 S.rdv     = S.rdv     || [];
 S.partir  = S.partir  || {};   /* les taches cochees du parcours */
+/* Le monde sombre devient le DEFAUT le 21/09/2026 : c est celui que Steve a
+   retenu. Le bouton reste, et son choix precedent est respecte s il en avait
+   deja fait un, d ou le test sur undefined et pas sur la valeur. */
+if (S.dark === undefined) S.dark = true;
 if (S.budget.soldeDebut === undefined) S.budget.soldeDebut = null;
 S.budget.mvts = S.budget.mvts || [];
 S.budget.mois = S.budget.mois || moisCourant();
@@ -1321,10 +1380,23 @@ function htmlSauvegarde(){
     '<span class="pill" data-sauv="remplacer">Remplacer mes données</span>' +
     '<span class="pill" data-sauv="annuler">Annuler</span></div></div>' +
     '<div class="note" style="margin-top:9px">' + Math.max(1, Math.round(n / 1024)) +
-    ' Ko. Garde le fichier dans ton Drive : c\'est la seule copie qui existe.</div></div>';
+    ' Ko. Garde le fichier dans ton Drive : c\'est la seule copie qui existe.' +
+    '<br><span style="opacity:.7">Version de l\'app : <b id="majV">…</b>. ' +
+    'Si elle ne bouge pas après une mise à jour, ferme l\'app et rouvre-la.</span></div></div>';
   return h;
 }
+/* La version affichee vient du service worker lui-meme, pas d une constante
+   ecrite a cote : une constante mentirait des qu on oublierait de la bumper. */
+function afficheVersion(cont){
+  const z = cont.querySelector("#majV");
+  if (!z) return;
+  fetch("sw.js?x=" + Date.now(), {cache:"no-store"})
+    .then(r => r.text())
+    .then(t => { const m = t.match(/steve-v(\d+)/); z.textContent = m ? "v" + m[1] : "inconnue"; })
+    .catch(() => { z.textContent = "hors connexion"; });
+}
 function brancherSauvegarde(cont){
+  afficheVersion(cont);
   const dire = (m, err) => {
     const z = cont.querySelector("#sauvMsg");
     if (!z) return;
@@ -5280,7 +5352,52 @@ function asBrancheP(){
 renderAll();
 /* si un rendez-vous tombe dans deux jours, on previent des l'ouverture */
 setTimeout(rappelsDeuxJours, 1200);
-if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+/* ---------- LA MISE A JOUR, ANNONCEE ----------
+   Le 21/09, Steve a regarde l onglet Parcours et l a trouve VIDE. Le module
+   etait pourtant en ligne : c est son service worker qui lui servait encore
+   une version d avant, sans rien dire. Une app installee qui se met a jour en
+   silence ne se met pas a jour du tout, parce que personne ne recharge jamais.
+   Desormais : un bandeau apparait des qu une version attend, et un seul
+   geste l installe. Et le numero de version est ecrit dans l app, pour qu on
+   sache toujours ce qu on regarde. */
+function bandeauMaj(sw){
+  if (document.getElementById("majBar")) return;
+  const d = document.createElement("div");
+  d.id = "majBar";
+  d.innerHTML = '<span>Une nouvelle version est prête.</span>' +
+                '<button id="majGo">Installer</button>';
+  document.body.appendChild(d);
+  document.getElementById("majGo").addEventListener("click", () => {
+    if (sw) sw.postMessage({type:"SAUTER"});
+    setTimeout(() => location.reload(), 200);
+  });
+}
+if ("serviceWorker" in navigator) window.addEventListener("load", () => {
+  navigator.serviceWorker.register("sw.js").then(reg => {
+    if (!reg) return;
+    if (reg.waiting) bandeauMaj(reg.waiting);
+    reg.addEventListener("updatefound", () => {
+      const sw = reg.installing;
+      if (!sw) return;
+      sw.addEventListener("statechange", () => {
+        if (sw.state === "installed" && navigator.serviceWorker.controller) bandeauMaj(sw);
+      });
+    });
+    /* On redemande au serveur a chaque ouverture et toutes les demi-heures :
+       une app ouverte en permanence sur un telephone ne verifie jamais sinon. */
+    reg.update().catch(() => {});
+    setInterval(() => reg.update().catch(() => {}), 30 * 60 * 1000);
+  }).catch(() => {});
+  /* On ne recharge que s il y avait DEJA un service worker au chargement.
+     Sinon, a la toute premiere installation, la page se rechargerait une fois
+     pour rien sous les yeux de Steve. */
+  const avait = !!navigator.serviceWorker.controller;
+  let recharge = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!avait || recharge) return;
+    recharge = true; location.reload();
+  });
+});
 </script>
 </body>
 </html>
