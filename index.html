@@ -434,11 +434,11 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=57"></script>
-<script src="entrainement.js?v=57"></script>
-<script src="actu.js?v=57"></script>
-<script src="dscg.js?v=57"></script>
-<script src="signaux.js?v=57"></script>
+<script src="fiches.js?v=58"></script>
+<script src="entrainement.js?v=58"></script>
+<script src="actu.js?v=58"></script>
+<script src="dscg.js?v=58"></script>
+<script src="signaux.js?v=58"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -1178,11 +1178,39 @@ function seanceDu(dateIso){
   return CYCLE[i];
 }
 function estTravail(dateIso){ return TRAVAIL.jours.indexOf(parse(dateIso).getDay()) >= 0; }
+/* Le creneau de seance REGARDE LES RENDEZ-VOUS du jour. Avant, il proposait
+   « quand tu veux dans la journee » un samedi ou Steve a psy a 10h, et
+   « apres le travail vers 19h00 » un jour ou il sort de l hopital. Un conseil
+   qui ignore l agenda n est pas un conseil. */
 function creneauSport(dateIso){
   const d = parse(dateIso).getDay();
-  if (d === 4) return "le matin avant le travail, tu as ta réunion à 20h30";
-  if (estTravail(dateIso)) return "après le travail, vers 19h00";
-  return "quand tu veux dans la journée";
+  const base = d === 4 ? "le matin avant le travail, tu as ta réunion à 20h30"
+    : estTravail(dateIso) ? "après le travail, vers 19h00"
+    : "quand tu veux dans la journée";
+
+  const rdvs = (typeof rdvDu === "function" ? rdvDu(dateIso) : [])
+    .filter(r => !r.rec)
+    .sort((a, b) => a.h < b.h ? -1 : 1);
+  if (!rdvs.length) return base;
+
+  const m = rdvs.filter(r => r.h < "13:00");
+  const ap = rdvs.filter(r => r.h >= "13:00");
+  /* On garde la casse d'origine : « examen amf » se lit mal, « Examen AMF » non. */
+  const nom = r => r.t.replace(/,.*$/, "").trim();
+
+  /* Un rendez-vous medical ou un examen prend la journee : on ne cale pas une
+     seance de jambes juste apres un scanner. */
+  const lourd = rdvs.find(r => /scanner|hôpital|hopital|examen|opération|operation/i.test(r.t));
+  if (lourd) return "à décaler ou à alléger, tu as " + nom(lourd) + " à " +
+    lourd.h.replace(":", "h") + " ce jour-là";
+
+  if (m.length && !ap.length)
+    return "l'après-midi ou le soir, tu as " + nom(m[0]) + " à " + m[0].h.replace(":", "h");
+  if (ap.length && !m.length)
+    return "le matin, avant " + nom(ap[0]) + " à " + ap[0].h.replace(":", "h");
+  if (m.length && ap.length)
+    return "entre les deux, après " + nom(m[0]) + " et avant " + nom(ap[0]);
+  return base;
 }
 /* Les rendez-vous viennent de deux endroits : RDV, ecrit dans le code, et S.rdv, ce que
    Steve ajoute lui-meme. Depuis le 13/09/2026 il peut aussi en RETIRER. Un rendez-vous a
@@ -1265,6 +1293,92 @@ function brancherSignaux(cont){
   }));
 }
 
+/* ---------- LA SAUVEGARDE ----------
+   Tout ce que Steve coche, note et saisit vit dans le localStorage de CE
+   navigateur, et nulle part ailleurs. Vider le cache, changer de telephone ou
+   reinstaller l'app, et son budget, ses niveaux, ses notes et ses taches
+   cochees disparaissent sans prevenir. Le code de l'app est sauvegarde sur
+   GitHub ; ses donnees, elles, ne l'etaient nulle part. */
+function htmlSauvegarde(){
+  const n = new Blob([JSON.stringify(S)]).size;
+  const der = S.derSauv || "";
+  const vieux = !der || (Date.now() - Date.parse(der)) > 30 * 86400000;
+  let h = '<div class="card"><h2>Ta sauvegarde' +
+    (vieux ? ' <span class="tag" style="background:var(--rouge);color:#fff">à faire</span>' : '') +
+    '</h2>' +
+    '<div class="sub" style="margin-bottom:9px">Tes données ne vivent que dans ce ' +
+    'navigateur. Ni sur GitHub, ni ailleurs. ' +
+    (der ? 'Dernière sauvegarde le ' + esc(der.slice(0, 10)) + '.'
+         : 'Tu n\'en as jamais fait.') + '</div>' +
+    '<div class="pills"><span class="pill" data-sauv="copier">Copier</span>' +
+    '<span class="pill" data-sauv="fichier">Télécharger</span>' +
+    '<span class="pill" data-sauv="ouvrir">Restaurer</span></div>' +
+    '<div id="sauvMsg" class="note" style="margin-top:9px;display:none"></div>' +
+    '<div id="sauvZone" style="display:none;margin-top:9px">' +
+    '<textarea id="sauvTxt" style="min-height:90px" placeholder="Colle ici une sauvegarde, ' +
+    'puis touche Remplacer. Ce que tu as maintenant sera écrasé."></textarea>' +
+    '<div class="pills" style="margin-top:7px">' +
+    '<span class="pill" data-sauv="remplacer">Remplacer mes données</span>' +
+    '<span class="pill" data-sauv="annuler">Annuler</span></div></div>' +
+    '<div class="note" style="margin-top:9px">' + Math.max(1, Math.round(n / 1024)) +
+    ' Ko. Garde le fichier dans ton Drive : c\'est la seule copie qui existe.</div></div>';
+  return h;
+}
+function brancherSauvegarde(cont){
+  const dire = (m, err) => {
+    const z = cont.querySelector("#sauvMsg");
+    if (!z) return;
+    z.style.display = "block"; z.innerHTML = m;
+    z.style.borderLeft = "3px solid " + (err ? "var(--rouge)" : "var(--vert)");
+  };
+  cont.querySelectorAll("[data-sauv]").forEach(b => b.addEventListener("click", async () => {
+    const quoi = b.dataset.sauv, zone = cont.querySelector("#sauvZone");
+    const corps = JSON.stringify(S, null, 1);
+
+    if (quoi === "copier"){
+      try { await navigator.clipboard.writeText(corps);
+        S.derSauv = new Date().toISOString(); save();
+        dire("<b>Copié.</b> Colle-le dans une note ou un mail que tu t'envoies.");
+      } catch(e){ dire("<b>Le presse-papier a refusé.</b> Utilise Télécharger.", 1); }
+      return;
+    }
+    if (quoi === "fichier"){
+      try {
+        const u = URL.createObjectURL(new Blob([corps], {type:"application/json"}));
+        const a = document.createElement("a");
+        a.href = u; a.download = "ma-version-" + auj() + ".json";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(u), 2000);
+        S.derSauv = new Date().toISOString(); save();
+        dire("<b>Fichier téléchargé.</b> Mets-le dans ton Drive, pas seulement dans Téléchargements.");
+      } catch(e){ dire("<b>Le téléchargement a échoué.</b> Utilise Copier.", 1); }
+      return;
+    }
+    if (quoi === "ouvrir"){ zone.style.display = "block"; return; }
+    if (quoi === "annuler"){ zone.style.display = "none"; return; }
+
+    if (quoi === "remplacer"){
+      const v = (cont.querySelector("#sauvTxt").value || "").trim();
+      if (!v){ dire("Colle d'abord une sauvegarde.", 1); return; }
+      let o;
+      try { o = JSON.parse(v); } catch(e){ dire("<b>Ce n'est pas une sauvegarde valide.</b> Le texte doit commencer par une accolade.", 1); return; }
+      if (!o || typeof o !== "object" || Array.isArray(o)){ dire("<b>Ce n'est pas une sauvegarde valide.</b>", 1); return; }
+      /* On ne remplace que si ca ressemble vraiment a un etat de l'app, sinon
+         un copier-coller malheureux effacerait tout. */
+      const cles = ["track","shop","skills","budget","rdv","partir","fin"];
+      if (!cles.some(k => k in o)){
+        dire("<b>Ce fichier ne ressemble pas à une sauvegarde de l'app.</b> Rien n'a été touché.", 1);
+        return;
+      }
+      /* Filet : on garde l'etat actuel sous une autre cle avant d'ecraser. */
+      try { localStorage.setItem(LS + "_avant_restauration", JSON.stringify(S)); } catch(e){}
+      localStorage.setItem(LS, JSON.stringify(o));
+      dire("<b>Restauré.</b> L'app se recharge.");
+      setTimeout(() => location.reload(), 700);
+    }
+  }));
+}
+
 function renderJour(){
   const t = auj(), s = seanceDu(t), st = S.track[t] || (S.track[t] = {seance:false, eau:0});
   const rdvs = rdvDu(t), prochains = prochainsRdv(3);
@@ -1340,9 +1454,12 @@ function renderJour(){
     });
     h += '</div>';
   }
+  h += htmlSauvegarde();
+
   el("jour").innerHTML = h;
   brancherSignaux(el("jour"));
   brancherAv(el("jour"));
+  brancherSauvegarde(el("jour"));
 
   el("jour").querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
     const a = b.dataset.act, s2 = S.track[auj()];
