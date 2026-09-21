@@ -330,9 +330,9 @@ body.dark .asIco{background:#222B40;border-color:#33405C;color:#E7EAF2}
   <button data-tab="dscg"><span class="ic">🎓</span>DSCG</button>
 </div>
 
-<script src="fiches.js?v=50"></script>
-<script src="entrainement.js?v=50"></script>
-<script src="actu.js?v=50"></script>
+<script src="fiches.js?v=52"></script>
+<script src="entrainement.js?v=52"></script>
+<script src="actu.js?v=52"></script>
 <script src="dscg.js?v=46"></script>
 <script>
 /* ================= RÉGLAGES ================= */
@@ -2915,7 +2915,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v46";
+const FINV = "v52";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
