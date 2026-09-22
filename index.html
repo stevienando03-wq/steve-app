@@ -456,6 +456,27 @@ body.dark .asChip,body.dark .asBasBtn{background:var(--surface2);border-color:va
   font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:9px}
 .asMin b{font-size:16px}
 body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(--bleu)}
+
+/* --- onglet AMF : revision de la certification --- */
+.aopt{display:block;width:100%;text-align:left;background:var(--surface);color:var(--anthr);
+  border:1.5px solid var(--ligne);border-radius:11px;padding:13px 14px;margin-bottom:9px;
+  font-size:14px;line-height:1.45;cursor:pointer;font-family:inherit}
+.aopt:disabled{cursor:default}
+.aopt .alet{display:inline-block;width:21px;height:21px;line-height:21px;text-align:center;
+  border-radius:50%;background:var(--ligne);color:var(--anthr);font-weight:800;font-size:11px;
+  margin-right:9px;vertical-align:1px}
+.aopt.bon{background:var(--vertbg);border-color:var(--vert)}
+.aopt.bon .alet{background:var(--vert);color:#fff}
+.aopt.mal{background:var(--rougebg);border-color:var(--rouge)}
+.aopt.mal .alet{background:var(--rouge);color:#fff}
+.abar{height:7px;border-radius:5px;background:var(--ligne);overflow:hidden;margin-top:6px}
+.abar i{display:block;height:100%;background:var(--rouge);border-radius:5px}
+.ath{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--ligne);cursor:pointer}
+.ath:last-child{border-bottom:0}
+.ath b{font-size:14px}
+.ath span{font-size:12px;color:var(--anthr);white-space:nowrap}
+.aprog{font-size:12px;color:var(--anthr);font-weight:700;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -479,6 +500,7 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <div class="tab" id="t-bouffe"><div class="wrap" id="bouffe"></div></div>
 <div class="tab" id="t-fin"><div class="wrap" id="fin"></div></div>
 <div class="tab" id="t-dscg"><div class="wrap" id="dscg"></div></div>
+<div class="tab" id="t-amf"><div class="wrap" id="amf"></div></div>
 
 <button class="asFab" id="asFab" aria-label="Un coup de main">💬</button>
 <div class="asVoile" id="asVoile"></div>
@@ -505,6 +527,7 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
   <button data-tab="euro"><span class="ic">💶</span>Budget</button>
   <button data-tab="bouffe"><span class="ic">🍽️</span>Bouffe</button>
   <button data-tab="fin"><span class="ic">🧠</span>Finance</button>
+  <button data-tab="amf"><span class="ic">🎓</span>AMF</button>
   <button data-tab="docs"><span class="ic">🗂️</span>Papiers</button>
   <!-- DSCG sorti de la barre le 21/09 : son resume et son calendrier sont dans
        Parcours. Le code et les donnees restent en place, remettre ce bouton suffit. -->
@@ -512,11 +535,12 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=76"></script>
-<script src="entrainement.js?v=76"></script>
-<script src="actu.js?v=76"></script>
-<script src="dscg.js?v=76"></script>
-<script src="signaux.js?v=76"></script>
+<script src="fiches.js?v=77"></script>
+<script src="entrainement.js?v=77"></script>
+<script src="actu.js?v=77"></script>
+<script src="dscg.js?v=77"></script>
+<script src="amf.js?v=77"></script>
+<script src="signaux.js?v=77"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -606,12 +630,12 @@ const CERTIFS = [
  reserve:"NE PASSE PAS LE TOEFL. C'est un test d'admission à l'université pour les pays anglophones, aucun employeur ne le demande ici, et l'immigration canadienne ne l'accepte pas non plus. Si un jour on te réclame l'attestation, dis simplement que le score date de plus de deux ans et propose de le repasser. Le seul moment où un test devient obligatoire, c'est le dossier canadien, et là c'est l'IELTS General, pas le TOEIC.",
  lien:["ETS Global, validité et tarifs", "https://www.etsglobal.org/fr/fr/help-center/mon-score/validite-score"]},
 
-{ordre:2, nm:"Certification AMF", etat:"tu la passes le 22 septembre", coul:"or",
- score:"examen le mardi 22 à 11h30",
+{ordre:2, nm:"Certification AMF", etat:"échouée le 22/09, à repasser", coul:"rouge",
+ score:"A 24/33 quand il fallait 27, C 63/87 quand il fallait 70",
  pourquoi:"Recompté le 21/09 : aucune des 206 annonces ne la demande, et aucune des 203 annonces étrangères non plus. Elle ne sert donc pas à décrocher les postes que tu vises aujourd'hui : elle ÉLARGIT ton périmètre vers la banque, l'assurance et la gestion d'actifs, où elle est obligatoire pour certaines fonctions. Elle est déjà payée, passe-la, mais ne compte pas dessus.",
  cout:"déjà engagé", duree:"l'examen du 22",
  ouvre:"Les postes réglementés en banque et en société de gestion. Et sur un CV de contrôle de gestion, elle montre que tu te formes de toi-même.",
- reserve:"Ne la présente pas comme ton atout principal face à une direction financière. Elle parle marchés, eux parlent clôture et reporting.",
+ reserve:"Ne la présente pas comme ton atout principal face à une direction financière. Elle parle marchés, eux parlent clôture et reporting. Pour la repasser : l'onglet AMF contient les 600 questions de tes cinq blancs, avec tes 209 erreurs isolées. Ton dernier blanc donnait 72,5 % et l'examen a donné 72 % : ne te réinscris pas avant d'être à 85 % en blanc.",
  lien:["AMF, l'examen certifié", "https://www.amf-france.org/"]},
 
 {ordre:4, nm:"Examen civique", etat:"obligatoire, et daté", coul:"or",
@@ -1269,6 +1293,15 @@ S.skills  = S.skills  || {};
 S.budget  = S.budget  || {};
 S.rdv     = S.rdv     || [];
 S.partir  = S.partir  || {};   /* les taches cochees du parcours */
+/* Certification AMF : ce qui a ete revu, ce qui est mis de cote, la serie. */
+S.amf     = S.amf     || {};
+S.amf.vus    = S.amf.vus    || {};
+S.amf.revoir = S.amf.revoir || {};
+S.amf.serie  = S.amf.serie  || 0;
+S.amf.record = S.amf.record || 0;
+S.amf.poses  = S.amf.poses  || 0;
+S.amf.justes = S.amf.justes || 0;
+S.amf.dernier = S.amf.dernier || "";
 /* Le monde sombre devient le DEFAUT le 21/09/2026 : c est celui que Steve a
    retenu. Le bouton reste, et son choix precedent est respecte s il en avait
    deja fait un, d ou le test sur undefined et pas sur la valeur. */
@@ -1868,6 +1901,7 @@ function htmlParcours(){
      certification ne bouscule plus le classement. */
   CERTIFS.slice().sort((x, y) => (x.ordre || 99) - (y.ordre || 99)).forEach((c, i) => {
     const coul = c.coul === "vert" ? "var(--vert)" : c.coul === "or" ? "var(--or)" :
+                 c.coul === "rouge" ? "var(--rouge)" :
                  c.coul === "gris" ? "var(--anthr)" : "var(--bleu)";
     h += '<div class="acc"><div class="h"><span class="nm">' + (i + 1) + '. ' + esc(c.nm) + '</span>' +
       '<span class="meta" style="color:' + coul + '">' + esc(c.etat) + '</span></div><div class="b">' +
@@ -4457,7 +4491,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v75";
+const FINV = "v77";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
@@ -5303,7 +5337,296 @@ function dscgBranche(){
   });
 }
 
-const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, partir:renderPartir, docs:renderDocs, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg};
+
+/* ======================= CERTIFICATION AMF, ajoute le 22/09/2026 =======================
+   Les 600 questions viennent des CINQ examens blancs corriges de Steve. Elles sont
+   dans amf.js, avec la bonne reponse ET la case qu'il avait cochee ce jour-la.
+   Examen reel du 22/09/2026 : echoue, A 24/33 (il fallait 27), C 63/87 (il fallait 70).
+   amfVue retient l'ecran courant, comme fVue pour l'onglet Finance. */
+let amfVue = "accueil", amfLot = [], amfPos = 0, amfBon = 0, amfRep = -1, amfTitre = "";
+
+function amfVa(v){ amfVue = v; renderAmf(); window.scrollTo(0, 0); }
+
+function renderAmf(){
+  try { renderAmfInterne(); }
+  catch (err){
+    el("amf").innerHTML = '<div class="card"><h2>L\'onglet a buté</h2>' +
+      '<p class="note">Envoie-moi cette ligne, elle dit exactement où.</p>' +
+      '<p style="font-family:monospace;font-size:12px;background:#F7F5EF;padding:11px;' +
+      'border-radius:9px;word-break:break-word">' + esc(err.name + " : " + err.message) + '</p>' +
+      '<button class="btn bsec" onclick="amfRemiseAZero()">Repartir de zéro sur cet onglet</button></div>';
+  }
+}
+/* Ne touche QUE l'onglet AMF. */
+function amfRemiseAZero(){
+  S.amf = {vus:{}, revoir:{}, serie:0, dernier:"", record:0, justes:0, poses:0};
+  save(); amfVue = "accueil"; amfLot = []; amfPos = 0; amfBon = 0; amfRep = -1;
+  renderAmf(); window.scrollTo(0, 0);
+}
+
+function renderAmfInterne(){
+  if (typeof AMF_Q === "undefined" || !AMF_Q.length){
+    el("amf").innerHTML = '<div class="card"><h2>AMF</h2><p class="note">' +
+      'Le fichier amf.js n\'est pas chargé. Recharge la page une fois en ligne.</p></div>';
+    return;
+  }
+  if (amfVue === "quiz")  return amfEcranQuiz();
+  if (amfVue === "fin")   return amfEcranFin();
+  if (amfVue === "themes") return amfEcranThemes();
+  if (amfVue === "pieges") return amfEcranPieges();
+  amfAccueil();
+}
+
+/* ----------------------------------------------------------- les lots */
+function amfMelange(t){
+  const a = t.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const x = a[i]; a[i] = a[j]; a[j] = x;
+  }
+  return a;
+}
+function amfGo(quoi, arg){
+  let src = AMF_Q, titre = "";
+  if (quoi === "ko"){       src = AMF_Q.filter(q => q.k === 1); titre = "Mes erreurs des blancs"; }
+  else if (quoi === "theme"){ src = AMF_Q.filter(q => q.t === arg); titre = AMF_THEMES[arg] || ""; }
+  else if (quoi === "themeko"){ src = AMF_Q.filter(q => q.t === arg && q.k === 1); titre = (AMF_THEMES[arg] || "") + ", mes erreurs"; }
+  else if (quoi === "revoir"){ src = AMF_Q.filter(q => S.amf.revoir[q.i]); titre = "Mises de côté"; }
+  else if (quoi === "blanc"){ titre = "Examen blanc"; }
+  else { titre = "Au hasard"; }
+  if (!src.length){
+    alert("Rien à réviser ici pour le moment.");
+    return;
+  }
+  const taille = quoi === "blanc" ? 120 : (quoi === "hasard" ? 10 : Math.min(20, src.length));
+  amfLot = amfMelange(src).slice(0, Math.min(taille, src.length));
+  amfPos = 0; amfBon = 0; amfRep = -1; amfTitre = titre;
+  amfVa("quiz");
+}
+
+/* ----------------------------------------------------------- l'accueil */
+function amfTauxTheme(){
+  const t = [];
+  Object.keys(AMF_THEMES).forEach(k => {
+    const tot = AMF_Q.filter(q => q.t === k).length;
+    const ko = AMF_Q.filter(q => q.t === k && q.k === 1).length;
+    if (tot) t.push({k:k, nm:AMF_THEMES[k], tot:tot, ko:ko, pc:Math.round(100 * ko / tot)});
+  });
+  return t.sort((a, b) => b.pc - a.pc || b.ko - a.ko);
+}
+
+function amfAccueil(){
+  const ko = AMF_Q.filter(q => q.k === 1).length;
+  const vus = Object.keys(S.amf.vus).length;
+  const rev = Object.keys(S.amf.revoir).length;
+  const taux = S.amf.poses ? Math.round(100 * S.amf.justes / S.amf.poses) : 0;
+
+  let h = '<div class="card hero"><h2>Certification AMF</h2>' +
+    '<p class="note">Les ' + AMF_Q.length + ' questions de mes cinq examens blancs, avec le corrigé ' +
+    'et la case que j\'avais cochée ce jour-là.</p>' +
+    '<div class="kpi" style="margin-top:12px">' +
+    '<div class="box r"><div class="n">' + ko + '</div><div class="t">ratées en blanc</div></div>' +
+    '<div class="box"><div class="n">' + vus + '</div><div class="t">revues ici</div></div>' +
+    '<div class="box' + (taux >= 85 ? " v" : (S.amf.poses && taux < 80 ? " r" : "")) + '">' +
+    '<div class="n">' + (S.amf.poses ? taux + " %" : "–") + '</div>' +
+    '<div class="t">de juste ici</div></div>' +
+    '</div></div>';
+
+  /* Le resultat reel, sans arrondi et sans consolation : c est lui qui fixe la cible. */
+  h += '<div class="card sec-rouge"><h2>Le 22 septembre 2026 : échoué</h2>' +
+    amfBarre("Catégorie A", 24, 33, 27) +
+    amfBarre("Catégorie C", 63, 87, 70) +
+    '<p class="note" style="margin-top:11px"><b>Il manquait 3 questions en A et 7 en C.</b> ' +
+    'Dix sur cent vingt. Le seuil est de 80 % dans CHAQUE catégorie, sans compensation : ' +
+    'réussir l\'une ne rattrape pas l\'autre.</p>' +
+    '<p class="note" style="margin-top:8px">Le dernier blanc donnait 72,5 %, l\'examen a donné 72 %. ' +
+    'Le score en blanc est le score réel. <b>Ne pas se représenter tant que les blancs ne sont pas à 85 %.</b></p>' +
+    '</div>';
+
+  h += '<div class="card"><h2>Réviser maintenant</h2>' +
+    '<button class="btn" onclick="amfGo(\'ko\')">Mes ' + ko + ' erreurs, série de 20</button>' +
+    '<button class="btn bsec" onclick="amfGo(\'hasard\')">10 questions au hasard</button>' +
+    '<button class="btn bsec" onclick="amfVa(\'themes\')">Réviser un thème</button>' +
+    '<button class="btn bsec" onclick="amfGo(\'blanc\')">Examen blanc, 120 questions</button>';
+  if (rev) h += '<button class="btn bsec" onclick="amfGo(\'revoir\')">Revoir mes ' + rev + ' mises de côté</button>';
+  h += '</div>';
+
+  h += '<div class="card"><h2>Où ça saigne</h2>' +
+    '<p class="note">Part de questions ratées en blanc, thème par thème. Touche une ligne pour la travailler.</p>' +
+    '<div style="margin-top:10px">';
+  amfTauxTheme().forEach(t => {
+    h += '<div class="ath" onclick="amfGo(\'themeko\',\'' + t.k + '\')">' +
+      '<div style="flex:1"><b>' + esc(t.nm) + '</b>' +
+      '<div class="abar"><i style="width:' + t.pc + '%"></i></div></div>' +
+      '<span>' + t.ko + ' / ' + t.tot + '</span></div>';
+  });
+  h += '</div></div>';
+
+  h += '<div class="card sec-or"><h2>Les pièges qui reviennent</h2>' +
+    '<p class="note">Deux règles de lecture qui rapportent plus que du par-coeur.</p>' +
+    '<button class="btn bsec" onclick="amfVa(\'pieges\')">Les revoir</button></div>';
+
+  el("amf").innerHTML = h;
+}
+
+function amfBarre(nom, obtenu, total, requis){
+  const pc = Math.round(100 * obtenu / total);
+  const pcReq = Math.round(100 * requis / total);
+  return '<div style="margin-top:10px">' +
+    '<div class="ath" style="border:0;padding:0 0 5px;cursor:default">' +
+    '<b>' + nom + '</b><span>' + obtenu + ' / ' + total + ' &middot; il fallait ' + requis + '</span></div>' +
+    '<div class="abar" style="height:9px;position:relative">' +
+    '<i style="width:' + pc + '%"></i>' +
+    '<span style="position:absolute;left:' + pcReq + '%;top:-2px;width:2px;height:13px;background:var(--anthr)"></span>' +
+    '</div></div>';
+}
+
+/* ----------------------------------------------------------- les thèmes */
+function amfEcranThemes(){
+  let h = '<div class="card"><h2>Réviser un thème</h2>' +
+    '<p class="note">Tout le thème, ou seulement ce que j\'y ai raté.</p></div>';
+  amfTauxTheme().forEach(t => {
+    h += '<div class="card"><h2 style="font-size:16px">' + esc(t.nm) + '</h2>' +
+      '<p class="note">' + t.tot + ' questions, ' + t.ko + ' ratées en blanc (' + t.pc + ' %).</p>' +
+      '<div class="pills" style="margin-top:9px">' +
+      '<span class="pill" onclick="amfGo(\'themeko\',\'' + t.k + '\')">Mes erreurs</span>' +
+      '<span class="pill" onclick="amfGo(\'theme\',\'' + t.k + '\')">Tout le thème</span>' +
+      '</div></div>';
+  });
+  h += '<button class="btn bsec" onclick="amfVa(\'accueil\')">Retour</button>';
+  el("amf").innerHTML = h;
+}
+
+/* ----------------------------------------------------------- le quiz */
+function amfEcranQuiz(){
+  const q = amfLot[amfPos];
+  if (!q) return amfVa("fin");
+  const lettres = ["a", "b", "c"];
+  let h = '<div class="card">' +
+    '<div class="ath" style="border:0;padding:0 0 9px;cursor:default">' +
+    '<span class="aprog">' + esc(amfTitre.toUpperCase()) + '</span>' +
+    '<span class="aprog">' + (amfPos + 1) + ' / ' + amfLot.length + '</span></div>' +
+    '<p class="fq">' + esc(q.q) + '</p>';
+
+  q.o.forEach((o, i) => {
+    let cl = "aopt";
+    if (amfRep >= 0){
+      if (i === q.b) cl += " bon";
+      else if (i === amfRep) cl += " mal";
+    }
+    h += '<button class="' + cl + '"' + (amfRep >= 0 ? " disabled" : "") +
+      ' onclick="amfRepond(' + i + ')">' +
+      '<span class="alet">' + lettres[i] + '</span>' + esc(o) + '</button>';
+  });
+
+  if (amfRep >= 0){
+    const juste = amfRep === q.b;
+    h += '<div class="ftip" style="margin-top:12px"><b>' +
+      (juste ? "Juste." : "Faux. La bonne réponse est " + lettres[q.b] + ".") + '</b><br>' +
+      esc(q.x) + '</div>';
+    /* Le rappel qui fait la difference : ce qu'il avait coche le jour du blanc. */
+    if (q.k === 1 && q.s >= 0){
+      h += '<p class="note" style="margin-top:9px">En examen blanc, tu avais répondu <b>' +
+        lettres[q.s] + '</b>. C\'est une de tes ' + AMF_Q.filter(x => x.k === 1).length + ' erreurs.</p>';
+    }
+    h += '<div class="pills" style="margin-top:11px">' +
+      '<span class="pill" onclick="amfCote(\'' + q.i + '\')">' +
+      (S.amf.revoir[q.i] ? "Retirer de mes mises de côté" : "Mettre de côté") + '</span></div>';
+    h += '<button class="btn" style="margin-top:12px" onclick="amfSuivant()">' +
+      (amfPos + 1 >= amfLot.length ? "Voir le résultat" : "Suivant") + '</button>';
+  }
+  h += '</div>';
+  h += '<button class="btn bsec" onclick="amfQuitter()">Arrêter la série</button>';
+  el("amf").innerHTML = h;
+}
+
+function amfRepond(i){
+  const q = amfLot[amfPos];
+  if (!q || amfRep >= 0) return;
+  amfRep = i;
+  const juste = i === q.b;
+  if (juste) amfBon++;
+  S.amf.vus[q.i] = juste ? 1 : 0;
+  S.amf.poses = (S.amf.poses || 0) + 1;
+  if (juste) S.amf.justes = (S.amf.justes || 0) + 1;
+  if (!juste) S.amf.revoir[q.i] = 1;
+  amfJour();
+  save();
+  renderAmf();
+}
+function amfCote(id){
+  if (S.amf.revoir[id]) delete S.amf.revoir[id]; else S.amf.revoir[id] = 1;
+  save(); renderAmf();
+}
+function amfSuivant(){
+  amfPos++; amfRep = -1;
+  if (amfPos >= amfLot.length) return amfVa("fin");
+  renderAmf(); window.scrollTo(0, 0);
+}
+function amfQuitter(){ amfVa("fin"); }
+
+/* La serie de jours consecutifs, comme pour l'onglet Finance. */
+function amfJour(){
+  const d = new Date(), j = d.toISOString().slice(0, 10);
+  if (S.amf.dernier === j) return;
+  const hier = new Date(d.getTime() - 86400000).toISOString().slice(0, 10);
+  S.amf.serie = (S.amf.dernier === hier) ? (S.amf.serie || 0) + 1 : 1;
+  S.amf.dernier = j;
+  if (S.amf.serie > (S.amf.record || 0)) S.amf.record = S.amf.serie;
+}
+
+function amfEcranFin(){
+  const poses = amfPos + (amfRep >= 0 ? 1 : 0);
+  const n = Math.max(poses, 1);
+  const pc = Math.round(100 * amfBon / n);
+  const verdict = pc >= 85 ? "C'est le niveau qu'il faut."
+    : (pc >= 80 ? "Au-dessus du seuil, mais sans marge. La cible est 85 %."
+    : "En dessous du seuil. Il faut 80 % dans chaque catégorie, et 85 % en blanc avant de se représenter.");
+  let h = '<div class="card hero"><h2>' + amfBon + ' / ' + poses + '</h2>' +
+    '<p class="note">' + pc + ' % de bonnes réponses. ' + esc(verdict) + '</p></div>';
+  const rev = Object.keys(S.amf.revoir).length;
+  h += '<div class="card"><h2>Et maintenant</h2>';
+  if (rev) h += '<button class="btn" onclick="amfGo(\'revoir\')">Revoir mes ' + rev + ' mises de côté</button>';
+  h += '<button class="btn bsec" onclick="amfGo(\'ko\')">Encore mes erreurs des blancs</button>' +
+    '<button class="btn bsec" onclick="amfVa(\'accueil\')">Retour à l\'accueil</button></div>';
+  el("amf").innerHTML = h;
+}
+
+/* ----------------------------------------------------------- les pièges */
+const AMF_PIEGES = [
+ {t:"Un absolu contre le client est faux, un absolu contre le professionnel est vrai",
+  d:"« Toujours », « jamais », « uniquement », « systématiquement ». Si l'absolu RÉTRÉCIT une définition ou RETIRE une protection, c'est faux : une obligation n'est pas toujours émise au pair, un sondage de marché n'est pas systématiquement un abus. S'il INTERDIT, impose un devoir au professionnel ou donne un monopole au régulateur, c'est vrai : un mandat sans acceptation n'est JAMAIS valable, le bénéficiaire effectif est NÉCESSAIREMENT une personne physique, une SGP est agréée par l'AMF UNIQUEMENT."},
+ {t:"La réponse la plus protectrice du client gagne presque toujours",
+  d:"En cas de doute, prends celle qui impose l'obligation la plus lourde au professionnel. Corollaire : quand le client refuse de donner ses informations, la réponse est l'abstention. Conseil, on s'abstient. Gestion sous mandat, on refuse le service."},
+ {t:"Les réponses qui cumulent sont souvent les bonnes",
+  d:"« Risque de liquidité, de marché ET de crédit », « risque de change ET risque action », « intermédiaires, marchés ET infrastructures ». Une question « à quoi s'expose-t-il » attend le cumul, pas un seul risque."},
+ {t:"Best-in-class : les mots qui doivent apparaître",
+  d:"Best-in-class = les meilleures de CHAQUE secteur, sans en exclure aucun. Donc un fonds best-in-class PEUT garder une entreprise polluante. Exclusion = on retire les secteurs controversés. Best-in-universe = toutes catégories confondues. Best-effort = on récompense la progression. Si l'option parle d'exclure un secteur, ce n'est pas du best-in-class."},
+ {t:"Qui contrôle quoi",
+  d:"AMF : marchés, sociétés de gestion, OPC, CIF, information des émetteurs, biens divers, crypto. ACPR : prudentiel, banques, assurances. Ministre de l'économie : reconnaissance des entreprises de marché. Banque de France : FICP, surendettement."},
+ {t:"Meilleure exécution, le bloc entier",
+  d:"Politique approuvée par le client, revue annuellement, meilleur résultat possible. Client non professionnel : apprécié sur le COÛT TOTAL. Instruction spécifique : le PSI la suit et le client perd la meilleure exécution. Hors plate-forme : consentement préalable EXPRÈS. Information de l'exécution : sans délai."},
+ {t:"Les délais à savoir par coeur",
+  d:"Accusé de réception d'une réclamation : 10 jours ouvrables, réponse sous 2 mois. Rapport financier annuel : 4 mois. Semestriel : 3 mois. Rachat de plus de 10 % d'un emprunt obligataire : 4 jours de négociation. Conservation LCB-FT : 5 ans. Règlement-livraison : J+2. Connaissances minimales des vendeurs : 6 mois."},
+ {t:"Les montants à savoir par coeur",
+  d:"FGDR : 100 000 € en espèces, 70 000 € en titres, par déposant et par établissement. Sapin 2 : plus de 500 salariés ET plus de 100 M€ de chiffre d'affaires. Démarchage : personnes morales sous 5 M€ de CA. Barème de l'IR : 45 % au plus haut. PFU : 30 %. Impôt minimum mondial : 15 %. Bénéficiaire effectif : 25 %. FCPR : 50 % de non coté."}
+];
+
+function amfEcranPieges(){
+  let h = '<div class="card"><h2>Les pièges qui reviennent</h2>' +
+    '<p class="note">Tirés de mes 209 erreurs. Ils valent mieux que du par-coeur : ' +
+    'ils font gagner des points sur des questions jamais vues.</p></div>';
+  AMF_PIEGES.forEach(p => {
+    h += '<div class="acc"><div class="head" onclick="this.nextElementSibling.style.display=' +
+      'this.nextElementSibling.style.display===\'block\'?\'none\':\'block\'">' +
+      '<b>' + esc(p.t) + '</b></div>' +
+      '<div style="display:none;padding:0 13px 13px"><p class="note">' + esc(p.d) + '</p></div></div>';
+  });
+  h += '<button class="btn bsec" onclick="amfVa(\'accueil\')">Retour</button>';
+  el("amf").innerHTML = h;
+}
+
+const RENDUS = {jour:renderJour, semaine:renderSemaine, sport:renderSport, partir:renderPartir, docs:renderDocs, skills:renderSkills, euro:renderEuro, bouffe:renderBouffe, fin:renderFin, dscg:renderDscg, amf:renderAmf};
 /* La barre de l'en-tete se redessine a chaque rendu : elle suit ce qu'on coche
    dans n'importe quel onglet, sans qu'on ait a la prevenir. */
 /* Steve, le 21/09 : « la barre en haut je ne comprends rien ». Il avait
