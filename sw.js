@@ -1,9 +1,16 @@
-const CACHE = "steve-v82";
+const CACHE = "steve-v83";
 const ASSETS = ["./", "./index.html", "./fiches.js", "./actu.js", "./entrainement.js", "./dscg.js", "./signaux.js", "./amf.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 const DONNEES = ["fiches.js", "actu.js", "entrainement.js", "dscg.js", "signaux.js", "amf.js"];
 
+/* CORRIGE LE 22/09/2026. L'installation appelait skipWaiting() sans condition :
+   chaque nouvelle version prenait la main toute seule, et la page se rechargeait
+   aussitot, a n'importe quel moment. Steve l'a vu en important ses papiers :
+   partir dans le selecteur de fichiers puis revenir suffisait a declencher la
+   verification, et l'app repartait sur « Aujourd'hui », import perdu.
+   Desormais la nouvelle version ATTEND, le bandeau « Installer » s'affiche, et
+   c'est son geste qui la fait passer, par le message SAUTER ci-dessous. */
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
 });
 /* La page peut demander a une version en attente de prendre la main tout de
    suite, quand Steve touche « Installer » sur le bandeau de mise a jour. */

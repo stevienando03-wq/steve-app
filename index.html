@@ -354,6 +354,8 @@ body.dark .hint{background:#2E2617}
 body.dark .jour-repas{background:var(--surface2)}
 body.dark .jour-repas.auj{background:#2E2617}
 body.dark .alerte{background:var(--rougebg);color:#F0B5A8}
+/* la ligne qu'il vient d'importer brille, la ou il regarde */
+.row.papflash{background:var(--vertbg);box-shadow:inset 3px 0 0 var(--vert);transition:background .6s}
 body.dark .ing{background:var(--surface2)}
 body.dark .etape .n{background:#2A3A36}
 body.dark .bar{background:var(--ligne)}
@@ -544,12 +546,12 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=82"></script>
-<script src="entrainement.js?v=82"></script>
-<script src="actu.js?v=82"></script>
-<script src="dscg.js?v=82"></script>
-<script src="amf.js?v=82"></script>
-<script src="signaux.js?v=82"></script>
+<script src="fiches.js?v=83"></script>
+<script src="entrainement.js?v=83"></script>
+<script src="actu.js?v=83"></script>
+<script src="dscg.js?v=83"></script>
+<script src="amf.js?v=83"></script>
+<script src="signaux.js?v=83"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -2318,6 +2320,39 @@ function poidsLisible(n){
 
 let PAPIERS_EN_MEMOIRE = [];
 let PAP_MSG = null;   /* message a reposer apres le reaffichage */
+let PAP_FLASH = null; /* l'emplacement qu'il vient de remplir, a faire briller */
+let PAP_ALERTE = null; /* message affiche EN HAUT de l'onglet, la ou il se voit */
+/* Il reste deux minutes, ou jusqu'au prochain import reussi : au demarrage
+   l'onglet se dessine deux fois, et un message efface au premier passage
+   ne se voyait jamais. */
+let PAP_ALERTE_FIN = 0;
+
+/* ---------- Revenir la ou il etait ----------
+   Steve, le 22/09 : « des que j'importe un doc, ca fait sauter la page ».
+   Sur un telephone, choisir un fichier fait passer l'app en arriere-plan, et
+   Android recharge parfois la page au retour, faute de memoire, surtout quand
+   le selecteur ouvre la galerie ou l'appareil photo. Et une nouvelle version
+   la rechargeait aussi toute seule (corrige dans sw.js). Or au rechargement
+   l'app repartait sur « Aujourd'hui », tout en haut, et l'import en cours
+   etait perdu sans un mot.
+   On note donc ou il est, a chaque changement d'onglet, a chaque passage en
+   arriere-plan et juste avant d'ouvrir le selecteur. Si la page renait dans
+   les trois minutes, on le remet au meme endroit, et on lui dit si un import
+   a ete interrompu. sessionStorage vit le temps de l'onglet : une ouverture
+   normale le lendemain repart bien sur « Aujourd'hui ». */
+const POS = "steve_position", POS_IMPORT = "steve_import_en_cours";
+function notePosition(){
+  try {
+    const b = document.querySelector(".nav button.act");
+    sessionStorage.setItem(POS, JSON.stringify({tab: b ? b.dataset.tab : "jour",
+      y: Math.round(window.scrollY), t: Date.now()}));
+  } catch(e){}
+}
+function noteImport(id, nm){
+  try { sessionStorage.setItem(POS_IMPORT, JSON.stringify({id: id, nm: nm, t: Date.now()})); } catch(e){}
+  notePosition();
+}
+function finImport(){ try { sessionStorage.removeItem(POS_IMPORT); } catch(e){} }
 function renderDocs(){
   docsTous().then(l => { PAPIERS_EN_MEMOIRE = l || []; dessineDocs(); })
     .catch(() => { PAPIERS_EN_MEMOIRE = []; dessineDocs(true); });
@@ -2337,6 +2372,8 @@ function dessineDocs(panne){
   if (panne)
     h += '<div class="card"><div class="alerte"><b>Le stockage du navigateur est ' +
       'inaccessible.</b> C\'est le cas en navigation privée. Ouvre l\'app normalement.</div></div>';
+  if (PAP_ALERTE && Date.now() < PAP_ALERTE_FIN)
+    h += '<div class="card"><div class="alerte">' + PAP_ALERTE + '</div></div>';
 
   /* Ce qui expire, en tete, parce que c est la seule chose qui se perime. */
   const exp = PAPIERS.filter(p => p.exp);
@@ -2424,8 +2461,19 @@ function dessineDocs(panne){
     PAP_MSG = null;
   }
 
+  /* Redessiner tout l'onglet ne doit pas le faire remonter : on garde la
+     position, et la ligne qu'il vient de remplir brille deux secondes, la ou
+     il regarde, au lieu d'un message ecrit tout en bas qu'il ne voyait pas. */
+  const y = window.scrollY;
   el("docs").innerHTML = h;
   brancherPapiers();
+  if (el("t-docs") && el("t-docs").classList.contains("act")) window.scrollTo(0, y);
+  if (PAP_FLASH){
+    const bt = el("docs").querySelector('[data-pap="ouvre:' + PAP_FLASH + '"]');
+    const ligne = bt && bt.closest(".row");
+    if (ligne){ ligne.classList.add("papflash"); setTimeout(() => ligne.classList.remove("papflash"), 2400); }
+    PAP_FLASH = null;
+  }
 }
 
 function brancherPapiers(){
@@ -2442,7 +2490,12 @@ function brancherPapiers(){
   if (!inp){
     inp = document.createElement("input");
     inp.type = "file"; inp.id = "papFich";
-    inp.style.cssText = "position:fixed;left:-9999px;width:1px;height:1px;opacity:0";
+    /* top:0 et pointer-events:none : sans position verticale, le champ se
+       placait tout en bas de la page, et certains telephones y faisaient
+       defiler l'ecran en lui rendant le focus au retour du selecteur. */
+    inp.style.cssText = "position:fixed;top:0;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none";
+    /* Un selecteur ferme sans choix ne laisse pas d'import « en cours ». */
+    inp.addEventListener("cancel", finImport);
     document.body.appendChild(inp);
   }
   cont.querySelectorAll("[data-pap]").forEach(b => b.addEventListener("click", async () => {
@@ -2451,8 +2504,9 @@ function brancherPapiers(){
     if (quoi === "paquet"){
       inp.value = "";
       inp.onchange = () => {
+        try { inp.blur(); } catch(e){}
         const f = inp.files && inp.files[0];
-        if (!f){ dire("Aucun fichier choisi."); return; }
+        if (!f){ finImport(); dire("Aucun fichier choisi."); return; }
         const r = new FileReader();
         r.onload = async () => {
           let o;
@@ -2473,14 +2527,16 @@ function brancherPapiers(){
               n++;
             } catch(e){ rates++; }
           }
+          finImport();
           PAP_MSG = "<b>" + n + " document" + (n > 1 ? "s" : "") + " enregistré" +
             (n > 1 ? "s" : "") + ".</b>" + (rates ? " " + rates + " n'ont pas pu être lus." : "") +
             " Tu peux supprimer le paquet de ton téléphone, ils sont dans l'app.";
           renderDocs();
         };
-        r.onerror = () => dire("<b>Lecture impossible.</b>", 1);
+        r.onerror = () => { finImport(); dire("<b>Lecture impossible.</b>", 1); };
         r.readAsText(f);
       };
+      noteImport("@paquet", "le paquet de papiers");
       inp.click();
       return;
     }
@@ -2488,9 +2544,11 @@ function brancherPapiers(){
     if (quoi === "charge"){
       inp.value = "";
       inp.onchange = () => {
+        try { inp.blur(); } catch(e){}
         const f = inp.files && inp.files[0];
-        if (!f){ dire("Aucun fichier choisi."); return; }
+        if (!f){ finImport(); dire("Aucun fichier choisi."); return; }
         if (f.size > 20 * 1024 * 1024){
+          finImport();
           dire("<b>" + poidsLisible(f.size) + ", c'est trop.</b> Au-delà de 20 Mo, garde le " +
             "fichier dans ton Drive et mets ici une version allégée.", 1); return; }
         let vrai = id, nom = f.name;
@@ -2502,9 +2560,16 @@ function brancherPapiers(){
         }
         docMet({id: vrai, nm: nom, fichier: f, type: f.type || "application/octet-stream",
                 taille: f.size, nomFichier: f.name, ajoute: auj()})
-          .then(() => { dire("<b>" + esc(nom) + "</b> est enregistré sur ce téléphone."); renderDocs(); })
-          .catch(e => dire("<b>Enregistrement impossible.</b> " + esc(String(e).slice(0, 80)), 1));
+          .then(() => {
+            finImport();
+            PAP_ALERTE = null;
+            PAP_MSG = "<b>" + esc(nom) + "</b> est enregistré sur ce téléphone.";
+            PAP_FLASH = vrai;
+            renderDocs();
+          })
+          .catch(e => { finImport(); dire("<b>Enregistrement impossible.</b> " + esc(String(e).slice(0, 80)), 1); });
       };
+      noteImport(id, id === "@libre" ? "ton document" : ((PAPIERS.filter(x => x.id === id)[0] || {}).nm || "ton document"));
       inp.click();
       return;
     }
@@ -4503,7 +4568,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v82";
+const FINV = "v83";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
@@ -5679,7 +5744,11 @@ document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click"
   const nom = (b.textContent || "").replace(ic ? ic.textContent : "", "").trim();
   document.title = nom ? nom + " - Meilleure version de moi-même" : "Meilleure version de moi-même";
   window.scrollTo(0, 0);
+  /* il a change d'onglet a la main : plus aucun import n'est en suspens */
+  finImport(); notePosition();
 }));
+/* En passant en arriere-plan, selecteur de fichiers compris, on note ou il est. */
+document.addEventListener("visibilitychange", () => { if (document.hidden) notePosition(); });
 
 /* ---------- Le clavier, sur ordinateur ----------
    Les chiffres 1 a 7 changent d onglet. Le raccourci est affiche a droite de
@@ -6551,6 +6620,39 @@ function asBrancheP(){
 renderAll();
 /* si un rendez-vous tombe dans deux jours, on previent des l'ouverture */
 setTimeout(rappelsDeuxJours, 1200);
+
+/* La page vient de renaitre : si c'etait il y a moins de trois minutes qu'il
+   etait ailleurs, on le remet au meme endroit. Voir notePosition(). */
+(function(){
+  /* Le navigateur remettait de lui-meme l'ancien defilement au rechargement,
+     meme sur un autre onglet : on ouvrait « Aujourd'hui » au milieu de la
+     page. C'est l'app, et elle seule, qui decide ou il atterrit. */
+  try { history.scrollRestoration = "manual"; } catch(e){}
+  let pos = null, imp = null;
+  try { pos = JSON.parse(sessionStorage.getItem(POS) || "null"); } catch(e){}
+  try { imp = JSON.parse(sessionStorage.getItem(POS_IMPORT) || "null"); } catch(e){}
+  const frais = o => o && (Date.now() - (o.t || 0)) < 3 * 60 * 1000;
+  if (frais(imp)){
+    /* Un import a ete coupe par le rechargement : on le dit en haut de
+       l'onglet Papiers, la ou il va regarder. */
+    PAP_ALERTE = "<b>Ton téléphone a rechargé l'app pendant que tu choisissais " + esc(imp.nm || "ton document") +
+      ".</b> Le fichier n'a pas pu être enregistré. Recommence l'import : c'est rare, et " +
+      "l'app te remet maintenant au bon endroit.";
+    PAP_ALERTE_FIN = Date.now() + 2 * 60 * 1000;
+    finImport();
+    pos = {tab: "docs", y: 0, t: Date.now()};
+  }
+  if (!frais(pos) || !pos.tab || pos.tab === "jour"){
+    if (frais(pos) && pos.tab === "jour") [80, 400].forEach(ms => setTimeout(() => window.scrollTo(0, pos.y || 0), ms));
+    else window.scrollTo(0, 0);
+    return;
+  }
+  const b = document.querySelector('.nav button[data-tab="' + pos.tab + '"]');
+  if (!b) return;
+  b.click();
+  /* l'onglet se dessine parfois en deux temps, les papiers viennent d'IndexedDB */
+  [80, 400, 900].forEach(ms => setTimeout(() => window.scrollTo(0, pos.y || 0), ms));
+})();
 /* ---------- LA MISE A JOUR, ANNONCEE ----------
    Le 21/09, Steve a regarde l onglet Parcours et l a trouve VIDE. Le module
    etait pourtant en ligne : c est son service worker qui lui servait encore
@@ -6567,8 +6669,17 @@ function bandeauMaj(sw, num){
                 '<button id="majGo">Installer</button>';
   document.body.appendChild(d);
   document.getElementById("majGo").addEventListener("click", () => {
-    if (sw) { try { sw.postMessage({type:"SAUTER"}); } catch(e) {} }
-    setTimeout(() => location.reload(), 200);
+    /* La version en attente ne prend plus la main toute seule (sw.js, 22/09) :
+       il faut la reveiller, meme quand le bandeau vient de verifieVersion et
+       qu'on n'a pas l'objet sous la main. */
+    const recharger = () => setTimeout(() => location.reload(), 250);
+    const sauter = w => { try { w.postMessage({type:"SAUTER"}); } catch(e) {} };
+    if (sw) { sauter(sw); recharger(); return; }
+    if (!("serviceWorker" in navigator)) { recharger(); return; }
+    navigator.serviceWorker.getRegistration()
+      .then(reg => { if (reg && reg.waiting) sauter(reg.waiting); })
+      .catch(() => {})
+      .then(recharger);
   });
 }
 
