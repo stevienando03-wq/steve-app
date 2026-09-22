@@ -512,11 +512,11 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=75"></script>
-<script src="entrainement.js?v=75"></script>
-<script src="actu.js?v=75"></script>
-<script src="dscg.js?v=75"></script>
-<script src="signaux.js?v=75"></script>
+<script src="fiches.js?v=76"></script>
+<script src="entrainement.js?v=76"></script>
+<script src="actu.js?v=76"></script>
+<script src="dscg.js?v=76"></script>
+<script src="signaux.js?v=76"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -597,13 +597,14 @@ const MARCHE = {
 /* ---------- Les certifications, dans l'ordre de ce qu'elles t'apportent ---------- */
 /* Chiffres verifies a la source le 13/09/2026. Aucun repris de memoire. */
 const CERTIFS = [
-{ordre:1, nm:"TOEIC", etat:"tu l'as déjà", coul:"vert",
- score:"955 sur 990, à confirmer sur ton attestation",
- pourquoi:"L'anglais est cité dans 80 annonces sur 206, recompté le 21/09. Et à l'étranger ça explose : 83 % au Luxembourg, 79 % à Montréal. Un score chiffré vaut mieux que « anglais courant », que tout le monde écrit. Attention : ton TOEIC ne compte PAS pour l'immigration canadienne, qui n'accepte que l'IELTS General, le CELPIP ou le PTE Core.",
- cout:"zéro, c'est déjà fait", duree:"zéro",
- ouvre:"Toutes les offres qui demandent un anglais professionnel, et elles sont nombreuses. Un score chiffré vaut mieux que « anglais courant », que tout le monde écrit.",
- reserve:"Vérifie le chiffre exact sur ton attestation avant d'envoyer quoi que ce soit. Un recruteur peut demander le justificatif, et un score faux sur un CV ne se rattrape pas. Le TOEIC est valable deux ans pour certains employeurs, regarde la date de passage.",
- lien:["Retrouver son score TOEIC", "https://www.etsglobal.org/fr/fr"]},
+{ordre:1, nm:"TOEIC", etat:"expiré, et ce n'est pas grave", coul:"or",
+ score:"955 sur 990, passé il y a plus de deux ans",
+ pourquoi:"Recompté le 22/09 sur le texte réel des annonces, parce que la question méritait un chiffre et pas une impression : UNE SEULE annonce française sur 1 391 nomme le TOEIC, et elle demande 750 quand tu en as 955. Zéro TOEFL, zéro IELTS, zéro Cambridge. Et sur les 201 annonces des sept marchés étrangers, aucun test nommé, pas une fois. Ce que les annonces demandent, c'est « courant » ou « bilingue », 28 fois sur 201. Autrement dit : ce qui se teste, c'est l'entretien, pas ton attestation.",
+ cout:"zéro si tu ne le repasses pas. Environ 189 € le Listening and Reading, 216 € le 4-Skills, si un employeur l'exigeait un jour",
+ duree:"zéro pour l'instant",
+ ouvre:"Rien de plus qu'aujourd'hui. Ton CV porte déjà « TOEIC 955 sur 990 » sans année, et c'est exactement la bonne façon d'écrire un score ancien.",
+ reserve:"NE PASSE PAS LE TOEFL. C'est un test d'admission à l'université pour les pays anglophones, aucun employeur ne le demande ici, et l'immigration canadienne ne l'accepte pas non plus. Si un jour on te réclame l'attestation, dis simplement que le score date de plus de deux ans et propose de le repasser. Le seul moment où un test devient obligatoire, c'est le dossier canadien, et là c'est l'IELTS General, pas le TOEIC.",
+ lien:["ETS Global, validité et tarifs", "https://www.etsglobal.org/fr/fr/help-center/mon-score/validite-score"]},
 
 {ordre:2, nm:"Certification AMF", etat:"tu la passes le 22 septembre", coul:"or",
  score:"examen le mardi 22 à 11h30",
@@ -624,11 +625,11 @@ const CERTIFS = [
 
 {ordre:5, nm:"IELTS General ou CELPIP", etat:"la clé du Canada", coul:"bleu",
  score:"quatre épreuves, résultats valables deux ans",
- pourquoi:"TON TOEIC 955 NE COMPTE PAS pour l'immigration canadienne. Elle n'accepte que l'IELTS General, le CELPIP ou le PTE Core. Et le Canada est ton marché le plus accessible : en 2026, sa catégorie francophone a délivré 35 500 invitations, 37 % du total, à un score moyen de 405 quand les tirages généraux exigeaient 520 à 550. Sans test reconnu, tu ne peux pas déposer de profil.",
- cout:"environ 240 à 285 euros en France, vérifié en septembre 2026",
+ pourquoi:"NI TON TOEIC NI LE TOEFL NE COMPTENT pour l'immigration canadienne. Revérifié à la source le 22/09 sur le site d'IRCC : la liste officielle est CELPIP General, IELTS General Training, PTE Core pour l'anglais, TEF Canada ou TCF Canada pour le français. Rien d'autre. Et le Canada est ton marché le plus accessible : en 2026, sa catégorie francophone a délivré 35 500 invitations, 37 % du total, à un score moyen de 405 quand les tirages généraux exigeaient 520 à 550. Sans test reconnu, tu ne peux pas déposer de profil.",
+ cout:"307 € l'IELTS General à Paris, relevé le 22/09/2026 sur le centre British Council. Le TCF Canada va de 135 à 220 € selon le centre parisien, le TEF Canada autour de 245 €",
  duree:"une journée d'examen, aucune préparation nécessaire à ton niveau",
  ouvre:"Le profil Entrée Express, et avec lui neuf annonces sur vingt-neuf à Montréal qui acceptent trois ans d'expérience ou moins, avec tes intitulés mot pour mot.",
- reserve:"Il te faut AUSSI le TEF ou le TCF Canada pour le français, NCLC 7 dans les quatre compétences. Pour un francophone de langue maternelle c'est une formalité administrative, mais c'est une formalité obligatoire.",
+ reserve:"NE LE PASSE PAS MAINTENANT. Les résultats ne valent que deux ans, aux deux moments qui comptent : quand tu crées ton profil, et quand tu déposes ta demande. Le passer aujourd'hui, c'est 307 € qui expirent avant de servir. Avril 2027 est la bonne fenêtre, et c'est déjà ce que dit ton planning. Il te faut AUSSI le TEF ou le TCF Canada pour le français, NCLC 7 dans les quatre compétences : c'est celui-là qui te rapporte vraiment des points, puisque c'est la voie francophone qui te fait passer à 405 au lieu de 520. Pour toi c'est une formalité, mais une formalité obligatoire, et il faut réserver trois à quatre mois à l'avance.",
  lien:["TEF Canada, le test de français", "https://www.lefrancaisdesaffaires.fr/tests-diplomes/test-evaluation-francais-tef/tef-canada/"]},
 
 {ordre:7, nm:"CMA, l'Institute of Management Accountants", etat:"celle qui colle le mieux à ton métier", coul:"bleu",
@@ -846,7 +847,7 @@ const SKILLS = [
    lire:"Après SQLBolt, vise les jointures et les fonctions de fenêtrage. C'est ce qu'on demande en entretien."},
 
   {cat:"Ce que je te conseille de faire, dans l'ordre", nm:"Anglais financier", ordre:3, quand:"test reconnu à passer avant le 31 mai 2027", cible:"Tenir une réunion de clôture en anglais sans la préparer",
-   why:"Cité dans 80 annonces sur 206 en France, 83 % au Luxembourg, 79 % à Montréal. Tu es à l'aise à l'écrit et tu as 955 au TOEIC. Deux choses restent : l'oral en contexte technique, et un piège administratif. TON TOEIC NE COMPTE PAS pour l'immigration canadienne, qui n'accepte que l'IELTS General, le CELPIP ou le PTE Core. Si le Canada est dans ton plan, il faut en repasser un.",
+   why:"Cité dans 80 annonces sur 206 en France, 83 % au Luxembourg, 79 % à Montréal. Tu es à l'aise à l'écrit et tu as 955 au TOEIC, même s'il a plus de deux ans et n'est donc plus certifiable. Ça ne bloque rien : une seule annonce française sur 1 391 nomme le TOEIC, et aucune des 201 annonces étrangères ne nomme de test. Deux choses restent : l'oral en contexte technique, et un piège administratif. NI LE TOEIC NI LE TOEFL ne comptent pour l'immigration canadienne, qui n'accepte que l'IELTS General, le CELPIP ou le PTE Core. Si le Canada est dans ton plan, l'IELTS General se passe en avril 2027, pas avant : deux ans de validité seulement.",
    faire:"Écris les commentaires de ton reporting en anglais une fois par mois. Et vingt minutes d'écoute par jour dans les transports.",
    liens:[["BBC Learning English, gratuit","https://www.bbc.co.uk/learningenglish/"],
           ["Toastmasters Paris bilingue, on y parle les deux langues","https://toastmasters-paris-bilingue.org/"]],
