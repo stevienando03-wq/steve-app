@@ -1,4 +1,4 @@
-const CACHE = "steve-v77";
+const CACHE = "steve-v78";
 const ASSETS = ["./", "./index.html", "./fiches.js", "./actu.js", "./entrainement.js", "./dscg.js", "./signaux.js", "./amf.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 const DONNEES = ["fiches.js", "actu.js", "entrainement.js", "dscg.js", "signaux.js", "amf.js"];
 
