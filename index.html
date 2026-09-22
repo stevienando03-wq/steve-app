@@ -535,12 +535,12 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=79"></script>
-<script src="entrainement.js?v=79"></script>
-<script src="actu.js?v=79"></script>
-<script src="dscg.js?v=79"></script>
-<script src="amf.js?v=79"></script>
-<script src="signaux.js?v=79"></script>
+<script src="fiches.js?v=80"></script>
+<script src="entrainement.js?v=80"></script>
+<script src="actu.js?v=80"></script>
+<script src="dscg.js?v=80"></script>
+<script src="amf.js?v=80"></script>
+<script src="signaux.js?v=80"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -742,9 +742,6 @@ const PARTIR = {
        "18 octobre au 18 décembre 2026. Ton CDI à 27 k porte la condition de ressources " +
        "stables et suffisantes : ne fais rien qui le fragilise avant le décret.",
      taches:[
-      {id:"n00", t:"URGENT : renouveler ton passeport tchadien, il a expiré", d:"2026-09-26",
-       x:"Constaté le 22/09 en lisant le scan de ton passeport : [numéro retiré], délivré le 07/07/2021, EXPIRÉ LE 06/07/2026, périmé depuis deux mois et demi. Pour renouveler un titre de séjour, la pièce normale est un passeport en cours de validité. Une attestation consulaire avec photo peut parfois le remplacer, mais un passeport périmé peut bloquer l'instruction, et ton dépôt doit se faire entre le 18 octobre et le 18 décembre. Un renouvellement à l'ambassade prend plusieurs semaines : c'est donc CETTE tâche qui commande les autres. Prends le rendez-vous à l'ambassade du Tchad à Paris cette semaine, demande-leur une attestation de demande de renouvellement pour la préfecture, et fais confirmer par Inès ce que ta préfecture acceptera.",
-       but:"Rendez-vous pris à l'ambassade avant samedi", lien:null},
       {id:"n0", t:"Réunir le dossier de renouvellement du titre de séjour", d:"2026-10-18",
        x:"Ton titre expire le 18 février 2027. La demande se dépose au plus tôt QUATRE mois et au plus tard DEUX mois avant, donc entre le 18 octobre et le 18 décembre 2026. La fenêtre s'ouvre le 18 octobre : prépare les pièces avant, pour déposer dès l'ouverture et non à la fin.",
        but:"Pièces prêtes le jour où la fenêtre s'ouvre", lien:null},
@@ -2274,7 +2271,7 @@ function docOte(id){ return docTx("readwrite", st => st.delete(id)); }
    une place et, pour les papiers qui perdent leur validite, une date. */
 const PAPIERS = [
   {cat:"Identité", id:"passeport",  nm:"Passeport tchadien",      exp:true,
-   note:"EXPIRÉ LE 6 JUILLET 2026. Constaté le 22/09 en lisant le scan : passeport [numéro retiré], délivré le 07/07/2021. Pour renouveler ton titre de séjour, la pièce normale est un passeport valide ; une attestation consulaire peut parfois dépanner, mais un passeport périmé peut bloquer le dossier. Dépôt entre le 18 octobre et le 18 décembre : prends rendez-vous à l'ambassade du Tchad cette semaine."},
+   note:"Le bon est le [numéro retiré], délivré le 04/07/2025, valable jusqu'au 03/07/2030. L'ancien, [numéro retiré], a expiré le 06/07/2026 : ne l'envoie plus nulle part, et surtout pas à la préfecture pour le renouvellement du titre."},
   {cat:"Identité", id:"titre",      nm:"Titre de séjour",         exp:true,
    note:"Expire le 18 février 2027. Dépôt du renouvellement entre le 18 octobre et le 18 décembre 2026."},
   {cat:"Identité", id:"vitale",     nm:"Carte Vitale"},
