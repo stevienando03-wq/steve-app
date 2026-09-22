@@ -5,3 +5,8 @@
 
 # Le service worker et les donnees sont servis tels quels, on ne touche a rien.
 *.js text eol=lf
+
+# Le code de l'app part CHIFFRE sur GitHub et reste en clair sur le PC de Steve.
+# Voir .claude/chiffre_git.py. diff=chiffre fait afficher le clair a git diff.
+index.html filter=chiffre diff=chiffre
+signaux.js filter=chiffre diff=chiffre
