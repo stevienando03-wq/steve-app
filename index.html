@@ -544,12 +544,12 @@ body.dark .asIco{background:var(--surface2);border-color:var(--ligne);color:var(
 <!-- Les onglets Skills et DSCG sont repris dans Parcours. Leur code reste en place,
      rien n'est supprime : remettre un bouton data-tab="skills" les rend visibles. -->
 
-<script src="fiches.js?v=81"></script>
-<script src="entrainement.js?v=81"></script>
-<script src="actu.js?v=81"></script>
-<script src="dscg.js?v=81"></script>
-<script src="amf.js?v=81"></script>
-<script src="signaux.js?v=81"></script>
+<script src="fiches.js?v=82"></script>
+<script src="entrainement.js?v=82"></script>
+<script src="actu.js?v=82"></script>
+<script src="dscg.js?v=82"></script>
+<script src="amf.js?v=82"></script>
+<script src="signaux.js?v=82"></script>
 <script>
 /* ================= RÉGLAGES ================= */
 const TRAVAIL = {debut:"09h30", fin:"18h30", jours:[1,2,3,4,5]};
@@ -582,10 +582,10 @@ const RDV = [
   {d:"2026-09-22", h:"11:30", dur:90,  t:"Examen AMF",                  note:"Mardi. Pose ta matinée. Révise avec l'app AMF le week-end du 19, et refais la veille au soir les séries sur lesquelles tu bloques."},
   {d:"2026-09-17", h:"09:38", dur:195, t:"Train Paris Marseille",       note:"Jeudi, départ Gare de Lyon à 09h38, arrivée Saint-Charles. Journée de bureau, pose-la. Durée bloquée sur le TGV direct standard, 3h15 : corrige si ton billet dit autre chose. Ta réunion du jeudi soir tombe pendant le séjour."},
   {d:"2026-09-20", h:"17:04", dur:195, t:"Train Marseille Paris",       note:"Dimanche, départ Saint-Charles à 17h04, arrivée Gare de Lyon. Même réserve sur la durée. Tu rentres deux jours avant l'examen AMF."},
-  {d:"2026-09-26", h:"10:00", dur:60,  t:"Psy",                         note:"Samedi matin, rien à poser."},
-  {d:"2026-09-30", h:"16:20", dur:60,  t:"Dentiste",                    note:"Mercredi en fin d'après-midi. Tu finis à 18h30 : préviens ton manager et pars plus tôt."},
-  {d:"2026-10-02", h:"12:48", dur:12,  t:"Scanner",                     note:"Vendredi. Enchaîne avec l'hôpital de Nanterre à 13h00 : douze minutes entre les deux. Si ce n'est pas le même site, décale le second MAINTENANT, pas le jour même."},
-  {d:"2026-10-02", h:"13:00", dur:60,  t:"Hôpital de Nanterre",         note:"Vendredi, juste après le scanner de 12h48. Pose ton après-midi, ne compte pas revenir au bureau."},
+  {d:"2026-09-26", h:"10:00", dur:60,  t:"Rendez-vous santé",           note:"Samedi matin, rien à poser."},
+  {d:"2026-09-30", h:"16:20", dur:60,  t:"Rendez-vous santé",           note:"Mercredi en fin d'après-midi. Tu finis à 18h30 : préviens ton manager et pars plus tôt."},
+  {d:"2026-10-02", h:"12:48", dur:12,  t:"Rendez-vous santé", lourd:true, note:"Vendredi. Enchaîne avec le second rendez-vous à 13h00 : douze minutes entre les deux. Si ce n'est pas le même site, décale le second MAINTENANT, pas le jour même."},
+  {d:"2026-10-02", h:"13:00", dur:60,  t:"Rendez-vous santé", lourd:true, note:"Vendredi, juste après celui de 12h48. Pose ton après-midi, ne compte pas revenir au bureau."},
   {d:"2026-10-22", h:"12:00", dur:0,   t:"RENDU GAI, date limite",      note:"Jeudi midi. Ce n'est pas un rendez-vous, c'est une date limite : rien ne se rattrape après. Elle tombe pendant le parcours Power BI. Si la semaine du 19 est chargée, c'est Power BI qui saute d'une semaine, pas le rendu."}
 ];
 
@@ -1390,7 +1390,9 @@ function creneauSport(dateIso){
 
   /* Un rendez-vous medical ou un examen prend la journee : on ne cale pas une
      seance de jambes juste apres un scanner. */
-  const lourd = rdvs.find(r => /scanner|hôpital|hopital|examen|opération|operation/i.test(r.t));
+  /* lourd:true marque un rendez-vous du code public dont le titre reste neutre, voir la
+     regle Rendez-vous sante. La regle sur le titre reste pour ceux qu il ajoute lui-meme. */
+  const lourd = rdvs.find(r => r.lourd || /scanner|hôpital|hopital|examen|opération|operation/i.test(r.t));
   if (lourd) return "à décaler ou à alléger, tu as " + nom(lourd) + " à " +
     lourd.h.replace(":", "h") + " ce jour-là";
 
@@ -4501,7 +4503,7 @@ function telechargerIcs(seulementRdv){
 /* Champ par champ, pas objet par objet. Un etat enregistre par une version anterieure
    pouvait avoir un S.fin sans .vus ni .revoir : Object.keys(undefined) levait alors une
    TypeError et l'onglet restait entierement BLANC. Corrige le 13/09. */
-const FINV = "v81";
+const FINV = "v82";
 S.fin = (S.fin && typeof S.fin === "object") ? S.fin : {};
 if (!S.fin.vus || typeof S.fin.vus !== "object") S.fin.vus = {};
 if (!S.fin.revoir || typeof S.fin.revoir !== "object") S.fin.revoir = {};
