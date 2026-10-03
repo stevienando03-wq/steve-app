@@ -1,4 +1,4 @@
-const CACHE = "steve-v98";
+const CACHE = "steve-v99";
 const ASSETS = ["./", "./index.html", "./fiches.js", "./actu.js", "./entrainement.js", "./dscg.js", "./signaux.js", "./amf.js", "./amf_cours.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 const DONNEES = ["fiches.js", "actu.js", "entrainement.js", "dscg.js", "signaux.js", "amf.js", "amf_cours.js"];
 
@@ -34,13 +34,28 @@ self.addEventListener("activate", e => {
    Desormais : reseau d'abord pour la page ET pour les trois fichiers de donnees, cache en
    secours quand il n'y a pas de reseau. Le reste, images et manifeste, reste cache d'abord,
    il ne change jamais. */
+/* CORRIGE LE 03/10/2026. Le reseau d'abord attendait le reseau sans limite. En rayon le
+   signal est souvent mauvais sans etre coupe : fetch peut trainer vingt secondes avant
+   d'echouer, et l'app restait blanche tout ce temps, liste de courses comprise. Desormais,
+   si une copie existe en cache et que le reseau n'a pas repondu en trois secondes, on
+   sert la copie. Le reseau continue en fond et remplit le cache pour la fois suivante.
+   Une reponse en erreur (404, 500) ne remplace plus la copie en cache. */
+const DELAI_RESEAU = 3000;
 function reseauDabord(e, cle){
-  e.respondWith(
-    fetch(e.request).then(r => {
+  const reseau = fetch(e.request).then(r => {
+    if (r && r.ok) {
       const copie = r.clone();
       caches.open(CACHE).then(c => c.put(cle, copie)).catch(() => {});
-      return r;
-    }).catch(() => caches.match(cle).then(r => r || caches.match("./index.html")))
+    }
+    return r;
+  });
+  e.waitUntil(reseau.catch(() => {}));
+  e.respondWith(
+    caches.match(cle).then(enCache => {
+      if (!enCache) return reseau.catch(() => caches.match("./index.html"));
+      const delai = new Promise(res => setTimeout(() => res(enCache), DELAI_RESEAU));
+      return Promise.race([reseau.then(r => (r && r.ok) ? r : enCache).catch(() => enCache), delai]);
+    })
   );
 }
 
