@@ -964,8 +964,8 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cuisine-2026-10-05@steve
 DTSTAMP:20261004T080000Z
-DTSTART:20261005T201500
-DTEND:20261005T204500
+DTSTART:20261005T190000
+DTEND:20261005T193000
 SUMMARY:Cuisine : Wok de dinde\, nouilles et légumes
 DESCRIPTION:500 g d'escalopes de dinde\, 2 courgettes\, le reste des carottes\, 1 oignon\, 2 gousses d'ail\, gingembre\, sauce soja\, 1 cuillère à soupe de miel\, 300 g de nouilles chinoises ou de spaghettis\, 2 cuillères à soupe d'huile || Feu vif d'un bout à l'autre et poêle pas trop pleine. Trop chargée elle refroidit\, les légumes rendent leur eau et tout bout au lieu de sauter. En deux fois si besoin.
 BEGIN:VALARM
