@@ -940,8 +940,8 @@ UID:courses-2026-10-06@steve
 DTSTAMP:20261004T080000Z
 DTSTART:20261006T184500
 DTEND:20261006T190500
-SUMMARY:Courses\, environ 12 €
-DESCRIPTION:Filets de poulet 750 g\, 300 pour le basquaise et 450 pour jeudi\, date au-delà de jeudi\, Poivrons 2\, Courgettes 2\, Skyr ou fromage blanc 500 g
+SUMMARY:Courses\, environ 7 €
+DESCRIPTION:Filets de poulet 450 g\, pour jeudi\, date au-delà de jeudi\, Courgettes 2\, Skyr ou fromage blanc 500 g
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Courses dans une heure\, la liste est dans l'app
@@ -951,8 +951,8 @@ END:VEVENT
 BEGIN:VEVENT
 UID:cuisine-2026-10-04@steve
 DTSTAMP:20261004T080000Z
-DTSTART:20261004T173000
-DTEND:20261004T194500
+DTSTART:20261004T210000
+DTEND:20261004T223500
 SUMMARY:Cuisine : Bœuf aux carottes et pommes de terre
 DESCRIPTION:700 g de bœuf à braiser\, 600 g de carottes\, 600 g de pommes de terre\, 2 oignons\, 2 gousses d'ail\, 1 cuillère à soupe de concentré de tomate\, 1 cube de bouillon\, 1 cuillère à soupe de farine\, thym\, laurier\, 2 cuillères à soupe d'huile || Le bœuf à braiser devient tendre en mijotant longtemps et doucement. À gros bouillons il durcit\, et il ne redevient jamais tendre. De petites bulles\, pas plus.
 BEGIN:VALARM
@@ -967,7 +967,7 @@ DTSTAMP:20261004T080000Z
 DTSTART:20261005T201500
 DTEND:20261005T204500
 SUMMARY:Cuisine : Wok de dinde\, nouilles et légumes
-DESCRIPTION:500 g d'escalopes de dinde\, 2 courgettes\, le reste des carottes\, 1 oignon\, 2 gousses d'ail\, gingembre\, sauce soja\, 1 cuillère à soupe de miel\, 225 g de nouilles chinoises ou de spaghettis\, 2 cuillères à soupe d'huile || Feu vif d'un bout à l'autre et poêle pas trop pleine. Trop chargée elle refroidit\, les légumes rendent leur eau et tout bout au lieu de sauter. En deux fois si besoin.
+DESCRIPTION:500 g d'escalopes de dinde\, 2 courgettes\, le reste des carottes\, 1 oignon\, 2 gousses d'ail\, gingembre\, sauce soja\, 1 cuillère à soupe de miel\, 300 g de nouilles chinoises ou de spaghettis\, 2 cuillères à soupe d'huile || Feu vif d'un bout à l'autre et poêle pas trop pleine. Trop chargée elle refroidit\, les légumes rendent leur eau et tout bout au lieu de sauter. En deux fois si besoin.
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Wok de dinde\, nouilles et légumes à préparer dans une heure
@@ -980,7 +980,7 @@ DTSTAMP:20261004T080000Z
 DTSTART:20261006T191500
 DTEND:20261006T200500
 SUMMARY:Cuisine : Poulet basquaise et riz
-DESCRIPTION:900 g de filets de poulet\, 600 achetés dimanche et 300 achetés ce soir\, 5 poivrons\, 3 oignons\, 4 gousses d'ail\, 2 boîtes de tomates pelées\, paprika\, piment d'Espelette ou paprika fumé\, thym\, 480 g de riz cru\, 2 cuillères à soupe d'huile || Le poulet de dimanche est à sa limite ce soir : il se cuit aujourd'hui\, pas demain. Et dix minutes pleines pour les poivrons avant les tomates\, sinon la sauce n'a aucun goût.
+DESCRIPTION:600 g de filets de poulet\, achetés dimanche\, 3 poivrons\, 2 oignons\, 3 gousses d'ail\, 1 boîte de tomates pelées\, paprika\, piment d'Espelette ou paprika fumé\, thym\, 320 g de riz cru\, 2 cuillères à soupe d'huile || Le poulet de dimanche est à sa limite ce soir : il se cuit aujourd'hui\, pas demain. Et dix minutes pleines pour les poivrons avant les tomates\, sinon la sauce n'a aucun goût.
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Poulet basquaise et riz à préparer dans une heure
