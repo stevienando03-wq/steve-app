@@ -1,7 +1,7 @@
 {
   "name": "Meilleure version de moi-même",
   "short_name": "Ma version",
-  "description": "Planning, sport, bouffe, budget, style — mon tableau de bord perso.",
+  "description": "Planning, ambitions, argent, savoir, sport : mon tableau de bord perso.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
@@ -9,9 +9,64 @@
   "background_color": "#F5F1E8",
   "theme_color": "#14213D",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Parler à Nova",
+      "short_name": "Nova",
+      "url": "./#nova",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mes ambitions",
+      "short_name": "Ambitions",
+      "url": "./#ambitions",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mon argent",
+      "short_name": "Argent",
+      "url": "./#argent",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }
