@@ -1,6 +1,12 @@
-const CACHE = "steve-v128";
-const ASSETS = ["./", "./index.html", "./fiches.js", "./actu.js", "./entrainement.js", "./dscg.js", "./signaux.js", "./amf.js", "./amf_cours.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
-const DONNEES = ["fiches.js", "actu.js", "entrainement.js", "dscg.js", "signaux.js", "amf.js", "amf_cours.js"];
+const CACHE = "steve-v129";
+const ASSETS = ["./", "./index.html", "./fiches.js", "./actu.js", "./entrainement.js", "./dscg.js", "./signaux.js", "./amf.js", "./amf_cours.js", "./mots.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
+/* v129 (23/10/2026) : les illustrations 3D, les logos, les drapeaux, les photos et la police
+   viennent d'Internet. Ils vont dans leur propre cache à la première vue, et ce cache survit
+   aux mises à jour : l'app reste illustrée hors ligne. */
+const CACHE_IMG = "steve-images";
+const HOTES_IMG = ["cdn.jsdelivr.net", "upload.wikimedia.org", "www.google.com", "flagcdn.com", "fonts.googleapis.com"];
+function estImage(u){ return HOTES_IMG.indexOf(u.hostname) !== -1 || /\.gstatic\.com$/.test(u.hostname); }
+const DONNEES = ["fiches.js", "actu.js", "entrainement.js", "dscg.js", "signaux.js", "amf.js", "amf_cours.js", "mots.js"];
 
 /* CORRIGE LE 22/09/2026. L'installation appelait skipWaiting() sans condition :
    chaque nouvelle version prenait la main toute seule, et la page se rechargeait
@@ -18,7 +24,7 @@ self.addEventListener("message", e => {
   if (e.data && e.data.type === "SAUTER") self.skipWaiting();
 });
 self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== CACHE_IMG).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 
 /* Corrige le 13/09/2026. Deux bugs vivaient ici depuis la v22 :
@@ -64,6 +70,15 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   if (req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html")) {
     return reseauDabord(e, "./index.html");
+  }
+  let u = null;
+  try { u = new URL(req.url); } catch (err) {}
+  if (u && u.origin !== self.location.origin && estImage(u)) {
+    e.respondWith(caches.open(CACHE_IMG).then(c => c.match(req).then(r => r || fetch(req).then(rep => {
+      if (rep && (rep.ok || rep.type === "opaque")) c.put(req, rep.clone()).catch(() => {});
+      return rep;
+    }))));
+    return;
   }
   let nom = "";
   try { nom = new URL(req.url).pathname.split("/").pop(); } catch (err) { nom = ""; }
