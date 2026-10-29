@@ -1,4 +1,4 @@
-const CACHE = "steve-v153";
+const CACHE = "steve-v154";
 const ASSETS = ["./", "./index.html", "./fiches.js", "./actu.js", "./entrainement.js", "./dscg.js", "./signaux.js", "./amf.js", "./amf_cours.js", "./mots.js", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 /* v129 (23/10/2026) : les illustrations 3D, les logos, les drapeaux, les photos et la police
    viennent d'Internet. Ils vont dans leur propre cache à la première vue, et ce cache survit
